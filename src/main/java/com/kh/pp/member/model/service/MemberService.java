@@ -36,7 +36,7 @@ public class MemberService {
 		int result = memberMapper.signUp(memberEntity); 
 	}
 	
-	private void countByMemberId(String memberId) {
+	private void countByMemberId(String memberId) { //.
 		int result = memberMapper.countByMemberId(memberId);
 		
 		log.info(memberId);
