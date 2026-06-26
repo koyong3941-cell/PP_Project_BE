@@ -43,6 +43,7 @@ public class SecurityConfiguration {
 					requests.requestMatchers(HttpMethod.DELETE, "/api/boards/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET, "/api/boards").permitAll();
 					requests.requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll();
+					requests.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
 					requests.requestMatchers(HttpMethod.POST, "/api/auth/login/**").permitAll();
 					requests.anyRequest().authenticated();
 					

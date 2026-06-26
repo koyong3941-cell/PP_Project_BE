@@ -23,7 +23,10 @@ public class TokenService {
 	
 	public Map<String, String> getTokens(CustomUserDetails user) {
 		Map<String, String> tokens = createTokens(user);
-		saveToken(tokens.get("refreshToken"),user.getUsername());
+		
+		int memberNo = user.getMemberNo();
+		
+		saveToken(tokens.get("refreshToken"),memberNo);
 		
 		return tokens;
 	}
@@ -35,11 +38,11 @@ public class TokenService {
 	}
 	
 	// 리프레시토큰을 받아서 DB에 INSERT 메소드
-	private void saveToken(String token, String adminId) {
+	private void saveToken(String token, int memberNo) {
 		RefreshToken refreshToken = RefreshToken.builder()
-										.adminId(adminId)
+										.memberNo(memberNo)
 										.token(token)
-										.expiration(System.currentTimeMillis()+ (1000*60*60*24*3))
+										.expirationToken(System.currentTimeMillis()+ (1000*60*60*24*3))
 										.build();
 		tokenMapper.saveToken(refreshToken);
 	}
@@ -52,7 +55,7 @@ public class TokenService {
 	
 	public Map<String, String> tokenLocation(String refreshToken){
 		RefreshToken token = tokenMapper.findByToken(refreshToken);
-		if(token == null || token.getExpiration() < System.currentTimeMillis()) {
+		if(token == null || token.getExpirationToken() < System.currentTimeMillis()) {
 			throw new CustomAuthenticationException("유효하지 않은 토큰입니다.");
 		}
 		Claims claims = tokenUtil.parseJwt(token.getToken());

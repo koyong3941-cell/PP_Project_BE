@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.pp.auth.model.dto.LoginRequestDto;
 import com.kh.pp.auth.model.dto.LoginResponse;
 import com.kh.pp.auth.model.service.AuthService;
+import com.kh.pp.common.api.ApiResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,11 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 	private final AuthService authService;
 
-	
 	@PostMapping
-	public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto lrd){
+	public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequestDto lrd){
 		LoginResponse res = authService.login(lrd);
 		
-		return ResponseEntity.ok(null);
+		return ResponseEntity.ok(ApiResponse.success(res));
 	}
 }
 

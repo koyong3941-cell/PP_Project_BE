@@ -26,7 +26,7 @@ public class AuthService {
 
 	public LoginResponse login(LoginRequestDto lrd) {
 		Authentication auth = null;
-
+		
 		try {
 			auth = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(lrd.getMemberId(), lrd.getMemberPwd()));
@@ -39,7 +39,7 @@ public class AuthService {
 		// 토큰 발급
 		
 			Map<String, String> tokens = tokenService.getTokens(user);
-			return LoginResponse.builder().memberId(user.getUsername())
+			return LoginResponse.builder().memberNo(user.getMemberNo())
 													.role(user.getAuthorities().iterator().next().getAuthority())
 													.accessToken(tokens.get("accessToken"))
 													.refreshToken(tokens.get("refreshToken"))

@@ -8,7 +8,6 @@ import com.kh.pp.member.model.vo.Member;
 
 @Mapper
 public interface MemberMapper {
-
 	@Select("SELECT COUNT(*) FROM MEMBER WHERE MEMBER_ID = #{memberId}")
 	int countByMemberId(String memberId);
 
