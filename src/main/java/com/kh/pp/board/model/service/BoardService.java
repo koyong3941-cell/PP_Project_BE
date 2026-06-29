@@ -3,6 +3,7 @@ package com.kh.pp.board.model.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.pp.board.model.dao.BoardMapper;
 import com.kh.pp.board.model.dto.BoardDto;
@@ -12,6 +13,7 @@ import com.kh.pp.exception.FailSaveException;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional(readOnly= true)
 @RequiredArgsConstructor
 public class BoardService {
 	private final BoardMapper boardMapper;
@@ -30,7 +32,6 @@ public class BoardService {
 				.boardTitle(board.getBoardTitle())
 				.boardContent(board.getBoardContent())
 				// 이미지 나중에 추가
-				
 				.build();
 				
 	}
@@ -39,5 +40,15 @@ public class BoardService {
 		if (board.getBoardTitle() == null || board.getBoardTitle().isEmpty()) {
 			throw new FailSaveException("제목은 필수입니다.");
 		}
+	}
+
+	public void deleteBoard(Long boardNo) {
+
+		
+	}
+
+	public void editBoard( BoardDto board) {
+
+		
 	}
 }

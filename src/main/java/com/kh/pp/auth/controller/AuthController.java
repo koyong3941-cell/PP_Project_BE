@@ -1,6 +1,7 @@
 package com.kh.pp.auth.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,24 +10,36 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.pp.auth.model.dto.LoginRequestDto;
 import com.kh.pp.auth.model.dto.LoginResponse;
 import com.kh.pp.auth.model.service.AuthService;
+import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.api.ApiResponse;
+import com.kh.pp.token.model.service.TokenService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@RestController
-@RequestMapping("/api/auth/login")
+@RestController 
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 	private final AuthService authService;
+	private final TokenService tokenService;
 
-	@PostMapping
+	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequestDto lrd){
 		LoginResponse res = authService.login(lrd);
 		
 		return ResponseEntity.ok(ApiResponse.success(res));
 	}
+	@PostMapping("/logout")
+	public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal CustomUserDetails user){
+		tokenService.logout(user.getMemberNo());
+		
+		return ResponseEntity.status(204).body(ApiResponse.noContent("로그아웃 성공", null));
+	}
+	
 }
+
+
 
 /*
 JwtUtil (토큰 생성/검증)

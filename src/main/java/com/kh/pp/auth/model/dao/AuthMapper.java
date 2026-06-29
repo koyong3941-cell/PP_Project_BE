@@ -8,7 +8,7 @@ import com.kh.pp.member.model.dto.MemberDto;
 @Mapper
 public interface AuthMapper {
 
-	@Select("SELECT MEMBER_ID, MEMBER_PWD, ROLE, DEL_YN FROM MEMBER WHERE DEL_YN ='N' AND MEMBER_ID = #{username}")
+	@Select("SELECT MEMBER_NO, MEMBER_ID, MEMBER_PWD, ROLE, DEL_YN FROM MEMBER WHERE DEL_YN ='N' AND MEMBER_ID = #{username}")
 	MemberDto loadUser(String username);
 	
 }

@@ -14,7 +14,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 public class LoginResponse {
-	private int memberNo;
+	private Integer memberNo;
+	private String memberId;
 	private String role;
 	private String accessToken;
 	private String refreshToken;

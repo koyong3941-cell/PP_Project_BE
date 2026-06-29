@@ -33,7 +33,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			throw new UsernameNotFoundException("유저 ID 조회 실패");
 		}
 		
-		return CustomUserDetails.builder().username(member.getMemberId())
+		return CustomUserDetails.builder().memberNo(member.getMemberNo())
+											.username(member.getMemberId())
 											.password(member.getMemberPwd())
 											.authorities(Collections.singletonList(new SimpleGrantedAuthority(member.getRole())))
 											.status(member.getDelYn())

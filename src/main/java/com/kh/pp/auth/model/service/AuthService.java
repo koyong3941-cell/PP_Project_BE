@@ -14,7 +14,9 @@ import com.kh.pp.auth.model.dto.LoginResponse;
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.exception.CustomAuthenticationException;
 import com.kh.pp.token.model.service.TokenService;
+import com.kh.pp.token.model.vo.RefreshToken;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -39,12 +41,14 @@ public class AuthService {
 		// 토큰 발급
 		
 			Map<String, String> tokens = tokenService.getTokens(user);
-			return LoginResponse.builder().memberNo(user.getMemberNo())
+			return LoginResponse.builder().memberNo(user.getMemberNo()).memberId(user.getUsername())
 													.role(user.getAuthorities().iterator().next().getAuthority())
 													.accessToken(tokens.get("accessToken"))
 													.refreshToken(tokens.get("refreshToken"))
 													.build();
 
 	}
+
+	
 
 }
