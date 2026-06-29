@@ -21,9 +21,9 @@ public class BoardDto {
 	private Long boardNo;
 	private Integer categoryNo;
 	private Integer memberNo;
-	@NotBlank
+	@NotBlank(message = "공백일 수 없습니다.")
 	private String boardTitle;
-	@NotBlank
+	@NotBlank(message = "공백일 수 없습니다.")
 	private String boardContent;
 	private Integer count;
 	private Date createDate;
@@ -32,4 +32,5 @@ public class BoardDto {
 	// Join
 	private String memberName;
 	private String categoryName;
+	
 }

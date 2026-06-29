@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pp.board.model.dao.BoardMapper">
+    <select id="boardDetail">
+			SELECT
+				B.BOARD_NO
+				,B.BOARD_TITLE
+				,B.BOARD_CONTENT
+				,B.COUNT
+				,C.CATEGORY_NAME
+				,M.MEMBER_ID
+			FROM 
+				BOARD B
+			Join 
+				Category C USING(CATEGORY_NO)
+			Join
+				MEMBER M USING(MEMBER_NO)
+			WHERE 
+				B.BOARD_NO = #{boardNo}
+			AND
+				B.DEL_YN = 'N'
+    </select>
+   
+	<update id="deleteBoard">
+   		UPDATE
+   			BOARD
+   		SET
+   			DEL_YN = 'Y'
+   		WHERE
+   			BOARD_NO = #{boardNo}
+   		AND
+   			MEMBER_NO = #{memberNo}
+	</update>
+	<update id="editBoard">
+   		UPDATE
+   			BOARD
+   		SET
+   			CATEGORY_NO = #{board.categoryNo}
+   			,BOARD_TITLE = #{board.boardTitle}
+   			,BOARD_CONTENT = #{board.boardContent}
+   		WHERE
+   			BOARD_NO = #{board.boardNo}
+   		AND
+   			MEMBER_NO = #{memberNo}
+	</update>
+</mapper>

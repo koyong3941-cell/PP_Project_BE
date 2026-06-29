@@ -34,11 +34,10 @@ public class AuthController {
 	public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal CustomUserDetails user){
 		tokenService.logout(user.getMemberNo());
 		
-		return ResponseEntity.status(204).body(ApiResponse.noContent("로그아웃 성공", null));
+		return ResponseEntity.status(200).body(ApiResponse.success("로그아웃 성공", null));
 	}
-	
+		
 }
-
 
 
 /*

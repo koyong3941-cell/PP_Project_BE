@@ -40,6 +40,7 @@ public class JwtUtil {
 				.subject(user.getUsername())
 				.issuedAt(new Date())
 		       .expiration(Date.from(Instant.now().plus(Duration.ofMinutes(540))))
+		       .claim("memberNo", user.getMemberNo())
 		       .claim("memberName", user.getMemberName())
 		       .signWith(key)
 		       .compact();
@@ -50,6 +51,7 @@ public class JwtUtil {
 				.subject(user.getMemberName())
 				.issuedAt(new Date())
 				.expiration(Date.from(Instant.now().plus(Duration.ofDays(5))))
+				.claim("memberNo", user.getMemberNo())
 				.claim("memberName", user.getMemberName())
 				.signWith(key)
 				.compact();
