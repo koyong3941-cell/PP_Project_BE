@@ -87,7 +87,7 @@ public class BoardService {
 	
 	// ------ 카테고리 조회 검증 ----	
 		public List<Category> categoryInfo() {
-			return boardMapper.categoryInfo();
+			return boardMapper.categoryInfo(); 
 		}
 	
 
