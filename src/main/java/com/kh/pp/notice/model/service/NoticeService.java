@@ -1,5 +1,44 @@
 package com.kh.pp.notice.model.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.kh.pp.notice.model.dao.NoticeMapper;
+import com.kh.pp.notice.model.dto.NoticeDto;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class NoticeService {
 
+	private final NoticeMapper noticeMapper;
+
+	public List<NoticeDto> findAll(){
+		return noticeMapper.findAll();
+	}
+	
+	@Transactional
+	public NoticeDto findById(int noticeNo) {
+		noticeMapper.updateCount(noticeNo);
+		return noticeMapper.findById(noticeNo);
+	}
+	
+	@Transactional
+	public void saveNotice(NoticeDto notice) {
+		noticeMapper.saveNotice(notice);
+	}
+	
+	@Transactional
+	public void editNotice(NoticeDto notice) {
+		noticeMapper.editNotice(notice);
+	}
+	
+	@Transactional
+	public void delete(int noticeNo) {
+		noticeMapper.delete(noticeNo);
+	}
 }
