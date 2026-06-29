@@ -32,7 +32,7 @@ public class NoticeController {
 	public ResponseEntity<ApiResponse<List<NoticeDto>>> findNoticeAll(@RequestParam(value = "page", defaultValue ="0") int page){
 		List<NoticeDto> notices = noticeService.findNoticeAll(page);
 		
-		return ResponseEntity.ok(ApiResponse.success(notices));
+		return ResponseEntity.status(200).body(ApiResponse.success(notices));
 	}
 	
 	@GetMapping("/{noticeNo}")
@@ -42,7 +42,5 @@ public class NoticeController {
 		return ResponseEntity.status(200).body(ApiResponse.success(notice));
 	}
 	
-	
-
 	
 }

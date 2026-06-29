@@ -34,18 +34,16 @@ public class NoticeService {
 	
 	private void increaseCount(Long noticeNo) {
 		noticeMapper.increaseCount(noticeNo);
-		
 	}
 	
 	// ------ 접근 실패 시  ------	
-		private NoticeDto getNoticeNoOrThrow(Long noticeNo) {
-			NoticeDto noticeDetail = noticeMapper.noticeDetail(noticeNo);
-			if (noticeDetail == null) {
-				throw new FailSaveException("유효하지 않은 접근입니다.");
-			}
-			return noticeDetail; 
-
+	private NoticeDto getNoticeNoOrThrow(Long noticeNo) {
+		NoticeDto noticeDetail = noticeMapper.noticeDetail(noticeNo);
+		if (noticeDetail == null) {
+			throw new FailSaveException("유효하지 않은 접근입니다.");
 		}
+		return noticeDetail; 
+	}
 
 
 
