@@ -29,17 +29,22 @@ public class NoticeService {
 	
 	@Transactional
 	public void saveNotice(NoticeDto notice) {
-		noticeMapper.saveNotice(notice);
+		noticeMapper.save(notice);
 	}
 	
 	@Transactional
 	public void editNotice(NoticeDto notice) {
-		noticeMapper.editNotice(notice);
+		noticeMapper.edit(notice);
 	}
 	
 	@Transactional
 	public void delete(int noticeNo) {
 		noticeMapper.delete(noticeNo);
+	}
+
+	public void search(String noticeTitle) {
+		noticeMapper.search(noticeTitle);
+	
 	}
 
 }
