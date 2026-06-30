@@ -25,7 +25,7 @@ public interface NoticeMapper {
 	void save(NoticeDto notice);
 
 	@Update("UPDATE NOTICE SET NOTICE_TITLE = #{noticeTitle},NOTICE_CONTENT = #{noticeContent} WHERE NOTICE_NO = #{noticeNo}")
-	void edit(NoticeDto notice);
+	void update(NoticeDto notice);
 
 	@Update("UPDATE NOTICE SET DEL_YN = 'Y' WHERE NOTICE_NO = #{noticeNo}")
 	void delete(int noticeNo);

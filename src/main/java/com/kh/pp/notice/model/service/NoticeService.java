@@ -28,13 +28,13 @@ public class NoticeService {
 	}
 	
 	@Transactional
-	public void saveNotice(NoticeDto notice) {
+	public void save(NoticeDto notice) {
 		noticeMapper.save(notice);
 	}
 	
 	@Transactional
-	public void editNotice(NoticeDto notice) {
-		noticeMapper.edit(notice);
+	public void update(NoticeDto notice) {
+		noticeMapper.update(notice);
 	}
 	
 	@Transactional
