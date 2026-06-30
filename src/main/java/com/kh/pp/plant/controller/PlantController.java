@@ -22,7 +22,6 @@ import com.kh.pp.plant.model.service.PlantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/plants")
@@ -33,13 +32,12 @@ public class PlantController {
 	public ResponseEntity<ApiResponse<List<PlantDto>>> findPlantAll(@RequestParam(value = "page", defaultValue ="0") int page){
 		List<PlantDto> plants = plantService.findPlantAll(page);
 	
-	
 		return ResponseEntity.status(200).body(ApiResponse.success(plants));
-	
 	}
 	
 	@GetMapping("/{plantNo}")
 	public ResponseEntity<ApiResponse<PlantDto>> plantDetail(@PathVariable(name = "plantNo") Long plantNo){
+		
 		PlantDto plant = plantService.plantDetail(plantNo);
 
 		return ResponseEntity.status(200).body(ApiResponse.success(plant));
@@ -68,6 +66,5 @@ public class PlantController {
 		plantService.editPlant(plant, memberNoFromToken, plantNo);
 		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
 	}
-	
 	
 }

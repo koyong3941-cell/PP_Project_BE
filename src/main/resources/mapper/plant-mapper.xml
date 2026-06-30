@@ -3,25 +3,119 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.pp.plant.model.dao.PlantMapper">
+	<insert id="savePlant" parameterType="Plant">
+		INSERT
+		INTO
+			PLANT	
+			(
+			MEMBER_NO 
+			,PLANT_NAME
+			,PLANT_INFO
+			)
+		VALUES
+			(
+			#{memberNo}
+			,#{plantName}
+			,#{plantInfo}
+			)
+	</insert>
+	
+	<select id="getLastPlantNoByMemberNo" resultType="java.lang.Long">
+		SELECT
+			PLANT_NO
+		FROM
+			PLANT
+		WHERE
+			MEMBER_NO = #{memberNo}
+		ORDER
+		BY
+			PLANT_NO DESC
+		FETCH
+			FIRST 1 ROWS ONLY
+	</select>
+	
+	<select id="findPlantAll">
+		SELECT 
+			p.PLANT_NO
+			, m.MEMBER_NAME
+			, p.PLANT_NAME
+			, p.CLASSIFICATION
+			, p.PLANT_INFO
+			, p.COUNT
+			, p.CARBON_CAPTURE
+			, p.CREATE_DATE
+			, p.GROWTH_INFO
+			, p.PLANT_API
+			, p.DEL_YN
+		FROM
+			PLANT p
+		JOIN
+			MEMBER m USING(MEMBER_NO)
+		WHERE
+			p.DEL_YN = 'N'
+		ORDER 
+		BY
+			p.PLANT_NO DESC
+	    OFFSET 
+	    	#{offset} ROWS
+		FETCH 
+			NEXT #{limit} ROWS ONLY
+	</select>
+	
+	
     <select id="plantDetail">
-			SELECT
-				P.PLANT_NO
-				,P.PLANT_NAME
-				,P.CLASSIFICATION
-				,P.COUNT
-				,P.CARBON_CAPTURE
-				,P.CREATE_DATE
-				,P.PLANT_INFO
-				,P.GROWTH_INFO
-				,M.MEMBER_ID
-				,P.PLANT_API
-			FROM 
-				PLANT P
-			Join
-				MEMBER M USING(MEMBER_NO)
-			WHERE 
-				P.PLANT_NO = #{plantNo}
-			AND
-				P.DEL_YN = 'N'
+		SELECT
+			p.PLANT_NO
+			,p.PLANT_NAME
+			,p.CLASSIFICATION
+			,p.COUNT
+			,p.CARBON_CAPTURE
+			,p.CREATE_DATE
+			,p.PLANT_INFO
+			,p.GROWTH_INFO
+			,m.MEMBER_ID
+			,p.PLANT_API
+		FROM 
+			PLANT p
+		Join
+			MEMBER m USING(MEMBER_NO)
+		WHERE 
+			p.PLANT_NO = #{plantNo}
+		AND
+			p.DEL_YN = 'N'
     </select>
+    
+    <update id="editPlant">
+   		UPDATE
+   			PLANT
+   		SET
+   			PLANT_NAME = #{plant.plantName}
+   			, PLANT_INFO = #{plant.plantInfo}
+   		WHERE
+   			PLANT_NO = #{plant.plantNo}
+   		AND
+   			MEMBER_NO = #{memberNo}
+	</update>
+	
+	<update id="increaseCount">
+		UPDATE 
+			PLANT 
+		SET 
+			COUNT = COUNT + 1 
+		WHERE 
+			PLANT_NO = #{plantNo}
+	</update>
+	
+	<update id="deletePlant">
+   		UPDATE
+   			PLANT
+   		SET
+   			DEL_YN = 'Y'
+   		WHERE
+   			PLANT_NO = #{plantNo}
+   		AND
+   			MEMBER_NO = #{memberNo}
+	</update>
+	
+	
 </mapper>
