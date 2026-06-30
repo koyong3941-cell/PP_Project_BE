@@ -20,6 +20,12 @@ public interface BoardMapper {
 	// Read
 	List<BoardDto> findBoardAll(@Param("offset") int offset, @Param("limit") int limit);
 
+	List<BoardDto> findBoardByKeyword(@Param("offset") int offset, @Param("limit") int limit, @Param("keyword") String keyword);
+
+	List<BoardDto> findBoardByMemberName(@Param("offset") int offset, @Param("limit") int limit, @Param("keyword") String keyword);
+
+	
+	
 	BoardDto boardDetail(Long boardNo);
 
 	// Update
@@ -33,4 +39,6 @@ public interface BoardMapper {
 	
 	// Delete
 	int deleteBoard(@Param("boardNo") Long boardNo, @Param("memberNo") int memberNo);
+
+
 }

@@ -1,11 +1,6 @@
 package com.kh.pp.board.model.service;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +99,16 @@ public class BoardService {
 		
 		return boardMapper.findBoardAll(offset, limit);
 	}
+	
+	public List<BoardDto> findBoardByKeyword(int page, String keyword, String target) {
+		int offset = page * 10;
+		int limit = 10;
+		List<BoardDto> boards;
+		if (target == "writer") {
+			boards = boardMapper.findBoardByMemberName(offset, limit, keyword);
+		}
+		return boardMapper.findBoardByKeyword(offset, limit, keyword);
+	}
 
 	// 상세 및 리스트 조회
 	public BoardDto boardDetail(Long boardNo) {
@@ -152,6 +157,5 @@ public class BoardService {
 	public List<Category> categoryInfo() {
 		return boardMapper.categoryInfo(); 
 	}
-	
 
 }

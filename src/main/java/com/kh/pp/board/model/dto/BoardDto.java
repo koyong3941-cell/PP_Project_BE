@@ -35,6 +35,9 @@ public class BoardDto {
 	// Join
 	private String memberName;
 	private String categoryName;
+	private Long commentCount;
+	private Long likeCount;
+	private Long dislikeCount;
 	
 	// 이미지 입력용
 	private List<MultipartFile> imageFiles;

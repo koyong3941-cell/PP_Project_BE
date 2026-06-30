@@ -41,6 +41,31 @@
 <!-- Read -->
 	<select id="findBoardAll">
 		SELECT 
+				B.BOARD_NO
+			 ,	B.BOARD_TITLE
+			 ,	C.CATEGORY_NAME
+			 ,	B.COUNT
+			 ,	M.MEMBER_NAME
+			 ,	B.CREATE_DATE
+			 ,	(SELECT COUNT(*) FROM BOARD_COMMENT WHERE BOARD_NO = B.BOARD_NO) AS COMMENT_COUNT
+			 ,	(SELECT COUNT(*) FROM BOARD_LIKE WHERE BOARD_NO = B.BOARD_NO) AS LIKE_COUNT
+		  FROM
+				BOARD B
+		  JOIN
+				CATEGORY C USING(CATEGORY_NO)
+		  JOIN
+				MEMBER M USING(MEMBER_NO)
+		 WHERE
+				B.DEL_YN = 'N'
+		 ORDER 
+		    BY
+		    	B.BOARD_NO DESC
+	    OFFSET #{offset} ROWS
+		 FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<select id="findBoardByKeyword">
+		SELECT 
 				b.BOARD_NO
 			 ,	c.CATEGORY_NAME
 			 ,	m.MEMBER_NAME
@@ -48,7 +73,6 @@
 			 ,	b.BOARD_CONTENT
 			 ,	b.COUNT
 			 ,	b.CREATE_DATE
-			 ,	b.DEL_YN
 		  FROM
 				BOARD b
 		  JOIN
@@ -57,11 +81,17 @@
 				MEMBER m USING(MEMBER_NO)
 		 WHERE
 				b.DEL_YN = 'N'
+		   AND
+		   		(
+        		b.BOARD_TITLE  LIKE '%' || #{keyword} || '%'
+            OR 
+        		b.BOARD_CONTENT LIKE '%' || #{keyword} || '%'
+    			)
 		 ORDER 
 		    BY
 		    	b.BOARD_NO DESC
 	    OFFSET #{offset} ROWS
-		 FETCH NEXT #{limit} ROWS ONLY
+		 FETCH NEXT #{limit} ROWS ONLY	
 	</select>
 	
     <select id="boardDetail">
@@ -72,6 +102,10 @@
 			 ,	B.COUNT
 			 ,	C.CATEGORY_NAME
 			 ,	M.MEMBER_ID
+			 ,	(SELECT COUNT(*) FROM BOARD_COMMENT WHERE BOARD_NO = B.BOARD_NO) AS COMMENT_COUNT
+			 ,	(SELECT COUNT(*) FROM BOARD_LIKE WHERE BOARD_NO = B.BOARD_NO) AS LIKE_COUNT
+			 ,	(SELECT COUNT(*) FROM BOARD_DISLIKE WHERE BOARD_NO = B.BOARD_NO) AS DISLIKE_COUNT
+			 
 		  FROM 
 				BOARD B
 		  Join 
