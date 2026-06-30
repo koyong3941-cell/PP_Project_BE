@@ -36,7 +36,10 @@ public class BoardDto {
 	private String memberName;
 	private String categoryName;
 	
-	// 이미지
+	// 이미지 입력용
 	private List<MultipartFile> imageFiles;
+	
+	// 이미지 출력용
+	private List<BoardImgDto> boardImages;
 	
 }

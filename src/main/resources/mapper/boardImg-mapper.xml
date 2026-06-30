@@ -3,12 +3,45 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.pp.board.model.dao.BoardImgMapper">
-   <insert id="insertBoardImg" parameterType="com.kh.pp.board.model.dto.BoardImgDto">
-    INSERT INTO BOARD_IMG 
-        (BOARD_NO, ORIGINAL_NAME, SAVE_NAME, IMG_PATH, IMG_ORDER, DEL_YN)
-    VALUES 
-        (#{boardNo}, #{originalName}, #{saveName}, #{imgPath}, #{imgOrder}, 'N')
+	<insert id="insertBoardImg" parameterType="com.kh.pp.board.model.dto.BoardImgDto">
+		INSERT 
+	      INTO 
+	     		BOARD_IMG 
+	   	    	(
+				BOARD_NO
+		 	 , 	ORIGINAL_NAME
+			 , 	SAVE_NAME
+			 , 	IMG_PATH
+			 , 	IMG_ORDER
+			    )
+	    VALUES 
+	        	(
+				#{boardNo}
+			 , 	#{originalName}
+			 , 	#{saveName}
+			 , 	#{imgPath}
+			 , 	#{imgOrder}
+			    )
 	</insert>
    
-   
+	<select id="findByBoardNo" resultType="com.kh.pp.board.model.dto.BoardImgDto">
+		SELECT 
+	        	BOARD_IMG_NO
+	         ,	BOARD_NO
+	         ,	ORIGINAL_NAME
+	         ,	SAVE_NAME
+	         ,	IMG_PATH
+	         ,	IMG_ORDER
+	         ,	CREATE_DATE
+	         ,	DEL_YN
+	      FROM 
+	    		BOARD_IMG
+	     WHERE 
+	     		BOARD_NO = #{boardNo}
+	       AND 
+	       		DEL_YN = 'N'
+	     ORDER
+	        BY 
+	        	IMG_ORDER ASC
+	</select>
 </mapper>
