@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.board.model.service.BoardService;
 import com.kh.pp.common.api.ApiResponse;
@@ -34,22 +35,36 @@ public class BoardController {
 		return ResponseEntity.ok(ApiResponse.success(boards));
 	}
 	
+	@GetMapping("/{boardNo}")
+	public ResponseEntity<ApiResponse<BoardDto>> boardDetail(@PathVariable(name = "boardNo") Long boardNo){
+		
+		BoardDto board = boardService.boardDetail(boardNo);
+		
+		return ResponseEntity.status(200).body(ApiResponse.success(board));
+	}
+	
 	@PostMapping
-	public ResponseEntity<ApiResponse<Void>> saveBoard(@AuthenticationPrincipal @ModelAttribute @Valid BoardDto board){
+	public ResponseEntity<ApiResponse<Void>> saveBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute @Valid BoardDto board){
+		int memberNoFromToken = userDetails.getMemberNo();
+		board.setMemberNo(memberNoFromToken);
+		 
 		boardService.saveBoard(board);
 		return ResponseEntity.status(201).body(ApiResponse.created(null));
 	}
 	
 	@DeleteMapping("/{boardNo}")
-	public ResponseEntity<ApiResponse<Void>> deleteBoard(@AuthenticationPrincipal @PathVariable(name = "boardNo") Long boardNo){
-		boardService.deleteBoard(boardNo);
-		return ResponseEntity.status(204).body(ApiResponse.created("deleted", null));
+	public ResponseEntity<ApiResponse<Void>> deleteBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "boardNo") Long boardNo){
+		int memberNoFromToken = userDetails.getMemberNo();
+		boardService.deleteBoard(boardNo, memberNoFromToken);
+		return ResponseEntity.status(200).body(ApiResponse.created("deleted", null));
 	}
 	
-	@PatchMapping
-	public ResponseEntity<ApiResponse<Void>> editBoard(@AuthenticationPrincipal @ModelAttribute  @Valid BoardDto board){
-		boardService.editBoard(board);
-		return ResponseEntity.status(200).body(ApiResponse.created("edited", null));
+	@PatchMapping("/{boardNo}")
+	public ResponseEntity<ApiResponse<Void>> editBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute  @Valid BoardDto board,
+			@PathVariable(name = "boardNo") Long boardNo){
+		int memberNoFromToken = userDetails.getMemberNo();
+		boardService.editBoard(board, memberNoFromToken, boardNo);
+		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
 	}
 
 }

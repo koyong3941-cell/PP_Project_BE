@@ -18,4 +18,5 @@ public class NoticeDto {
 	private int noticeCount;
 	private Date createDate;
 	private String delYn;
+
 }

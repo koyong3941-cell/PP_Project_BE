@@ -41,4 +41,5 @@ public class NoticeService {
 	public void delete(int noticeNo) {
 		noticeMapper.delete(noticeNo);
 	}
+
 }

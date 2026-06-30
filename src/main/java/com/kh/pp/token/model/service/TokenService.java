@@ -42,6 +42,7 @@ public class TokenService {
 	
 	// 리프레시토큰을 받아서 DB에 INSERT 메소드
 	private void saveToken(String token, CustomUserDetails user) { // 해당 부분 문제 시 1순위 수정해야함; edited by 성현. refreshtoken vo 수정해야함
+		log.info("저장할 memberNo 확인: {}", user.getMemberNo());
 		RefreshToken refreshToken = RefreshToken.builder()
 										.memberNo(user.getMemberNo())
 										.memberId(user.getUsername())

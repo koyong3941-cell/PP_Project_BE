@@ -36,16 +36,22 @@ public class SecurityConfiguration {
 				.csrf(AbstractHttpConfigurer::disable)	// "/api/admins/boards/{boardNo}"
 				.cors(Customizer.withDefaults()).authorizeRequests(requests ->{
 					
+					// 1. 관리자 전용 경로 (가장 구체적이거나 제한이 강한 것)
 					requests.requestMatchers("/api/admins/**").hasRole("ADMIN");
-					requests.requestMatchers(HttpMethod.POST, "/api/members").permitAll(); // 나중에 바꿔야함.
+					// 2. 인증 관련 (로그인/토큰 등)
+					requests.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll();
+					// 3. 회원 관련
+					requests.requestMatchers(HttpMethod.POST, "/api/members").permitAll();
+					requests.anyRequest().authenticated();
+					// 4. 게시판 관련 (보드/공지사항 등)
 					requests.requestMatchers(HttpMethod.POST, "/api/boards").permitAll();
 					requests.requestMatchers(HttpMethod.PATCH, "/api/boards/**").permitAll();
 					requests.requestMatchers(HttpMethod.DELETE, "/api/boards/**").permitAll();
-					requests.requestMatchers(HttpMethod.GET, "/api/boards").permitAll();
-					requests.requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll();
-					requests.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
-					requests.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll();
-					requests.anyRequest().authenticated();
+					requests.requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll(); 
+					requests.requestMatchers(HttpMethod.GET, "/api/boards").permitAll();   
+					// 5. 공지사항 관련
+					requests.requestMatchers(HttpMethod.GET, "/api/notices/**").permitAll();
+					requests.requestMatchers(HttpMethod.GET, "/api/notices").permitAll();
 					
 				}).sessionManagement(manager ->
 				manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

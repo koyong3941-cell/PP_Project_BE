@@ -1,6 +1,9 @@
 package com.kh.pp.board.model.dto;
 
 import java.sql.Date;
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -21,9 +24,9 @@ public class BoardDto {
 	private Long boardNo;
 	private Integer categoryNo;
 	private Integer memberNo;
-	@NotBlank
+	@NotBlank(message = "공백일 수 없습니다.")
 	private String boardTitle;
-	@NotBlank
+	@NotBlank(message = "공백일 수 없습니다.")
 	private String boardContent;
 	private Integer count;
 	private Date createDate;
@@ -32,4 +35,8 @@ public class BoardDto {
 	// Join
 	private String memberName;
 	private String categoryName;
+	
+	// 이미지
+	private List<MultipartFile> imageFiles;
+	
 }
