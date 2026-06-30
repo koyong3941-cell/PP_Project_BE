@@ -39,7 +39,7 @@
 	</select>
 	
 <!-- Read -->
-	<select id="findBoardAll">
+	<sql id="findBoardQuery">
 		SELECT 
 				B.BOARD_NO
 			 ,	B.BOARD_TITLE
@@ -57,41 +57,41 @@
 				MEMBER M USING(MEMBER_NO)
 		 WHERE
 				B.DEL_YN = 'N'
+	</sql>
+	
+	<select id="findBoardAll">
+		<include refid="findBoardQuery"/>
 		 ORDER 
 		    BY
 		    	B.BOARD_NO DESC
-	    OFFSET #{offset} ROWS
-		 FETCH NEXT #{limit} ROWS ONLY
+	    OFFSET 	#{offset} ROWS FETCH
+		  NEXT  #{limit} ROWS ONLY	
 	</select>
 	
 	<select id="findBoardByKeyword">
-		SELECT 
-				b.BOARD_NO
-			 ,	c.CATEGORY_NAME
-			 ,	m.MEMBER_NAME
-			 ,	b.BOARD_TITLE
-			 ,	b.BOARD_CONTENT
-			 ,	b.COUNT
-			 ,	b.CREATE_DATE
-		  FROM
-				BOARD b
-		  JOIN
-				CATEGORY c USING(CATEGORY_NO)
-		  JOIN
-				MEMBER m USING(MEMBER_NO)
-		 WHERE
-				b.DEL_YN = 'N'
+		<include refid="findBoardQuery"/>
 		   AND
 		   		(
-        		b.BOARD_TITLE  LIKE '%' || #{keyword} || '%'
+        		B.BOARD_TITLE  LIKE '%' || #{keyword} || '%'
             OR 
-        		b.BOARD_CONTENT LIKE '%' || #{keyword} || '%'
+        		B.BOARD_CONTENT LIKE '%' || #{keyword} || '%'
     			)
 		 ORDER 
 		    BY
-		    	b.BOARD_NO DESC
-	    OFFSET #{offset} ROWS
-		 FETCH NEXT #{limit} ROWS ONLY	
+		    	B.BOARD_NO DESC
+	    OFFSET 	#{offset} ROWS FETCH
+		  NEXT  #{limit} ROWS ONLY	
+	</select>
+	
+	<select id="findBoardByMemberName">
+		<include refid="findBoardQuery"/>
+		   AND
+				M.MEMBER_NAME LIKE '%' || #{keyword} || '%'
+		 ORDER 
+		    BY
+		    	B.BOARD_NO DESC
+	    OFFSET 	#{offset} ROWS FETCH
+		  NEXT  #{limit} ROWS ONLY	
 	</select>
 	
     <select id="boardDetail">

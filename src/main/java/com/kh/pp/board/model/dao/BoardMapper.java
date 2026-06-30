@@ -24,6 +24,7 @@ public interface BoardMapper {
 
 	List<BoardDto> findBoardByMemberName(@Param("offset") int offset, @Param("limit") int limit, @Param("keyword") String keyword);
 
+	List<BoardDto> findBoardByBoardTitle(@Param("offset") int offset, @Param("limit") int limit, @Param("keyword") String keyword);
 	
 	
 	BoardDto boardDetail(Long boardNo);
@@ -39,6 +40,7 @@ public interface BoardMapper {
 	
 	// Delete
 	int deleteBoard(@Param("boardNo") Long boardNo, @Param("memberNo") int memberNo);
+
 
 
 }

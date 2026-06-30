@@ -104,10 +104,15 @@ public class BoardService {
 		int offset = page * 10;
 		int limit = 10;
 		List<BoardDto> boards;
-		if (target == "writer") {
-			boards = boardMapper.findBoardByMemberName(offset, limit, keyword);
+		log.info(target);
+		// 카테고리는 이후 개선 필요
+		if ("writer".equals(target)) {
+			return boards = boardMapper.findBoardByMemberName(offset, limit, keyword);
+		} else if ("boardTitle".equals(target)) {
+			return boards = boardMapper.findBoardByBoardTitle(offset, limit, keyword);
+		} else {
+			return boardMapper.findBoardByKeyword(offset, limit, keyword);
 		}
-		return boardMapper.findBoardByKeyword(offset, limit, keyword);
 	}
 
 	// 상세 및 리스트 조회
