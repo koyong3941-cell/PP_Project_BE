@@ -83,25 +83,6 @@
 		   AND
 				B.DEL_YN = 'N'
     </select>
-   
-	<select id="existsByUserId">
-		SELECT 
-				CASE 
-		  WHEN 
-		  		EXISTS
-		  		(
-				SELECT 
-						1 
-				  FROM 
-				  		BOARD 
-				 WHERE 
-				 		MEMBER_NO = #{memberNo}
-				) 
-		  THEN 
-		  		1 ELSE 0 END AS EXISTS_YN 
-		  FROM 
-		  		DUAL
-	</select>
 
 	<select id="categoryInfo">
 		SELECT 

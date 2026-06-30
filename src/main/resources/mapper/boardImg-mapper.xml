@@ -26,14 +26,10 @@
    
 	<select id="findByBoardNo" resultType="com.kh.pp.board.model.dto.BoardImgDto">
 		SELECT 
-	        	BOARD_IMG_NO
-	         ,	BOARD_NO
-	         ,	ORIGINAL_NAME
+	         	ORIGINAL_NAME
 	         ,	SAVE_NAME
 	         ,	IMG_PATH
 	         ,	IMG_ORDER
-	         ,	CREATE_DATE
-	         ,	DEL_YN
 	      FROM 
 	    		BOARD_IMG
 	     WHERE 

@@ -49,7 +49,17 @@ public class BoardService {
 		
 		Long boardNo = boardMapper.getLastBoardNoByMemberNo(board.getMemberNo());
 		
-		log.info("생성된 boardNo : {}",boardNo);
+		// log.info("생성된 boardNo : {}",boardNo);
+		
+		if (board.getImageFiles() != null) {
+	        long validImageCount = board.getImageFiles().stream()
+	                .filter(file -> !file.isEmpty())
+	                .count();
+
+	        if (validImageCount > 5) {
+	            throw new FailSaveException("이미지는 최대 5장까지 업로드할 수 있습니다.");
+	        }
+	    }
 		
 		// 이미지 처리
 	    if (board.getImageFiles() != null && !board.getImageFiles().isEmpty()) {

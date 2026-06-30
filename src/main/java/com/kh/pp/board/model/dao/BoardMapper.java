@@ -20,8 +20,6 @@ public interface BoardMapper {
 	// Read
 	List<BoardDto> findBoardAll(@Param("offset") int offset, @Param("limit") int limit);
 
-	boolean existsByUserId(String memberNo);
-	
 	BoardDto boardDetail(Long boardNo);
 
 	// Update
