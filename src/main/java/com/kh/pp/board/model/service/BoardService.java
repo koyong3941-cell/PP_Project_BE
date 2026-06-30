@@ -20,13 +20,27 @@ import lombok.RequiredArgsConstructor;
 public class BoardService {
 	private final BoardMapper boardMapper;
 	
+	
+	// 상세 및 리스트 조회
+	public BoardDto boardDetail(Long boardNo) {
+		increaseCount(boardNo);
+		BoardDto board = getBoardNoOrThrow(boardNo);
+		
+		return board;
+	}
+	
+	private void increaseCount(Long boardNo) {
+		boardMapper.increaseCount(boardNo);
+	}
+	
 	public List<BoardDto> findBoardAll(int page) {
 	    int offset = page * 10;
 	    int limit = 10;
 	    
 	    return boardMapper.findBoardAll(offset, limit);
 	}
-
+	
+	// 보드 저장 및 검증 메서드
 	@Transactional
 	public void saveBoard(BoardDto board) {
 		validateBoard(board);
@@ -50,6 +64,8 @@ public class BoardService {
 		}
 	}
 	
+	
+	// 수정 및 삭제
 	@Transactional
 	public void deleteBoard(Long boardNo, int memberNo) {
 		int result = boardMapper.deleteBoard(boardNo, memberNo);
@@ -64,16 +80,7 @@ public class BoardService {
 		boardMapper.editBoard(board, memberNo, boardNo);
 	}
 	
-	public BoardDto boardDetail(Long boardNo) {
-		increaseCount(boardNo);
-		BoardDto board = getBoardNoOrThrow(boardNo);
-		
-		return board;
-	}
 	
-	private void increaseCount(Long boardNo) {
-		boardMapper.increaseCount(boardNo);
-	}
 	
 	// ------ 접근 실패 시  ------	
 	private BoardDto getBoardNoOrThrow(Long boardNo) {
@@ -86,9 +93,9 @@ public class BoardService {
 	}
 	
 	// ------ 카테고리 조회 검증 ----	
-		public List<Category> categoryInfo() {
-			return boardMapper.categoryInfo();
-		}
+	public List<Category> categoryInfo() {
+		return boardMapper.categoryInfo(); 
+	}
 	
 
 }
