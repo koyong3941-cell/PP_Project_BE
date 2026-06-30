@@ -3,6 +3,40 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.pp.board.model.dao.BoardMapper">
+
+	<insert id="saveBoard" parameterType="Board">
+		INSERT
+		  INTO
+		  		BOARD	
+		  		(
+		  		MEMBER_NO 
+			  	,BOARD_TITLE
+			  	,BOARD_CONTENT
+			  	,CATEGORY_NO
+			  	)
+		VALUES
+				(
+				#{memberNo}
+				,#{boardTitle}
+				,#{boardContent}
+				,#{categoryNo}
+				)
+	</insert>
+	
+	<select id="getLastBoardNoByMemberNo" resultType="java.lang.Long">
+	SELECT
+			BOARD_NO
+	  FROM
+	  		BOARD
+	 WHERE
+	 		MEMBER_NO = #{memberNo}
+	 ORDER
+	 	BY
+	    	BOARD_NO DESC
+	 FETCH
+	 		FIRST 1 ROWS ONLY
+	</select>
+
     <select id="boardDetail">
 			SELECT
 				B.BOARD_NO
@@ -23,16 +57,6 @@
 				B.DEL_YN = 'N'
     </select>
    
-	<update id="deleteBoard">
-   		UPDATE
-   			BOARD
-   		SET
-   			DEL_YN = 'Y'
-   		WHERE
-   			BOARD_NO = #{boardNo}
-   		AND
-   			MEMBER_NO = #{memberNo}
-	</update>
 	<update id="editBoard">
    		UPDATE
    			BOARD
@@ -42,6 +66,17 @@
    			,BOARD_CONTENT = #{board.boardContent}
    		WHERE
    			BOARD_NO = #{board.boardNo}
+   		AND
+   			MEMBER_NO = #{memberNo}
+	</update>
+
+	<update id="deleteBoard">
+   		UPDATE
+   			BOARD
+   		SET
+   			DEL_YN = 'Y'
+   		WHERE
+   			BOARD_NO = #{boardNo}
    		AND
    			MEMBER_NO = #{memberNo}
 	</update>

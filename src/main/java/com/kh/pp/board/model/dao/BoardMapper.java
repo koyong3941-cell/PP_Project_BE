@@ -2,7 +2,6 @@ package com.kh.pp.board.model.dao;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -62,26 +61,11 @@ public interface BoardMapper {
 
 	BoardDto findByNo(Long boardNo);
 
-	@Insert("""
-			INSERT
-			  INTO
-		  		BOARD	
-		  		(
-		  		MEMBER_NO 
-			  	,BOARD_TITLE
-			  	,BOARD_CONTENT
-			  	,CATEGORY_NO
-			  		)
-			VALUES
-					(
-				#{memberNo}
-				,#{boardTitle}
-				,#{boardContent}
-				,#{categoryNo}
-					)
-		""")
+
 	void saveBoard(Board boardEntity);
 
+	Long getLastBoardNoByMemberNo(int memberNo);
+	
 	void editBoard(@Param("board")BoardDto board,@Param("memberNo") int memberNo, Long boardNo);
 	
 }
