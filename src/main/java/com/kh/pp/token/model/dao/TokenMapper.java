@@ -14,7 +14,7 @@ public interface TokenMapper {
 	void saveToken(RefreshToken token);
 	
 	@Delete("DELETE FROM TOKEN WHERE MEMBER_NO = #{memberNo}")
-	void deleteToken(int memberNo);
+	void deleteToken(Long memberNo);
 	
 	@Select("SELECT MEMBER_NO, TOKEN, EXPIRATION_TOKEN FROM TOKEN WHERE TOKEN = #{token}")
 	RefreshToken findByToken(String token);

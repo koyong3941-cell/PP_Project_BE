@@ -9,7 +9,7 @@ import lombok.Value;
 @Builder
 public class Plant {
 	private Long plantNo;
-	private	Integer memberNo;
+	private	Long memberNo;
 	private	String plantName;
 	private	String classification;
 	private	Integer count;

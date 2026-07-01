@@ -1,4 +1,4 @@
-package com.kh.pp.exception;
+package com.kh.pp.exception.controller;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
@@ -12,6 +12,14 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.kh.pp.exception.CustomAuthenticationException;
+import com.kh.pp.exception.DuplicateMemberException;
+import com.kh.pp.exception.FailDeleteException;
+import com.kh.pp.exception.FailSaveException;
+import com.kh.pp.exception.FailSignUpException;
+import com.kh.pp.exception.FailUpdateException;
+import com.kh.pp.exception.dto.ErrorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,6 +71,11 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(FailSaveException.class)
 	public ResponseEntity<ErrorResponse> HandlerFailSave(FailSaveException e) {
+		return ResponseEntity.badRequest().body(new ErrorResponse(400, e.getMessage(), null));
+	}
+	
+	@ExceptionHandler(FailUpdateException.class)
+	public ResponseEntity<ErrorResponse> HandlerFailUpdate(FailUpdateException e) {
 		return ResponseEntity.badRequest().body(new ErrorResponse(400, e.getMessage(), null));
 	}
 }

@@ -40,4 +40,13 @@
 	        BY 
 	        	IMG_ORDER ASC
 	</select>
+	
+	<update id="deleteByBoardNo">
+		UPDATE
+				BOARD_IMG
+		   SET
+		   		DEL_YN = 'Y'
+		 WHERE
+		 		BOARD_NO = #{boardNo}
+	</update>
 </mapper>

@@ -23,7 +23,7 @@ import lombok.ToString;
 public class BoardDto {
 	private Long boardNo;
 	private Integer categoryNo;
-	private Integer memberNo;
+	private Long memberNo;
 	@NotBlank(message = "공백일 수 없습니다.")
 	private String boardTitle;
 	@NotBlank(message = "공백일 수 없습니다.")
@@ -35,6 +35,9 @@ public class BoardDto {
 	// Join
 	private String memberName;
 	private String categoryName;
+	private Long commentCount;
+	private Long likeCount;
+	private Long dislikeCount;
 	
 	// 이미지 입력용
 	private List<MultipartFile> imageFiles;

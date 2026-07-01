@@ -11,4 +11,6 @@ public interface BoardImgMapper {
 	int insertBoardImg(BoardImgDto boardImgDto);
 
 	List<BoardImgDto> findByBoardNo(Long boardNo);
+	
+	void deleteByBoardNo(Long boardNo);
 }
