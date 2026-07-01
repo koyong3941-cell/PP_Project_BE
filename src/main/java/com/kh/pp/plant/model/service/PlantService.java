@@ -35,7 +35,11 @@ public class PlantService {
 		Plant plantEntity = Plant.builder()
 				.memberNo(plant.getMemberNo())
 				.plantName(plant.getPlantName())
+				.classification(plant.getClassification())
 				.plantInfo(plant.getPlantInfo())
+				.carbonCapture(plant.getCarbonCapture())
+				.growthInfo(plant.getGrowthInfo())
+				.plantApi(plant.getPlantApi())
 				.build();	
 		
 		plantMapper.savePlant(plantEntity);

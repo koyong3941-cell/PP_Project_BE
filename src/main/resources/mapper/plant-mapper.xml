@@ -10,13 +10,21 @@
 			(
 			MEMBER_NO 
 			,PLANT_NAME
+			,CLASSIFICATION
 			,PLANT_INFO
-			)
+			,CARBON_CAPTURE
+			,GROWTH_INFO
+			,PLANT_API
+			)	
 		VALUES
 			(
 			#{memberNo}
 			,#{plantName}
+			,#{classification}
 			,#{plantInfo}
+			,#{carbonCapture}
+			,#{growthInfo}
+			,#{plantApi}
 			)
 	</insert>
 	
