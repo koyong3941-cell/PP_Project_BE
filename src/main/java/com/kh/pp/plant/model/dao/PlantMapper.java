@@ -20,12 +20,12 @@ public interface PlantMapper {
 	
 	PlantDto plantDetail(Long plantNo);
 	
-	int deletePlant(@Param("plantNo")Long plantNo, @Param("memberNo")int memberNo);
+	int deletePlant(@Param("plantNo")Long plantNo, @Param("memberNo")Long memberNo);
 	
 	void savePlant(Plant plantEntity);
 
-	void editPlant(@Param("plant")PlantDto plant, @Param("memberNo")int memberNo, @Param("plantNo")Long plantNo);
+	void editPlant(@Param("plant")PlantDto plant, @Param("memberNo")Long memberNo, @Param("plantNo")Long plantNo);
 
-	Long getLastPlantNoByMemberNo(int memberNo);
+	Long getLastPlantNoByMemberNo(Long memberNo);
 	
 }

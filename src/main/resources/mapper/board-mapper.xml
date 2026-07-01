@@ -11,16 +11,16 @@
 		  		BOARD	
 		  		(
 		  		MEMBER_NO 
-			  	,BOARD_TITLE
-			  	,BOARD_CONTENT
-			  	,CATEGORY_NO
+			 ,	BOARD_TITLE
+			 ,	BOARD_CONTENT
+			 ,	CATEGORY_NO
 			  	)
 		VALUES
 				(
 				#{memberNo}
-				,#{boardTitle}
-				,#{boardContent}
-				,#{categoryNo}
+			 ,  #{boardTitle}
+			 ,	#{boardContent}
+			 ,	#{categoryNo}
 				)
 	</insert>
 	

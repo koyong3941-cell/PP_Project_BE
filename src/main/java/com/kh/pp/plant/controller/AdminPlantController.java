@@ -45,7 +45,7 @@ public class AdminPlantController {
 	
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> savePlant(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute @Valid PlantDto plant){
-		int memberNoFromToken = userDetails.getMemberNo();
+		Long memberNoFromToken = userDetails.getMemberNo();
 		plant.setMemberNo(memberNoFromToken);
 		
 		plantService.savePlant(plant);
@@ -54,7 +54,7 @@ public class AdminPlantController {
 	
 	@DeleteMapping("/{plantNo}")
 	public ResponseEntity<ApiResponse<Void>> deletePlant(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "plantNo") Long plantNo){
-		int memberNoFromToken = userDetails.getMemberNo();
+		Long memberNoFromToken = userDetails.getMemberNo();
 		plantService.deletePlant(plantNo, memberNoFromToken);
 		return ResponseEntity.status(200).body(ApiResponse.created("deleted", null));
 	}
@@ -62,7 +62,7 @@ public class AdminPlantController {
 	@PatchMapping("/{plantNo}")
 	public ResponseEntity<ApiResponse<Void>> editPlant(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute  @Valid PlantDto plant,
 			@PathVariable(name = "plantNo") Long plantNo){
-		int memberNoFromToken = userDetails.getMemberNo();
+		Long memberNoFromToken = userDetails.getMemberNo();
 		plantService.editPlant(plant, memberNoFromToken, plantNo);
 		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
 	}

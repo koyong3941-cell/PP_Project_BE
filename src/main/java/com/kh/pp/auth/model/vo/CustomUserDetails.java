@@ -11,7 +11,7 @@ import lombok.Value;
 @Value
 @Builder
 public class CustomUserDetails implements UserDetails {
-	private int memberNo;
+	private Long memberNo;
 	
 	private String username; // = Admin_Id 
 	private String password;

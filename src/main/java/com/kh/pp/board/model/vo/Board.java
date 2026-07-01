@@ -12,7 +12,7 @@ import lombok.Value;
 public class Board {
 	private Long boardNo;
 	private Integer categoryNo;
-	private Integer memberNo;
+	private Long memberNo;
 	private String boardTitle;
 	private String boardContent;
 	private Integer count;

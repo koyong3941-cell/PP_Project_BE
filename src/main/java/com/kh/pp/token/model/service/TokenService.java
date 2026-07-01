@@ -53,7 +53,7 @@ public class TokenService {
 	}
 	// 로그아웃 요청 시 DB정리 메서드
 	@Transactional
-	public void logout(int memberNo) {
+	public void logout(Long memberNo) {
 		tokenMapper.deleteToken(memberNo);
 	}
 	// 추후 AccessToken이 만료기간이 지나서 토큰 갱신 요청이 들어왔을때
@@ -66,7 +66,7 @@ public class TokenService {
 		}
 		Claims claims = tokenUtil.parseJwt(token.getToken());
 		String memberId = claims.getSubject();
-		Integer memberNo = claims.get("memberNo", Integer.class);
+		Long memberNo = claims.get("memberNo", Long.class);
 		String memberName = (String)claims.get("memberName");
 		
 		CustomUserDetails user = CustomUserDetails.builder().memberNo(memberNo).memberName(memberName).username(memberId).build();

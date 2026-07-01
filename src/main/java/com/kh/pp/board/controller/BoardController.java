@@ -33,7 +33,7 @@ public class BoardController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> saveBoard(@AuthenticationPrincipal CustomUserDetails userDetails,
 													   @ModelAttribute @Valid BoardDto board){
-		int memberNoFromToken = userDetails.getMemberNo();
+		Long memberNoFromToken = userDetails.getMemberNo();
 		board.setMemberNo(memberNoFromToken);
 		 
 		boardService.saveBoard(board);
@@ -70,7 +70,7 @@ public class BoardController {
 	public ResponseEntity<ApiResponse<Void>> editBoard(@AuthenticationPrincipal CustomUserDetails userDetails, 
 													   @ModelAttribute  @Valid BoardDto board,
 													   @PathVariable(name = "boardNo") Long boardNo){
-		int memberNoFromToken = userDetails.getMemberNo();
+		Long memberNoFromToken = userDetails.getMemberNo();
 		boardService.editBoard(board, memberNoFromToken, boardNo);
 		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
 	}
@@ -78,7 +78,7 @@ public class BoardController {
 	// Delete
 	@DeleteMapping("/{boardNo}")
 	public ResponseEntity<ApiResponse<Void>> deleteBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "boardNo") Long boardNo){
-		int memberNoFromToken = userDetails.getMemberNo();
+		Long memberNoFromToken = userDetails.getMemberNo();
 		boardService.deleteBoard(boardNo, memberNoFromToken);
 		return ResponseEntity.status(200).body(ApiResponse.created("deleted", null));
 	}

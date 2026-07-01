@@ -9,6 +9,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pp.exception.FailSaveException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -19,9 +21,8 @@ public class FileService {
 	public String store(MultipartFile file, String subDirectory) {
         try {
         	if (!isImageFile(file)) {
-                throw new RuntimeException("이미지 파일만 업로드할 수 있습니다. (jpg, jpeg, png, gif, webp)");
+                throw new FailSaveException("이미지 파일만 업로드할 수 있습니다. (jpg, jpeg, png, gif, webp)");
             }
-        	
         	String extension = getExtension(file);
         	String saveName = UUID.randomUUID().toString() + extension;
 
@@ -40,7 +41,7 @@ public class FileService {
 
         } catch (IOException e) {
             log.error("파일 저장 실패", e);
-            throw new RuntimeException("파일 저장에 실패했습니다.");
+            throw new RuntimeException("이미지 파일 저장에 실패했습니다.");
         }
     }
 	
@@ -68,9 +69,9 @@ public class FileService {
 
         // 확장자 체크
         String extension = getExtension(file).toLowerCase();
-        return extension.equals("jpg") || extension.equals("jpeg")
-        		|| extension.equals("png") || extension.equals("gif")
-        		|| extension.equals("webp");
+        return extension.equals(".jpg") || extension.equals(".jpeg")
+        		|| extension.equals(".png") || extension.equals(".gif")
+        		|| extension.equals(".webp");
     }
 	
 }

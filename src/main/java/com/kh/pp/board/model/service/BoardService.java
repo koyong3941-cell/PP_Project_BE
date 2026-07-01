@@ -15,6 +15,7 @@ import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.vo.Board;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
+import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.file.service.FileService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class BoardService {
 	@Transactional
 	public void saveBoard(BoardDto board) {
 		validateBoard(board);
+		validateImage(board.getImageFiles());
 		
 		Board boardEntity = Board.builder()
 				.memberNo(board.getMemberNo())
@@ -41,58 +43,21 @@ public class BoardService {
 				.categoryNo(board.getCategoryNo())
 				.build();	
 		
-		boardMapper.saveBoard(boardEntity);
+
+		
+		int result = boardMapper.saveBoard(boardEntity);
+		
+		if (result < 1) {
+			throw new FailSaveException("작성에 실패했습니다.");
+		}
 		
 		Long boardNo = boardMapper.getLastBoardNoByMemberNo(board.getMemberNo());
 		
-		// log.info("생성된 boardNo : {}",boardNo);
-		
-		if (board.getImageFiles() != null) {
-	        long validImageCount = board.getImageFiles().stream()
-	                .filter(file -> !file.isEmpty())
-	                .count();
-
-	        if (validImageCount > 5) {
-	            throw new FailSaveException("이미지는 최대 5장까지 업로드할 수 있습니다.");
-	        }
-	    }
-		
 		// 이미지 처리
-	    if (board.getImageFiles() != null && !board.getImageFiles().isEmpty()) {
-	        int order = 1;
-
-	        for (MultipartFile file : board.getImageFiles()) {
-	            if (!file.isEmpty()) {
-	                try {
-	                    String saveName = fileService.store(file, "board");
-
-	                    BoardImgDto imgDto = new BoardImgDto();
-	                    imgDto.setBoardNo(boardNo);
-	                    imgDto.setOriginalName(file.getOriginalFilename());
-	                    imgDto.setSaveName(saveName);
-	                    imgDto.setImgPath("/uploads/board/");
-	                    imgDto.setImgOrder(order++);
-
-	                    boardImgMapper.insertBoardImg(imgDto);
-
-	                } catch (Exception e) {
-	                    log.error("이미지 저장 실패", e);
-	                    throw new FailSaveException("이미지 저장 중 오류가 발생했습니다.");
-	                }
-	            }
-	        }
-	    }
+	    saveImages(boardNo, board.getImageFiles());
 	}
 	
-	private void validateBoard(BoardDto board) {
-		if (board.getBoardTitle() == null || board.getBoardTitle().isEmpty()) {
-			throw new FailSaveException("제목은 필수입니다.");
-		}
-		if (board.getBoardContent() == null || board.getBoardContent().isEmpty()) {
-			throw new FailSaveException("내용은 필수입니다.");
-		}
-	}
-	
+
 	// Read
 	public List<BoardDto> findBoardAll(int page) {
 		int offset = page * 10;
@@ -125,7 +90,6 @@ public class BoardService {
 		return boardMapper.findBoardByKeyword(offset, limit, keywordList, target);
 	}
 
-	// 상세 및 리스트 조회
 	public BoardDto boardDetail(Long boardNo) {
 		increaseCount(boardNo);
 		BoardDto board = getBoardNoOrThrow(boardNo);
@@ -141,19 +105,32 @@ public class BoardService {
 	}
 	
 	
-	// 수정 및 삭제
+	// Update
 	@Transactional
-	public void deleteBoard(Long boardNo, int memberNo) {
+	public void editBoard(BoardDto board, Long memberNo, Long boardNo) {
+		
+		validateBoard(board);
+		validateImage(board.getImageFiles());
+		
+		int result = boardMapper.editBoard(board, memberNo, boardNo);
+		
+		if (result < 1) {
+			throw new FailUpdateException("수정에 실패했습니다.");
+		}
+		
+		boardImgMapper.deleteByBoardNo(boardNo);
+		
+		saveImages(boardNo, board.getImageFiles());
+	}
+	
+	// Delete
+	@Transactional
+	public void deleteBoard(Long boardNo, Long memberNo) {
 		int result = boardMapper.deleteBoard(boardNo, memberNo);
 		
 		if (result < 1) {
 			throw new FailDeleteException("삭제에 실패하였습니다.");
 		}
-	}
-	
-	@Transactional
-	public void editBoard(BoardDto board, int memberNo, Long boardNo) {
-		boardMapper.editBoard(board, memberNo, boardNo);
 	}
 	
 	
@@ -168,9 +145,65 @@ public class BoardService {
 
 	}
 	
-	// ------ 카테고리 조회 검증 ----	
+	// ------ 카테고리 조회 검증 ------	
 	public List<Category> categoryInfo() {
 		return boardMapper.categoryInfo(); 
 	}
+	
+	// ------ 게시글 입력값 검증 ------
+	private void validateBoard(BoardDto board) {
+		if (board.getBoardTitle() == null || board.getBoardTitle().isEmpty()) {
+			throw new FailSaveException("제목은 필수입니다.");
+		}
+		if (board.getBoardContent() == null || board.getBoardContent().isEmpty()) {
+			throw new FailSaveException("내용은 필수입니다.");
+		}
+	}
+	
+	// ------ 게시글 이미지 검증 ------
+	private void validateImage(List<MultipartFile> imageFiles) {
+		if (imageFiles == null) {
+			return;
+		}
+		
+		long count = imageFiles.stream()
+							   .filter(file -> !file.isEmpty())
+							   .count();
+			
+		if (count > 5) {
+			throw new FailSaveException("이미지는 최대 5장까지 업로드할 수 있습니다.");
+		}
+	}
+	
+	// ------ 이미지 저장 ------
+	private void saveImages(Long boardNo, List<MultipartFile> imageFiles) {
+		if (imageFiles == null || imageFiles.isEmpty()) {
+			return;
+		}
+	    int order = 1;
 
+        for (MultipartFile file : imageFiles) {
+            if (!file.isEmpty()) {
+                try {
+                    String saveName = fileService.store(file, "board");
+
+                    BoardImgDto imgDto = new BoardImgDto();
+                    imgDto.setBoardNo(boardNo);
+                    imgDto.setOriginalName(file.getOriginalFilename());
+                    imgDto.setSaveName(saveName);
+                    imgDto.setImgPath("/uploads/board/");
+                    imgDto.setImgOrder(order++);
+
+                    int imgResult = boardImgMapper.insertBoardImg(imgDto);
+	                    
+                    if (imgResult < 1) {
+                    	throw new FailSaveException("이미지 저장에 실패했습니다.");
+                    }
+                } catch (Exception e) {
+                    log.error("이미지 저장 실패", e);
+                    throw new FailSaveException("이미지 저장 중 오류가 발생했습니다.");
+                }
+            }
+        }
+	}
 }

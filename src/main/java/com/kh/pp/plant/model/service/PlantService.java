@@ -113,7 +113,7 @@ public class PlantService {
 	}
 
 	@Transactional
-	public void deletePlant(Long plantNo, int memberNo) {
+	public void deletePlant(Long plantNo, Long memberNo) {
 	int result = plantMapper.deletePlant(plantNo, memberNo);
 		
 		if (result < 1) {
@@ -122,7 +122,7 @@ public class PlantService {
 	}
 	
 	@Transactional
-	public void editPlant(PlantDto plant, int memberNo, Long plantNo) {
+	public void editPlant(PlantDto plant, Long memberNo, Long plantNo) {
 		plantMapper.editPlant(plant, memberNo, plantNo);
 	}
 	
