@@ -70,30 +70,41 @@
 	
 	<select id="findBoardByKeyword">
 		<include refid="findBoardQuery"/>
-		   AND
-		   		(
-        		B.BOARD_TITLE  LIKE '%' || #{keyword} || '%'
-            OR 
-        		B.BOARD_CONTENT LIKE '%' || #{keyword} || '%'
-    			)
+		   AND	(
+				<choose>
+					<when test="target == 'writer'">
+						<foreach collection="keywordList" item="word" separator="AND">
+							M.MEMBER_NAME LIKE '%' || #{word} || '%'
+						</foreach>
+					</when>
+					<when test="target == 'boardTitle'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		B.BOARD_TITLE LIKE '%' || #{word} || '%'
+                		</foreach>
+            		</when>
+            		<when test="target == 'boardContent'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		B.BOARD_CONTENT LIKE '%' || #{word} || '%'
+                		</foreach>
+            		</when>
+            		<otherwise>
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		(
+		                        M.MEMBER_NAME   LIKE '%' || #{word} || '%'
+		                        OR B.BOARD_TITLE  LIKE '%' || #{word} || '%'
+		                        OR B.BOARD_CONTENT LIKE '%' || #{word} || '%'
+		                    )
+		                </foreach>
+            		</otherwise>
+				</choose>
+		   		)
 		 ORDER 
 		    BY
 		    	B.BOARD_NO DESC
 	    OFFSET 	#{offset} ROWS FETCH
 		  NEXT  #{limit} ROWS ONLY	
 	</select>
-	
-	<select id="findBoardByMemberName">
-		<include refid="findBoardQuery"/>
-		   AND
-				M.MEMBER_NAME LIKE '%' || #{keyword} || '%'
-		 ORDER 
-		    BY
-		    	B.BOARD_NO DESC
-	    OFFSET 	#{offset} ROWS FETCH
-		  NEXT  #{limit} ROWS ONLY	
-	</select>
-	
+
     <select id="boardDetail">
 		SELECT
 				B.BOARD_NO

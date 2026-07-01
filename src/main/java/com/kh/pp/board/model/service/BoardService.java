@@ -1,5 +1,6 @@
 package com.kh.pp.board.model.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -103,16 +104,25 @@ public class BoardService {
 	public List<BoardDto> findBoardByKeyword(int page, String keyword, String target) {
 		int offset = page * 10;
 		int limit = 10;
-		List<BoardDto> boards;
-		log.info(target);
-		// 카테고리는 이후 개선 필요
-		if ("writer".equals(target)) {
-			return boards = boardMapper.findBoardByMemberName(offset, limit, keyword);
-		} else if ("boardTitle".equals(target)) {
-			return boards = boardMapper.findBoardByBoardTitle(offset, limit, keyword);
-		} else {
-			return boardMapper.findBoardByKeyword(offset, limit, keyword);
+		
+		if (keyword == null || keyword.trim().isEmpty()) {
+	        return boardMapper.findBoardAll(offset, limit);
+	    }
+		
+		List<String> keywordList = new ArrayList<>();
+		String[] words = keyword.trim().split("\\s+");
+		for (String word : words) {
+			if (!word.isEmpty()) {
+				keywordList.add(word);
+			}
 		}
+				
+		if (target == null || target.trim().isEmpty()) {
+			target = "all";
+		}
+
+		// 앞단에서 카테고리별로 보이는 기능 추가하면 수정해야됨
+		return boardMapper.findBoardByKeyword(offset, limit, keywordList, target);
 	}
 
 	// 상세 및 리스트 조회

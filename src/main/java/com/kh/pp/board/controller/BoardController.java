@@ -31,7 +31,8 @@ public class BoardController {
 
 	// Create
 	@PostMapping
-	public ResponseEntity<ApiResponse<Void>> saveBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute @Valid BoardDto board){
+	public ResponseEntity<ApiResponse<Void>> saveBoard(@AuthenticationPrincipal CustomUserDetails userDetails,
+													   @ModelAttribute @Valid BoardDto board){
 		int memberNoFromToken = userDetails.getMemberNo();
 		board.setMemberNo(memberNoFromToken);
 		 
@@ -66,8 +67,9 @@ public class BoardController {
 	
 	// Update
 	@PatchMapping("/{boardNo}")
-	public ResponseEntity<ApiResponse<Void>> editBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute  @Valid BoardDto board,
-			@PathVariable(name = "boardNo") Long boardNo){
+	public ResponseEntity<ApiResponse<Void>> editBoard(@AuthenticationPrincipal CustomUserDetails userDetails, 
+													   @ModelAttribute  @Valid BoardDto board,
+													   @PathVariable(name = "boardNo") Long boardNo){
 		int memberNoFromToken = userDetails.getMemberNo();
 		boardService.editBoard(board, memberNoFromToken, boardNo);
 		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));

@@ -18,14 +18,12 @@ public class FileService {
 	// 파일을 uploads폴더에 저장하고 저장된 파일명을 반환 subDirectort는 경로 지정을 위해 해당 게시글 명(ex. board, plant 등)을 입력
 	public String store(MultipartFile file, String subDirectory) {
         try {
-            String originalName = file.getOriginalFilename();
-            String extension = "";
-
-            if (originalName != null && originalName.contains(".")) {
-                extension = originalName.substring(originalName.lastIndexOf("."));
+        	if (!isImageFile(file)) {
+                throw new RuntimeException("이미지 파일만 업로드할 수 있습니다. (jpg, jpeg, png, gif, webp)");
             }
-
-            String saveName = UUID.randomUUID().toString() + extension;
+        	
+        	String extension = getExtension(file);
+        	String saveName = UUID.randomUUID().toString() + extension;
 
             // uploads/{subDirectory}/ 경로 생성
             Path uploadPath = Paths.get(System.getProperty("user.dir"), "uploads", subDirectory)
@@ -45,4 +43,34 @@ public class FileService {
             throw new RuntimeException("파일 저장에 실패했습니다.");
         }
     }
+	
+	// 파일 확장자 추출 (
+	private String getExtension(MultipartFile file) {
+		String originalName = file.getOriginalFilename();
+		if (originalName == null || !originalName.contains(".")) {
+			return "";
+		}
+		return originalName.substring(originalName.lastIndexOf("."));
+	}
+
+	// 이미지 파일인지 검증
+	private boolean isImageFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return false;
+        }
+
+        String contentType = file.getContentType();
+        
+        // MIME 타입 체크
+        if (contentType == null || !contentType.startsWith("image/")) {
+        	return false;
+        }
+
+        // 확장자 체크
+        String extension = getExtension(file).toLowerCase();
+        return extension.equals("jpg") || extension.equals("jpeg")
+        		|| extension.equals("png") || extension.equals("gif")
+        		|| extension.equals("webp");
+    }
+	
 }
