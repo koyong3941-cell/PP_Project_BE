@@ -33,7 +33,6 @@ public class PlantController {
 	public ResponseEntity<ApiResponse<List<PlantDto>>> findPlantAll(@RequestParam(value = "page", defaultValue ="0") int page){
 		List<PlantDto> plants = plantService.findPlantAll(page);
 	
-	
 		return ResponseEntity.status(200).body(ApiResponse.success(plants));
 	
 	}
