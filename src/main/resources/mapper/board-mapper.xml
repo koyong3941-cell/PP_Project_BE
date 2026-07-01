@@ -3,46 +3,127 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.pp.board.model.dao.BoardMapper">
+
+<!-- Create -->
+	<insert id="saveBoard" parameterType="Board">
+		INSERT
+		  INTO
+		  		BOARD	
+		  		(
+		  		MEMBER_NO 
+			  	,BOARD_TITLE
+			  	,BOARD_CONTENT
+			  	,CATEGORY_NO
+			  	)
+		VALUES
+				(
+				#{memberNo}
+				,#{boardTitle}
+				,#{boardContent}
+				,#{categoryNo}
+				)
+	</insert>
+	
+	<select id="getLastBoardNoByMemberNo" resultType="java.lang.Long">
+		SELECT
+				BOARD_NO
+		  FROM
+		  		BOARD
+		 WHERE
+		 		MEMBER_NO = #{memberNo}
+		 ORDER
+		 	BY
+		    	BOARD_NO DESC
+		 FETCH
+		 		FIRST 1 ROWS ONLY
+	</select>
+	
+<!-- Read -->
+	<select id="findBoardAll">
+		SELECT 
+				b.BOARD_NO
+			 ,	c.CATEGORY_NAME
+			 ,	m.MEMBER_NAME
+			 ,	b.BOARD_TITLE
+			 ,	b.BOARD_CONTENT
+			 ,	b.COUNT
+			 ,	b.CREATE_DATE
+			 ,	b.DEL_YN
+		  FROM
+				BOARD b
+		  JOIN
+				CATEGORY c USING(CATEGORY_NO)
+		  JOIN
+				MEMBER m USING(MEMBER_NO)
+		 WHERE
+				b.DEL_YN = 'N'
+		 ORDER 
+		    BY
+		    	b.BOARD_NO DESC
+	    OFFSET #{offset} ROWS
+		 FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
     <select id="boardDetail">
-			SELECT
+		SELECT
 				B.BOARD_NO
-				,B.BOARD_TITLE
-				,B.BOARD_CONTENT
-				,B.COUNT
-				,C.CATEGORY_NAME
-				,M.MEMBER_ID
-			FROM 
+			 ,	B.BOARD_TITLE
+			 ,	B.BOARD_CONTENT
+			 ,	B.COUNT
+			 ,	C.CATEGORY_NAME
+			 ,	M.MEMBER_ID
+		  FROM 
 				BOARD B
-			Join 
+		  Join 
 				Category C USING(CATEGORY_NO)
-			Join
+		  Join
 				MEMBER M USING(MEMBER_NO)
-			WHERE 
+		 WHERE 
 				B.BOARD_NO = #{boardNo}
-			AND
+		   AND
 				B.DEL_YN = 'N'
     </select>
+
+	<select id="categoryInfo">
+		SELECT 
+				CATEGORY_NO
+			 , 	CATEGORY_NAME
+		  FROM 
+				CATEGORY
+	</select>
    
-	<update id="deleteBoard">
-   		UPDATE
-   			BOARD
-   		SET
-   			DEL_YN = 'Y'
-   		WHERE
-   			BOARD_NO = #{boardNo}
-   		AND
-   			MEMBER_NO = #{memberNo}
-	</update>
+<!-- Update -->
 	<update id="editBoard">
    		UPDATE
-   			BOARD
-   		SET
-   			CATEGORY_NO = #{board.categoryNo}
-   			,BOARD_TITLE = #{board.boardTitle}
-   			,BOARD_CONTENT = #{board.boardContent}
-   		WHERE
-   			BOARD_NO = #{board.boardNo}
-   		AND
-   			MEMBER_NO = #{memberNo}
+   				BOARD
+   		   SET
+   				CATEGORY_NO = #{board.categoryNo}
+   			 ,	BOARD_TITLE = #{board.boardTitle}
+   			 ,	BOARD_CONTENT = #{board.boardContent}
+   		 WHERE
+   				BOARD_NO = #{board.boardNo}
+   		   AND
+   				MEMBER_NO = #{memberNo}
+	</update>
+	
+	<update id="increaseCount">
+		UPDATE 
+				BOARD 
+		   SET 
+		   		COUNT = COUNT + 1 
+		 WHERE 
+		 		BOARD_NO = #{boardNo}
+	</update>
+
+<!-- Delete -->
+	<update id="deleteBoard">
+   		UPDATE
+   				BOARD
+   		   SET
+   				DEL_YN = 'Y'
+   		 WHERE
+   				BOARD_NO = #{boardNo}
+   		   AND
+   				MEMBER_NO = #{memberNo}
 	</update>
 </mapper>

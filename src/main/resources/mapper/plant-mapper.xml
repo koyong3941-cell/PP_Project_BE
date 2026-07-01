@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pp.plant.model.dao.PlantMapper">
+    <select id="plantDetail">
+			SELECT
+				P.PLANT_NO
+				,P.PLANT_NAME
+				,P.CLASSIFICATION
+				,P.COUNT
+				,P.CARBON_CAPTURE
+				,P.CREATE_DATE
+				,P.PLANT_INFO
+				,P.GROWTH_INFO
+				,M.MEMBER_ID
+				,P.PLANT_API
+			FROM 
+				PLANT P
+			Join
+				MEMBER M USING(MEMBER_NO)
+			WHERE 
+				P.PLANT_NO = #{plantNo}
+			AND
+				P.DEL_YN = 'N'
+    </select>
+</mapper>

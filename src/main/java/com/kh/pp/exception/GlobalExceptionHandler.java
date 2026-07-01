@@ -60,4 +60,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> HandlerFailDelete(FailDeleteException e){
 		return ResponseEntity.badRequest().body(new ErrorResponse(400, e.getMessage(), null));
 	}
+	
+	@ExceptionHandler(FailSaveException.class)
+	public ResponseEntity<ErrorResponse> HandlerFailSave(FailSaveException e) {
+		return ResponseEntity.badRequest().body(new ErrorResponse(400, e.getMessage(), null));
+	}
 }

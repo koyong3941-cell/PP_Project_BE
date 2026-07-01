@@ -42,7 +42,6 @@ public class SecurityConfiguration {
 					requests.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll();
 					// 3. 회원 관련
 					requests.requestMatchers(HttpMethod.POST, "/api/members").permitAll();
-					requests.anyRequest().authenticated();
 					// 4. 게시판 관련 (보드/공지사항 등)
 					requests.requestMatchers(HttpMethod.POST, "/api/boards").permitAll();
 					requests.requestMatchers(HttpMethod.PATCH, "/api/boards/**").permitAll();
@@ -53,6 +52,14 @@ public class SecurityConfiguration {
 					requests.requestMatchers(HttpMethod.GET, "/api/notices/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET, "/api/notices").permitAll();
 					
+					// 6. 식물 게시판 관련
+					requests.requestMatchers(HttpMethod.GET, "/api/plants/**").permitAll();
+					requests.requestMatchers(HttpMethod.GET, "/api/plants").permitAll();
+					
+					// 요청 /api/plants get
+					requests.anyRequest().authenticated();
+					
+
 				}).sessionManagement(manager ->
 				manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
