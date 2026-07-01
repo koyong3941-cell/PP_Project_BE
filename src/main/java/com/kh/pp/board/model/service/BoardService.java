@@ -19,6 +19,7 @@ import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.vo.Board;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
+import com.kh.pp.file.service.FileService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,26 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BoardService {
 	private final BoardMapper boardMapper;
 	private final BoardImgMapper boardImgMapper;
-	
-	
-	// 상세 및 리스트 조회
-	public BoardDto boardDetail(Long boardNo) {
-		increaseCount(boardNo);
-		BoardDto board = getBoardNoOrThrow(boardNo);
-		
-		return board;
-	}
-	
-	private void increaseCount(Long boardNo) {
-		boardMapper.increaseCount(boardNo);
-	}
-	
-	public List<BoardDto> findBoardAll(int page) {
-	    int offset = page * 10;
-	    int limit = 10;
-	    
-	    return boardMapper.findBoardAll(offset, limit);
-	}
+	private final FileService fileService;
 	
 	// 보드 저장 및 검증 메서드
 	@Transactional
@@ -67,7 +49,17 @@ public class BoardService {
 		
 		Long boardNo = boardMapper.getLastBoardNoByMemberNo(board.getMemberNo());
 		
-		log.info("생성된 boardNo : {}",boardNo);
+		// log.info("생성된 boardNo : {}",boardNo);
+		
+		if (board.getImageFiles() != null) {
+	        long validImageCount = board.getImageFiles().stream()
+	                .filter(file -> !file.isEmpty())
+	                .count();
+
+	        if (validImageCount > 5) {
+	            throw new FailSaveException("이미지는 최대 5장까지 업로드할 수 있습니다.");
+	        }
+	    }
 		
 		// 이미지 처리
 	    if (board.getImageFiles() != null && !board.getImageFiles().isEmpty()) {
@@ -76,7 +68,7 @@ public class BoardService {
 	        for (MultipartFile file : board.getImageFiles()) {
 	            if (!file.isEmpty()) {
 	                try {
-	                    String saveName = saveFile(file);
+	                    String saveName = fileService.store(file, "board");
 
 	                    BoardImgDto imgDto = new BoardImgDto();
 	                    imgDto.setBoardNo(boardNo);
@@ -96,26 +88,6 @@ public class BoardService {
 	    }
 	}
 	
-	private String saveFile(MultipartFile file) throws IOException {
-	    String originalName = file.getOriginalFilename();
-	    String extension = originalName.substring(originalName.lastIndexOf("."));
-	    String saveName = UUID.randomUUID().toString() + extension;
-
-	    // 상대경로로 지정
-	    Path path = Paths.get(System.getProperty("user.dir"), "uploads/board/")
-                .toAbsolutePath().normalize();
-	    
-	    // 폴더가 없으면 자동 생성
-	    if (!Files.exists(path)) {
-	        Files.createDirectories(path);
-	    }
-
-	    Path filePath = path.resolve(saveName);
-	    file.transferTo(filePath.toFile());
-
-	    return saveName;
-	}
-	
 	private void validateBoard(BoardDto board) {
 		if (board.getBoardTitle() == null || board.getBoardTitle().isEmpty()) {
 			throw new FailSaveException("제목은 필수입니다.");
@@ -123,6 +95,29 @@ public class BoardService {
 		if (board.getBoardContent() == null || board.getBoardContent().isEmpty()) {
 			throw new FailSaveException("내용은 필수입니다.");
 		}
+	}
+	
+	// Read
+	public List<BoardDto> findBoardAll(int page) {
+		int offset = page * 10;
+		int limit = 10;
+		
+		return boardMapper.findBoardAll(offset, limit);
+	}
+
+	// 상세 및 리스트 조회
+	public BoardDto boardDetail(Long boardNo) {
+		increaseCount(boardNo);
+		BoardDto board = getBoardNoOrThrow(boardNo);
+		
+		List<BoardImgDto> images = boardImgMapper.findByBoardNo(boardNo);
+		board.setBoardImages(images);
+		
+		return board;
+	}
+	
+	private void increaseCount(Long boardNo) {
+		boardMapper.increaseCount(boardNo);
 	}
 	
 	

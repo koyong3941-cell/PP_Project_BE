@@ -60,6 +60,7 @@ public class SecurityConfiguration {
 					// 요청 /api/plants get
 					requests.anyRequest().authenticated();
 					
+
 				}).sessionManagement(manager ->
 				manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
