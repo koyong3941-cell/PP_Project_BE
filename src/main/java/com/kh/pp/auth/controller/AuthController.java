@@ -30,7 +30,7 @@ public class AuthController {
 		return ResponseEntity.ok(ApiResponse.success(res));
 	}
 	@PostMapping("/logout")
-	public ResponseEntity<ApiResponse<Void>> logout(@RequestParam(name = "memberNo") int memberNo){
+	public ResponseEntity<ApiResponse<Void>> logout(@RequestParam(name = "memberNo") Long memberNo){
 		tokenService.logout(memberNo);
 		
 		return ResponseEntity.status(200).body(ApiResponse.success("로그아웃 성공", null));
