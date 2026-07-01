@@ -16,19 +16,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class MemberDto {
-    private Long memberNo;
-    @NotBlank(message = "아이디는 필수입니다.")
-    @Pattern(
-        regexp = "^[a-zA-Z0-9]{5,12}$",
-        message = "아이디는 영문/숫자 5~12자여야 합니다."
-    )
-    private String memberId;
-    @NotBlank(message = "비밀번호는 필수입니다.")
-    @Pattern(
-        regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]{6,15}$",
-        message = "비밀번호는 영문과 숫자를 포함한 6~15자여야 합니다."
-    )
+public class MemberEditValidation {
     private String memberPwd;
     @NotBlank(message = "이름은 필수입니다.")
     @Pattern(
@@ -43,8 +31,5 @@ public class MemberDto {
         message = "올바른 이메일 형식이 아닙니다."
     )
     private String email;
-    private String role;
-    private Date enrollDate;
     private Date editDate;
-    private String delYn;
 }
