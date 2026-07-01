@@ -29,7 +29,7 @@ public class BoardController {
 	private final BoardService boardService;
 	
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="0")  int page){
+	public ResponseEntity<ApiResponse<List<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="1")  int page){
 		List<BoardDto> boards = boardService.findBoardAll(page);
 		
 		return ResponseEntity.ok(ApiResponse.success(boards));

@@ -24,15 +24,16 @@ public class NoticeController {
 	
 	//목록조회
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<NoticeDto>>> findAll(){
+	public ResponseEntity<ApiResponse<List<NoticeDto>>> findNoticeAll(@RequestParam(value="page", defaultValue="0")int page){
+		List<NoticeDto> notices =  noticeService.findNoticeAll(page);
 		return ResponseEntity.ok(
-				ApiResponse.success(noticeService.findAll()));
-	}
+			ApiResponse.success(notices));
+		}
 	
 	//상세조회
 	@GetMapping("/{noticeNo}")
 	public ResponseEntity<ApiResponse<NoticeDto>> findById(
-			@PathVariable Integer noticeNo){
+			@PathVariable(name= "noticeNo") Long noticeNo){
 		
 		return ResponseEntity.ok(
 				ApiResponse.success(noticeService.findById(noticeNo)));
@@ -41,10 +42,11 @@ public class NoticeController {
 	//검색
 	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<List<NoticeDto>>> search(
-			@RequestParam String keyword){
-	
+			@RequestParam(name="keyword") String keyword,
+			@RequestParam(defaultValue="0", name="page") int page){
+		List<NoticeDto> notices = noticeService.search(keyword,page);
 		
-		return ResponseEntity.ok(ApiResponse.success(noticeService.findAll()));
+		return ResponseEntity.ok(ApiResponse.success(notices));
 	}
 
 }

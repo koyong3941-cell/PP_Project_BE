@@ -9,7 +9,9 @@ import com.kh.pp.notice.model.dao.NoticeMapper;
 import com.kh.pp.notice.model.dto.NoticeDto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -17,12 +19,15 @@ public class NoticeService {
 
 	private final NoticeMapper noticeMapper;
 
-	public List<NoticeDto> findAll(){
-		return noticeMapper.findAll();
+	public List<NoticeDto> findNoticeAll(int page){
+		int offset = page * 10;
+		int limit = 10;
+		
+		return noticeMapper.findNoticeAll(offset,limit);
 	}
 	
 	@Transactional
-	public NoticeDto findById(int noticeNo) {
+	public NoticeDto findById(Long noticeNo) {
 		noticeMapper.updateCount(noticeNo);
 		return noticeMapper.findById(noticeNo);
 	}
@@ -42,8 +47,11 @@ public class NoticeService {
 		noticeMapper.delete(noticeNo);
 	}
 
-	public void search(String noticeTitle) {
-		noticeMapper.search(noticeTitle);
+	public List<NoticeDto> search(String keyword,int page) {
+		int offset = page * 10;
+		int limit = 10;
+		
+		return noticeMapper.search(keyword,offset,limit);
 	
 	}
 

@@ -19,4 +19,130 @@
 			AND
 				n.DEL_YN = 'N'
     </select>
+    
+    <select id="findNoticeAll">
+    		SELECT
+    			NOTICE_TITLE
+    			,NOTICE_CONTENT
+    			,NOTICE_COUNT
+    			,CREATE_DATE
+    			
+    		FROM
+    			NOTICE
+    			
+    		WHERE
+    			DEL_YN='N'
+    			
+    		ORDER
+    		BY
+    			NOTICE_NO
+    		DESC
+    		
+    		OFFSET #{offset} ROWS
+    		FETCH NEXT #{limit}
+    		
+    		ROWS ONLY
+    </select>
+    
+    <select id="findById">
+    SELECT
+    	 M.MEMBER_NAME
+    	 , N.NOTICE_TITLE
+    	 , N.NOTICE_CONTENT
+    	 , N.NOTICE_COUNT
+    	 , N.CREATE_DATE
+    	 
+    	  FROM
+    	  	 NOTICE N
+    	  	  
+    	 JOIN
+    	 	 MEMBER M 
+    	 
+    	 ON
+    	 	N.MEMBER_NO = M.MEMBER_NO
+    	 	
+    	 WHERE
+    	 	 N.NOTICE_NO = #{noticeNo}
+    </select>
+    
+    <select id="search">
+    SELECT
+    	 NOTICE_TITLE
+    	 , NOTICE_CONTENT
+    	 , NOTICE_COUNT
+    	 ,CREATE_DATE
+    	 
+    FROM
+    	 NOTICE
+    
+    WHERE
+    	 NOTICE_TITLE
+    
+    LIKE 
+    	 '%'||#{keyword}||'%'
+    	 
+    ORDER
+     BY
+     	 NOTICE_NO
+    	 DESC
+     
+   		 OFFSET #{offset} ROWS
+   		 FETCH NEXT #{limit}
+     
+     	 ROWS ONLY
+    
+    </select>
+    
+   <insert id="save">
+   INSERT INTO NOTICE(
+		noticeTitle
+		
+   )
+   	 
+   	VALUES
+   	(
+   		NOTICE_SEQ.NEXTVAL
+   		,#{noticeTitle}
+   		,#{noticeContent}
+   		,0
+   		,SYSDATE
+   		,'N'
+   	)
+   </insert>
+   <update id="update">
+   UPDATE
+   	 NOTICE
+    
+   SET
+    NOTICE_TITLE = #{noticeTitle}
+    ,NOTICE_CONTENT = #{noticeContent} 
+    
+    WHERE
+     NOTICE_NO = #{noticeNo}
+   
+   </update>
+    
+   <update id="delete">
+   UPDATE
+    NOTICE
+   
+   SET
+    DEL_YN = 'Y'
+    
+   WHERE
+    NOTICE_NO = #{noticeNo}
+   </update>
+   
+   <update id="updateCount">
+   UPDATE
+    NOTICE
+   
+   SET
+    NOTICE_COUNT = NOTICE_COUNT + 1 
+   
+   WHERE
+    NOTICE_NO = #{noticeNo}
+   </update>
+   
+   
 </mapper>
