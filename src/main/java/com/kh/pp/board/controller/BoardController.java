@@ -42,11 +42,7 @@ public class BoardController {
 	
 	// Read
 	@GetMapping
-<<<<<<< HEAD
-	public ResponseEntity<ApiResponse<List<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="1")  int page){
-=======
 	public ResponseEntity<ApiResponse<List<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="0") int page){
->>>>>>> main
 		List<BoardDto> boards = boardService.findBoardAll(page);
 		
 		return ResponseEntity.ok(ApiResponse.success(boards));
