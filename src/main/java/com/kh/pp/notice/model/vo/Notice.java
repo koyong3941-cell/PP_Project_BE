@@ -10,7 +10,7 @@ import lombok.Value;
 @Value
 @Builder
 public class Notice {
-	private int noticeNo;
+	private int noticeNo; 
 	private int memberNo;
 	private String noticeTitle;
 	private String noticeContent;
