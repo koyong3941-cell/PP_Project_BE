@@ -129,7 +129,7 @@
 				B.DEL_YN = 'N'
     </select>
 
-	<select id="categoryInfo">
+	<select id="boardCategoryAll">
 		SELECT 
 				CATEGORY_NO
 			 , 	CATEGORY_NAME
@@ -138,20 +138,20 @@
 	</select>
    
 <!-- Update -->
-	<update id="editBoard">
+	<update id="editBoard" parameterType="Board">
    		UPDATE
    				BOARD
    		   SET
-   				CATEGORY_NO = #{board.categoryNo}
-   			 ,	BOARD_TITLE = #{board.boardTitle}
-   			 ,	BOARD_CONTENT = #{board.boardContent}
+   				CATEGORY_NO = #{categoryNo}
+   			 ,	BOARD_TITLE = #{boardTitle}
+   			 ,	BOARD_CONTENT = #{boardContent}
    		 WHERE
-   				BOARD_NO = #{board.boardNo}
+   				BOARD_NO = #{boardNo}
    		   AND
    				MEMBER_NO = #{memberNo}
 	</update>
 	
-	<update id="increaseCount">
+	<update id="increaseBoardCount">
 		UPDATE 
 				BOARD 
 		   SET 

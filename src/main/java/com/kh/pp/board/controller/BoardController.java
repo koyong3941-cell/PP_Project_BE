@@ -85,8 +85,8 @@ public class BoardController {
 	
 	// 기타
 	@GetMapping("/category")
-	public ResponseEntity<ApiResponse<List<Category>>> findCategoryAll() {
-		List<Category> category = boardService.categoryInfo();
+	public ResponseEntity<ApiResponse<List<Category>>> findBoardCategoryAll() {
+		List<Category> category = boardService.boardCategoryAll();
 		return ResponseEntity.ok(ApiResponse.success(category));
 	}
 }

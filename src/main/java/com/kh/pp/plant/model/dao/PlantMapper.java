@@ -16,7 +16,7 @@ public interface PlantMapper {
 	
 	List<PlantDto> findPlantAll(@Param("offset") int offset, @Param("limit") int limit);
 	
-	void increaseCount(Long plantNo);
+	void increasePlantCount(Long plantNo);
 	
 	PlantDto plantDetail(Long plantNo);
 	

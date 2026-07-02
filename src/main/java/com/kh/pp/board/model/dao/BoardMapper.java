@@ -29,15 +29,12 @@ public interface BoardMapper {
 	
 	BoardDto boardDetail(Long boardNo);
 
+	List<Category> boardCategoryAll();
 	// Update
-	int editBoard(@Param("board")BoardDto board, @Param("memberNo") Long memberNo, Long boardNo);
+	int editBoard(Board boardEntity);
 	
-	void increaseCount(Long boardNo);
+	void increaseBoardCount(Long boardNo);
 
-	List<Category> categoryInfo();
-
-	BoardDto findByNo(Long boardNo);
-	
 	// Delete
 	int deleteBoard(@Param("boardNo") Long boardNo, @Param("memberNo") Long memberNo);
 
