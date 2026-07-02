@@ -1,6 +1,9 @@
 package com.kh.pp.notice.model.dto;
 
 import java.sql.Date;
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -21,11 +24,12 @@ public class NoticeDto {
 	private int noticeCount;
 	private Date createDate;
 	private String delYn;
-
-	
 	
 	// join
 	private String memberName;
+	private List<MultipartFile> imageFiles;
+	private List<NoticeImgDto> noticeImages; 
+
 	
 	
 }

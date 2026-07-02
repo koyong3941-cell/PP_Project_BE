@@ -83,7 +83,7 @@
     	 
     ORDER
      BY
-     	 NOTICE_NO
+     	 NOTICE_TITLE
     	 DESC
      
    		 OFFSET #{offset} ROWS
@@ -95,42 +95,42 @@
     
    <insert id="save">
    INSERT INTO NOTICE(
-		noticeTitle
-		
+		MEMBER_NO,
+		NOTICE_TITLE,
+		NOTICE_CONTENT
    )
    	 
    	VALUES
    	(
-   		NOTICE_SEQ.NEXTVAL
+		#{memberNo}
    		,#{noticeTitle}
    		,#{noticeContent}
-   		,0
-   		,SYSDATE
-   		,'N'
    	)
    </insert>
    <update id="update">
-   UPDATE
-   	 NOTICE
+    UPDATE
+    	 NOTICE
     
-   SET
-    NOTICE_TITLE = #{noticeTitle}
-    ,NOTICE_CONTENT = #{noticeContent} 
-    
+    SET
+       NOTICE_TITLE = #{notice.noticeTitle}
+      ,NOTICE_CONTENT = #{notice.noticeContent} 
+     
     WHERE
-     NOTICE_NO = #{noticeNo}
+      NOTICE_NO = #{noticeNo}
+     AND
+       DEL_YN = 'N'
    
    </update>
     
    <update id="delete">
-   UPDATE
-    NOTICE
-   
-   SET
-    DEL_YN = 'Y'
-    
-   WHERE
-    NOTICE_NO = #{noticeNo}
+    UPDATE
+    	NOTICE
+    	
+    SET
+    	DEL_YN = 'Y'
+
+    WHERE
+    	 NOTICE_NO = #{noticeNo}
    </update>
    
    <update id="updateCount">
