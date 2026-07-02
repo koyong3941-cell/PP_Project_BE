@@ -13,24 +13,32 @@ import com.kh.pp.board.model.vo.Board;
 public interface BoardMapper {
 
 	// Create
-	void saveBoard(Board boardEntity);
+	int saveBoard(Board boardEntity);
 
-	Long getLastBoardNoByMemberNo(int memberNo);
+	Long getLastBoardNoByMemberNo(Long memberNo);
 	
 	// Read
 	List<BoardDto> findBoardAll(@Param("offset") int offset, @Param("limit") int limit);
 
+	List<BoardDto> findBoardByKeyword(
+		@Param("offset") int offset 
+		, @Param("limit") int limit
+		, @Param("keywordList") List<String> keywordList
+		, @Param("target") String target
+	);
+	
 	BoardDto boardDetail(Long boardNo);
 
+	List<Category> boardCategoryAll();
 	// Update
-	void editBoard(@Param("board")BoardDto board, @Param("memberNo") int memberNo, Long boardNo);
+	int editBoard(Board boardEntity);
 	
-	void increaseCount(Long boardNo);
+	void increaseBoardCount(Long boardNo);
 
-	List<Category> categoryInfo();
-
-	BoardDto findByNo(Long boardNo);
-	
 	// Delete
-	int deleteBoard(@Param("boardNo") Long boardNo, @Param("memberNo") int memberNo);
+	int deleteBoard(@Param("boardNo") Long boardNo, @Param("memberNo") Long memberNo);
+
+
+
+
 }

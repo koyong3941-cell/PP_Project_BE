@@ -10,5 +10,7 @@ import com.kh.pp.board.model.dto.BoardImgDto;
 public interface BoardImgMapper {
 	int insertBoardImg(BoardImgDto boardImgDto);
 
-	List<BoardImgDto> findByBoardNo(Long boardNo);
+	List<BoardImgDto> findBoardImgByBoardNo(Long boardNo);
+	
+	void deleteBoardImgByBoardNo(Long boardNo);
 }

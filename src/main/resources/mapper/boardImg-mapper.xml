@@ -24,7 +24,7 @@
 			    )
 	</insert>
    
-	<select id="findByBoardNo" resultType="com.kh.pp.board.model.dto.BoardImgDto">
+	<select id="findBoardImgByBoardNo" resultType="com.kh.pp.board.model.dto.BoardImgDto">
 		SELECT 
 	         	ORIGINAL_NAME
 	         ,	SAVE_NAME
@@ -40,4 +40,13 @@
 	        BY 
 	        	IMG_ORDER ASC
 	</select>
+	
+	<update id="deleteBoardImgByBoardNo">
+		UPDATE
+				BOARD_IMG
+		   SET
+		   		DEL_YN = 'Y'
+		 WHERE
+		 		BOARD_NO = #{boardNo}
+	</update>
 </mapper>

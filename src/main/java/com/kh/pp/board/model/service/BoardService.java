@@ -1,11 +1,7 @@
 package com.kh.pp.board.model.service;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +15,7 @@ import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.vo.Board;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
+import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.file.service.FileService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,10 +30,10 @@ public class BoardService {
 	private final BoardImgMapper boardImgMapper;
 	private final FileService fileService;
 	
-	// 보드 저장 및 검증 메서드
+	// Create
 	@Transactional
 	public void saveBoard(BoardDto board) {
-		validateBoard(board);
+		long count = validateBoardImages(board.getImageFiles());
 		
 		Board boardEntity = Board.builder()
 				.memberNo(board.getMemberNo())
@@ -45,58 +42,19 @@ public class BoardService {
 				.categoryNo(board.getCategoryNo())
 				.build();	
 		
-		boardMapper.saveBoard(boardEntity);
+		int result = boardMapper.saveBoard(boardEntity);
 		
-		Long boardNo = boardMapper.getLastBoardNoByMemberNo(board.getMemberNo());
-		
-		// log.info("생성된 boardNo : {}",boardNo);
-		
-		if (board.getImageFiles() != null) {
-	        long validImageCount = board.getImageFiles().stream()
-	                .filter(file -> !file.isEmpty())
-	                .count();
-
-	        if (validImageCount > 5) {
-	            throw new FailSaveException("이미지는 최대 5장까지 업로드할 수 있습니다.");
-	        }
-	    }
-		
-		// 이미지 처리
-	    if (board.getImageFiles() != null && !board.getImageFiles().isEmpty()) {
-	        int order = 1;
-
-	        for (MultipartFile file : board.getImageFiles()) {
-	            if (!file.isEmpty()) {
-	                try {
-	                    String saveName = fileService.store(file, "board");
-
-	                    BoardImgDto imgDto = new BoardImgDto();
-	                    imgDto.setBoardNo(boardNo);
-	                    imgDto.setOriginalName(file.getOriginalFilename());
-	                    imgDto.setSaveName(saveName);
-	                    imgDto.setImgPath("/uploads/board/");
-	                    imgDto.setImgOrder(order++);
-
-	                    boardImgMapper.insertBoardImg(imgDto);
-
-	                } catch (Exception e) {
-	                    log.error("이미지 저장 실패", e);
-	                    throw new FailSaveException("이미지 저장 중 오류가 발생했습니다.");
-	                }
-	            }
-	        }
-	    }
-	}
-	
-	private void validateBoard(BoardDto board) {
-		if (board.getBoardTitle() == null || board.getBoardTitle().isEmpty()) {
-			throw new FailSaveException("제목은 필수입니다.");
+		if (result < 1) {
+			throw new FailSaveException("작성에 실패했습니다.");
 		}
-		if (board.getBoardContent() == null || board.getBoardContent().isEmpty()) {
-			throw new FailSaveException("내용은 필수입니다.");
+		if (count > 0) {
+			Long boardNo = boardMapper.getLastBoardNoByMemberNo(board.getMemberNo());
+			
+			saveBoardImages(boardNo, board.getImageFiles());
 		}
 	}
 	
+
 	// Read
 	public List<BoardDto> findBoardAll(int page) {
 		int offset = page * 10;
@@ -104,36 +62,80 @@ public class BoardService {
 		
 		return boardMapper.findBoardAll(offset, limit);
 	}
+	
+	public List<BoardDto> findBoardByKeyword(int page, String keyword, String target) {
+		int offset = page * 10;
+		int limit = 10;
+		
+		if (keyword == null || keyword.trim().isEmpty()) {
+	        return boardMapper.findBoardAll(offset, limit);
+	    }
+		
+		List<String> keywordList = new ArrayList<>();
+		String[] words = keyword.trim().split("\\s+");
+		for (String word : words) {
+			if (!word.isEmpty()) {
+				keywordList.add(word);
+			}
+		}
+				
+		if (target == null || target.trim().isEmpty()) {
+			target = "all";
+		}
 
-	// 상세 및 리스트 조회
+		// 앞단에서 카테고리별로 보이는 기능 추가하면 수정해야됨
+		return boardMapper.findBoardByKeyword(offset, limit, keywordList, target);
+	}
+
 	public BoardDto boardDetail(Long boardNo) {
-		increaseCount(boardNo);
+		increaseBoardCount(boardNo);
 		BoardDto board = getBoardNoOrThrow(boardNo);
 		
-		List<BoardImgDto> images = boardImgMapper.findByBoardNo(boardNo);
+		List<BoardImgDto> images = boardImgMapper.findBoardImgByBoardNo(boardNo);
 		board.setBoardImages(images);
 		
 		return board;
 	}
 	
-	private void increaseCount(Long boardNo) {
-		boardMapper.increaseCount(boardNo);
+	private void increaseBoardCount(Long boardNo) {
+		boardMapper.increaseBoardCount(boardNo);
 	}
 	
 	
-	// 수정 및 삭제
+	// Update
 	@Transactional
-	public void deleteBoard(Long boardNo, int memberNo) {
+	public void editBoard(BoardDto board, Long memberNo, Long boardNo) {
+		
+		long count = validateBoardImages(board.getImageFiles());
+		
+		Board boardEntity = Board.builder()
+				.boardNo(boardNo)
+				.memberNo(board.getMemberNo())
+				.boardTitle(board.getBoardTitle())
+				.boardContent(board.getBoardContent())
+				.categoryNo(board.getCategoryNo())
+				.build();
+		
+		int result = boardMapper.editBoard(boardEntity);
+		
+		if (result < 1) {
+			throw new FailUpdateException("수정에 실패했습니다.");
+		}
+		if(count > 0) {
+			boardImgMapper.deleteBoardImgByBoardNo(boardNo);
+			
+			saveBoardImages(boardNo, board.getImageFiles());
+		}
+	}
+	
+	// Delete
+	@Transactional
+	public void deleteBoard(Long boardNo, Long memberNo) {
 		int result = boardMapper.deleteBoard(boardNo, memberNo);
 		
 		if (result < 1) {
 			throw new FailDeleteException("삭제에 실패하였습니다.");
 		}
-	}
-	
-	@Transactional
-	public void editBoard(BoardDto board, int memberNo, Long boardNo) {
-		boardMapper.editBoard(board, memberNo, boardNo);
 	}
 	
 	
@@ -148,10 +150,57 @@ public class BoardService {
 
 	}
 	
-	// ------ 카테고리 조회 검증 ----	
-	public List<Category> categoryInfo() {
-		return boardMapper.categoryInfo(); 
+	// ------ 카테고리 조회 검증 ------	
+	public List<Category> boardCategoryAll() {
+		return boardMapper.boardCategoryAll(); 
 	}
 	
+	// ------ 게시글 이미지 갯수 확인 ------
+	private long validateBoardImages(List<MultipartFile> imageFiles) {
+		if (imageFiles == null) {
+			return 0;
+		}
+		
+		long count = imageFiles.stream()
+							   .filter(file -> !file.isEmpty())
+							   .count();
+			
+		if (count > 5) {
+			throw new FailSaveException("이미지는 최대 5장까지 업로드할 수 있습니다.");
+		}
+		
+		return count;
+	}
+	
+	// ------ 게시글 이미지 저장 ------
+	private void saveBoardImages(Long boardNo, List<MultipartFile> imageFiles) {
+		if (imageFiles == null || imageFiles.isEmpty()) {
+			return;
+		}
+	    int order = 1;
 
+        for (MultipartFile file : imageFiles) {
+            if (!file.isEmpty()) {
+                try {
+                    String saveName = fileService.store(file, "board");
+
+                    BoardImgDto imgDto = new BoardImgDto();
+                    imgDto.setBoardNo(boardNo);
+                    imgDto.setOriginalName(file.getOriginalFilename());
+                    imgDto.setSaveName(saveName);
+                    imgDto.setImgPath("/uploads/board/");
+                    imgDto.setImgOrder(order++);
+
+                    int imgResult = boardImgMapper.insertBoardImg(imgDto);
+	                    
+                    if (imgResult < 1) {
+                    	throw new FailSaveException("이미지 저장에 실패했습니다.");
+                    }
+                } catch (Exception e) {
+                    log.error("이미지 저장 실패", e);
+                    throw new FailSaveException("이미지 저장 중 오류가 발생했습니다.");
+                }
+            }
+        }
+	}
 }

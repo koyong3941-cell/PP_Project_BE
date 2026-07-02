@@ -41,7 +41,7 @@ public class TokenService {
 	}
 	
 	// 리프레시토큰을 받아서 DB에 INSERT 메소드
-	private void saveToken(String token, CustomUserDetails user) { // 해당 부분 문제 시 1순위 수정해야함; edited by 성현. refreshtoken vo 수정해야함
+	private void saveToken(String token, CustomUserDetails user) { 
 		log.info("저장할 memberNo 확인: {}", user.getMemberNo());
 		RefreshToken refreshToken = RefreshToken.builder()
 										.memberNo(user.getMemberNo())
@@ -53,7 +53,7 @@ public class TokenService {
 	}
 	// 로그아웃 요청 시 DB정리 메서드
 	@Transactional
-	public void logout(int memberNo) {
+	public void logout(Long memberNo) {
 		tokenMapper.deleteToken(memberNo);
 	}
 	// 추후 AccessToken이 만료기간이 지나서 토큰 갱신 요청이 들어왔을때
@@ -66,7 +66,7 @@ public class TokenService {
 		}
 		Claims claims = tokenUtil.parseJwt(token.getToken());
 		String memberId = claims.getSubject();
-		Integer memberNo = claims.get("memberNo", Integer.class);
+		Long memberNo = claims.get("memberNo", Long.class);
 		String memberName = (String)claims.get("memberName");
 		
 		CustomUserDetails user = CustomUserDetails.builder().memberNo(memberNo).memberName(memberName).username(memberId).build();

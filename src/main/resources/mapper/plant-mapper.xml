@@ -3,6 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.pp.plant.model.dao.PlantMapper">
+<!-- Create -->
 	<insert id="savePlant" parameterType="Plant">
 		INSERT
 		INTO
@@ -42,6 +43,7 @@
 			FIRST 1 ROWS ONLY
 	</select>
 	
+<!-- Read -->
 	<select id="findPlantAll">
 		SELECT 
 			p.PLANT_NO
@@ -93,6 +95,7 @@
 			p.DEL_YN = 'N'
     </select>
     
+<!-- Update -->
     <update id="editPlant">
    		UPDATE
    			PLANT
@@ -105,7 +108,7 @@
    			MEMBER_NO = #{memberNo}
 	</update>
 	
-	<update id="increaseCount">
+	<update id="increasePlantCount">
 		UPDATE 
 			PLANT 
 		SET 
@@ -114,6 +117,7 @@
 			PLANT_NO = #{plantNo}
 	</update>
 	
+<!-- Delete -->
 	<update id="deletePlant">
    		UPDATE
    			PLANT

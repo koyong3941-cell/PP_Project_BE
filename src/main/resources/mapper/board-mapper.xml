@@ -11,16 +11,16 @@
 		  		BOARD	
 		  		(
 		  		MEMBER_NO 
-			  	,BOARD_TITLE
-			  	,BOARD_CONTENT
-			  	,CATEGORY_NO
+			 ,	BOARD_TITLE
+			 ,	BOARD_CONTENT
+			 ,	CATEGORY_NO
 			  	)
 		VALUES
 				(
 				#{memberNo}
-				,#{boardTitle}
-				,#{boardContent}
-				,#{categoryNo}
+			 ,  #{boardTitle}
+			 ,	#{boardContent}
+			 ,	#{categoryNo}
 				)
 	</insert>
 	
@@ -39,31 +39,72 @@
 	</select>
 	
 <!-- Read -->
-	<select id="findBoardAll">
+	<sql id="findBoardQuery">
 		SELECT 
-				b.BOARD_NO
-			 ,	c.CATEGORY_NAME
-			 ,	m.MEMBER_NAME
-			 ,	b.BOARD_TITLE
-			 ,	b.BOARD_CONTENT
-			 ,	b.COUNT
-			 ,	b.CREATE_DATE
-			 ,	b.DEL_YN
+				B.BOARD_NO
+			 ,	B.BOARD_TITLE
+			 ,	C.CATEGORY_NAME
+			 ,	B.COUNT
+			 ,	M.MEMBER_NAME
+			 ,	B.CREATE_DATE
+			 ,	(SELECT COUNT(*) FROM BOARD_COMMENT WHERE BOARD_NO = B.BOARD_NO) AS COMMENT_COUNT
+			 ,	(SELECT COUNT(*) FROM BOARD_LIKE WHERE BOARD_NO = B.BOARD_NO) AS LIKE_COUNT
 		  FROM
-				BOARD b
+				BOARD B
 		  JOIN
-				CATEGORY c USING(CATEGORY_NO)
+				CATEGORY C USING(CATEGORY_NO)
 		  JOIN
-				MEMBER m USING(MEMBER_NO)
+				MEMBER M USING(MEMBER_NO)
 		 WHERE
-				b.DEL_YN = 'N'
+				B.DEL_YN = 'N'
+	</sql>
+	
+	<select id="findBoardAll">
+		<include refid="findBoardQuery"/>
 		 ORDER 
 		    BY
-		    	b.BOARD_NO DESC
-	    OFFSET #{offset} ROWS
-		 FETCH NEXT #{limit} ROWS ONLY
+		    	B.BOARD_NO DESC
+	    OFFSET 	#{offset} ROWS FETCH
+		  NEXT  #{limit} ROWS ONLY	
 	</select>
 	
+	<select id="findBoardByKeyword">
+		<include refid="findBoardQuery"/>
+		   AND	(
+				<choose>
+					<when test="target == 'writer'">
+						<foreach collection="keywordList" item="word" separator="AND">
+							M.MEMBER_NAME LIKE '%' || #{word} || '%'
+						</foreach>
+					</when>
+					<when test="target == 'boardTitle'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		B.BOARD_TITLE LIKE '%' || #{word} || '%'
+                		</foreach>
+            		</when>
+            		<when test="target == 'boardContent'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		B.BOARD_CONTENT LIKE '%' || #{word} || '%'
+                		</foreach>
+            		</when>
+            		<otherwise>
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		(
+		                        M.MEMBER_NAME   LIKE '%' || #{word} || '%'
+		                        OR B.BOARD_TITLE  LIKE '%' || #{word} || '%'
+		                        OR B.BOARD_CONTENT LIKE '%' || #{word} || '%'
+		                    )
+		                </foreach>
+            		</otherwise>
+				</choose>
+		   		)
+		 ORDER 
+		    BY
+		    	B.BOARD_NO DESC
+	    OFFSET 	#{offset} ROWS FETCH
+		  NEXT  #{limit} ROWS ONLY	
+	</select>
+
     <select id="boardDetail">
 		SELECT
 				B.BOARD_NO
@@ -72,6 +113,10 @@
 			 ,	B.COUNT
 			 ,	C.CATEGORY_NAME
 			 ,	M.MEMBER_ID
+			 ,	(SELECT COUNT(*) FROM BOARD_COMMENT WHERE BOARD_NO = B.BOARD_NO) AS COMMENT_COUNT
+			 ,	(SELECT COUNT(*) FROM BOARD_LIKE WHERE BOARD_NO = B.BOARD_NO) AS LIKE_COUNT
+			 ,	(SELECT COUNT(*) FROM BOARD_DISLIKE WHERE BOARD_NO = B.BOARD_NO) AS DISLIKE_COUNT
+			 
 		  FROM 
 				BOARD B
 		  Join 
@@ -84,7 +129,7 @@
 				B.DEL_YN = 'N'
     </select>
 
-	<select id="categoryInfo">
+	<select id="boardCategoryAll">
 		SELECT 
 				CATEGORY_NO
 			 , 	CATEGORY_NAME
@@ -93,20 +138,20 @@
 	</select>
    
 <!-- Update -->
-	<update id="editBoard">
+	<update id="editBoard" parameterType="Board">
    		UPDATE
    				BOARD
    		   SET
-   				CATEGORY_NO = #{board.categoryNo}
-   			 ,	BOARD_TITLE = #{board.boardTitle}
-   			 ,	BOARD_CONTENT = #{board.boardContent}
+   				CATEGORY_NO = #{categoryNo}
+   			 ,	BOARD_TITLE = #{boardTitle}
+   			 ,	BOARD_CONTENT = #{boardContent}
    		 WHERE
-   				BOARD_NO = #{board.boardNo}
+   				BOARD_NO = #{boardNo}
    		   AND
    				MEMBER_NO = #{memberNo}
 	</update>
 	
-	<update id="increaseCount">
+	<update id="increaseBoardCount">
 		UPDATE 
 				BOARD 
 		   SET 

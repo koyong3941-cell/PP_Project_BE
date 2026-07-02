@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.board.model.dto.BoardDto;
+import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.service.BoardService;
 import com.kh.pp.common.api.ApiResponse;
 
@@ -27,10 +28,35 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/boards")
 public class BoardController {
 	private final BoardService boardService;
+
+	// Create
+	@PostMapping
+	public ResponseEntity<ApiResponse<Void>> saveBoard(@AuthenticationPrincipal CustomUserDetails userDetails,
+													   @ModelAttribute @Valid BoardDto board){
+		Long memberNoFromToken = userDetails.getMemberNo();
+		board.setMemberNo(memberNoFromToken);
+		 
+		boardService.saveBoard(board);
+		return ResponseEntity.status(201).body(ApiResponse.created(null));
+	}
 	
+	// Read
 	@GetMapping
+<<<<<<< HEAD
 	public ResponseEntity<ApiResponse<List<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="1")  int page){
+=======
+	public ResponseEntity<ApiResponse<List<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="0") int page){
+>>>>>>> main
 		List<BoardDto> boards = boardService.findBoardAll(page);
+		
+		return ResponseEntity.ok(ApiResponse.success(boards));
+	}
+	
+	@GetMapping("/search")
+	public ResponseEntity<ApiResponse<List<BoardDto>>> findBoardByKeyword(@RequestParam(name = "page", defaultValue = "0") int page,
+																		  @RequestParam(name = "keyword", required = false) String keyword,
+																		  @RequestParam(name = "target", required = false) String target){
+		List<BoardDto> boards = boardService.findBoardByKeyword(page, keyword, target);
 		
 		return ResponseEntity.ok(ApiResponse.success(boards));
 	}
@@ -43,28 +69,28 @@ public class BoardController {
 		return ResponseEntity.status(200).body(ApiResponse.success(board));
 	}
 	
-	@PostMapping
-	public ResponseEntity<ApiResponse<Void>> saveBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute @Valid BoardDto board){
-		int memberNoFromToken = userDetails.getMemberNo();
-		board.setMemberNo(memberNoFromToken);
-		 
-		boardService.saveBoard(board);
-		return ResponseEntity.status(201).body(ApiResponse.created(null));
+	// Update
+	@PatchMapping("/{boardNo}")
+	public ResponseEntity<ApiResponse<Void>> editBoard(@AuthenticationPrincipal CustomUserDetails userDetails, 
+													   @ModelAttribute  @Valid BoardDto board,
+													   @PathVariable(name = "boardNo") Long boardNo){
+		Long memberNoFromToken = userDetails.getMemberNo();
+		boardService.editBoard(board, memberNoFromToken, boardNo);
+		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
 	}
 	
+	// Delete
 	@DeleteMapping("/{boardNo}")
 	public ResponseEntity<ApiResponse<Void>> deleteBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "boardNo") Long boardNo){
-		int memberNoFromToken = userDetails.getMemberNo();
+		Long memberNoFromToken = userDetails.getMemberNo();
 		boardService.deleteBoard(boardNo, memberNoFromToken);
 		return ResponseEntity.status(200).body(ApiResponse.created("deleted", null));
 	}
 	
-	@PatchMapping("/{boardNo}")
-	public ResponseEntity<ApiResponse<Void>> editBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute  @Valid BoardDto board,
-			@PathVariable(name = "boardNo") Long boardNo){
-		int memberNoFromToken = userDetails.getMemberNo();
-		boardService.editBoard(board, memberNoFromToken, boardNo);
-		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
+	// 기타
+	@GetMapping("/category")
+	public ResponseEntity<ApiResponse<List<Category>>> findBoardCategoryAll() {
+		List<Category> category = boardService.boardCategoryAll();
+		return ResponseEntity.ok(ApiResponse.success(category));
 	}
-
 }

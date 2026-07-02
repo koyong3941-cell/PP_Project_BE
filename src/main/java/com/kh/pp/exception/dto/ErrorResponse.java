@@ -1,4 +1,4 @@
-package com.kh.pp.exception;
+package com.kh.pp.exception.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

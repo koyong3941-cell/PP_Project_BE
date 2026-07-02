@@ -22,7 +22,7 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlantDto {
 	private Long plantNo;
-	private	Integer memberNo;
+	private	Long memberNo;
 	@NotBlank
 	private	String plantName;
 	private	String classification;
