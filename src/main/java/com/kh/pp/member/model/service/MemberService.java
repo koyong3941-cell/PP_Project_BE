@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.exception.FailSignUpException;
 import com.kh.pp.exception.FailUserRequestException;
 import com.kh.pp.member.model.dao.MemberMapper;
@@ -12,7 +13,6 @@ import com.kh.pp.member.model.dto.MemberEditValidation;
 import com.kh.pp.member.model.dto.MemberRequestDto;
 import com.kh.pp.member.model.vo.Member;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,12 +57,8 @@ public class MemberService {
 	
 	// 멤버 수정
 	@Transactional
-	public int userEdit(Long memberNo, MemberEditValidation validedMember) {
-		if(validedMember.getMemberPwd() == null &&
-				validedMember.getEmail() == null &&
-						validedMember.getMemberName() == null){
-			throw new FailUserRequestException("사용자 수정에  실패하였습니다, 다시 시도해주세요.");
-		}
+	public int userEdit(Long memberNo, MemberEditValidation validedMember) {		
+		validedMember.setMemberPwd(passwordEncoder.encode(validedMember.getMemberPwd()));
 		
 		int memberEditedResult = memberMapper.userEdit(memberNo, validedMember);
 		

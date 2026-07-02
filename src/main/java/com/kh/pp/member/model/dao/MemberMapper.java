@@ -46,6 +46,7 @@ public interface MemberMapper {
 			        <if test='validedMember.memberName != null'>
 			            MEMBER_NAME = #{validedMember.memberName},
 			        </if>
+			        EDIT_DATE = SYSDATE
 			    </set>
 			    WHERE 
 			    	MEMBER_NO = #{memberNo}
