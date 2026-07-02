@@ -31,13 +31,27 @@ public interface MemberMapper {
 	MemberRequestDto memberMoreDetails(Long memberNo);
 
 	@Update("""
-			UPDATE
-			
-			SET
-			
-			WHERE
+			<script>
+			    UPDATE 
+			    	MEMBER
+			    <set>
+			        <if test='validedMember.memberPwd != null'>
+			            MEMBER_PWD = #{validedMember.memberPwd},
+			        </if>
+
+			        <if test='validedMember.email != null'>
+			            EMAIL = #{validedMember.email},
+			        </if>
+
+			        <if test='validedMember.memberName != null'>
+			            MEMBER_NAME = #{validedMember.memberName},
+			        </if>
+			    </set>
+			    WHERE 
+			    	MEMBER_NO = #{memberNo}
+			</script>
 			""")
-	MemberEditValidation userEdit(@Param("memberNo") Long memberNo, @Param("validedMember") MemberEditValidation validedMember);
+		int userEdit(@Param("memberNo") Long memberNo, @Param("validedMember") MemberEditValidation validedMember);
 
 	@Update("""
 			Update

@@ -42,10 +42,10 @@ public class MemberController {
 	}
 	
 	@PatchMapping("/edit")
-	public ResponseEntity<ApiResponse<MemberEditValidation>> userEdit(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid MemberEditValidation validedMember){
+	public ResponseEntity<ApiResponse<Void>> userEdit(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody MemberEditValidation validedMember){
 		Long memberNoFromToken = userDetails.getMemberNo();
-		MemberEditValidation memberEditedInfo = memberService.userEdit(memberNoFromToken, validedMember);
-		return ResponseEntity.status(200).body(ApiResponse.success("수정 성공", memberEditedInfo));
+		memberService.userEdit(memberNoFromToken, validedMember);
+		return ResponseEntity.status(200).body(ApiResponse.success("수정 성공", null));
 	}
 	
 	@DeleteMapping("/delete")

@@ -38,10 +38,6 @@ public class MemberDto {
     private String memberName;
     @NotBlank(message = "이메일은 필수입니다.")
     @Email(message = "올바른 이메일 형식이 아닙니다.")
-    @Pattern(
-        regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
-        message = "올바른 이메일 형식이 아닙니다."
-    )
     private String email;
     private String role;
     private Date enrollDate;

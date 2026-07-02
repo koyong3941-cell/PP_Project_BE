@@ -57,13 +57,19 @@ public class MemberService {
 	
 	// 멤버 수정
 	@Transactional
-	public MemberEditValidation userEdit(Long memberNo, MemberEditValidation validedMember) {
-		
-		MemberEditValidation memberEditedResult = memberMapper.userEdit(memberNo, validedMember);
-		
-		if(memberEditedResult == null){
+	public int userEdit(Long memberNo, MemberEditValidation validedMember) {
+		if(validedMember.getMemberPwd() == null &&
+				validedMember.getEmail() == null &&
+						validedMember.getMemberName() == null){
 			throw new FailUserRequestException("사용자 수정에  실패하였습니다, 다시 시도해주세요.");
 		}
+		
+		int memberEditedResult = memberMapper.userEdit(memberNo, validedMember);
+		
+		if(memberEditedResult < 1){
+			throw new FailUserRequestException("사용자 수정에  실패하였습니다, 다시 시도해주세요.");
+		}
+		
 		return memberEditedResult;
 	}
 	
