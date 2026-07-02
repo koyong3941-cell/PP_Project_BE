@@ -4,37 +4,30 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.notice.model.dto.NoticeDto;
+import com.kh.pp.notice.model.vo.Notice;
 
 @Mapper
 public interface NoticeMapper {
-	@Select("""
-			SELECT 
-				n.NOTICE_NO
-				,m.MEMBER_NO
-				,n.NOTICE_TITLE
-				,n.NOTICE_CONTENT
-				,n.NOTICE_COUNT
-				,n.CREATE_DATE
-				,n.DEL_YN
-			FROM
-				NOTICE n
-			JOIN
-				MEMBER m ON (n.MEMBER_NO = m.MEMBER_NO)
-			WHERE
-				n.DEL_YN = 'N'
-				ORDER BY n.NOTICE_NO DESC
-				OFFSET #{offset} ROWS
-				FETCH NEXT #{limit} ROWS ONLY
-			""")
 	List<NoticeDto> findNoticeAll(@Param("offset") int offset, @Param("limit") int limit);
+
+	NoticeDto findById(Long noticeNo);
 	
-	@Update("UPDATE NOTICE SET NOTICE_COUNT = NOTICE_COUNT + 1 WHERE NOTICE_NO = #{noticeNo}")
-	void increaseCount(Long noticeNo);
+	List<NoticeDto> search(@Param("keyword")String keyword,@Param("offset")int offset,@Param("limit") int limit);
 	
-	NoticeDto noticeDetail(Long noticeNo);
+	void save(Notice notice);
+
+	void update(@Param("notice")NoticeDto notice,@Param("noticeNo")Long noticeNo,@Param("file") MultipartFile file);
+
+	void delete(@Param("noticeNo")Long noticeNo);
+	
+	void updateCount(Long noticeNo);
+
+	Long getLastBoardNoByMemberNo(int memberNo);
+
+
 
 }

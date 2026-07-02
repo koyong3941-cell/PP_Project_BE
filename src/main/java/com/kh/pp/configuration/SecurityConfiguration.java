@@ -53,7 +53,11 @@ public class SecurityConfiguration {
 					// 5. 공지사항 관련
 					requests.requestMatchers(HttpMethod.GET, "/api/notices/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET, "/api/notices").permitAll();
+					requests.requestMatchers(HttpMethod.GET, "/api/admin/notices/**").permitAll();
+					requests.requestMatchers(HttpMethod.GET, "/api/admin/notices").permitAll();
+					requests.requestMatchers(HttpMethod.POST,"/api/admin/notices").permitAll();
 					
+
 					// 6. 식물 게시판 관련
 					requests.requestMatchers(HttpMethod.GET, "/api/plants/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET, "/api/plants").permitAll();

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Data
 public class MemberDto {
     private Long memberNo;
     @NotBlank(message = "아이디는 필수입니다.")
