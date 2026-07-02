@@ -60,7 +60,7 @@ public class SecurityConfiguration {
 					requests.requestMatchers("/uploads/**").permitAll();
 					
 					// 요청 /api/plants get
-					requests.anyRequest().authenticated();
+					requests.anyRequest().authenticated(); 
 					
 
 				}).sessionManagement(manager ->
