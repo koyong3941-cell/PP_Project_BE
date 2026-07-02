@@ -33,7 +33,6 @@ public class BoardService {
 	// Create
 	@Transactional
 	public void saveBoard(BoardDto board) {
-		validateBoard(board);
 		long count = validateBoardImages(board.getImageFiles());
 		
 		Board boardEntity = Board.builder()
@@ -107,7 +106,6 @@ public class BoardService {
 	@Transactional
 	public void editBoard(BoardDto board, Long memberNo, Long boardNo) {
 		
-		validateBoard(board);
 		long count = validateBoardImages(board.getImageFiles());
 		
 		Board boardEntity = Board.builder()
@@ -155,16 +153,6 @@ public class BoardService {
 	// ------ 카테고리 조회 검증 ------	
 	public List<Category> boardCategoryAll() {
 		return boardMapper.boardCategoryAll(); 
-	}
-	
-	// ------ 게시글 데이터 빈 값 확인 ------
-	private void validateBoard(BoardDto board) {
-		if (board.getBoardTitle() == null || board.getBoardTitle().isEmpty()) {
-			throw new FailSaveException("제목은 필수입니다.");
-		}
-		if (board.getBoardContent() == null || board.getBoardContent().isEmpty()) {
-			throw new FailSaveException("내용은 필수입니다.");
-		}
 	}
 	
 	// ------ 게시글 이미지 갯수 확인 ------

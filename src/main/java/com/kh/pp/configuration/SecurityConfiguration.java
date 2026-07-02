@@ -56,6 +56,9 @@ public class SecurityConfiguration {
 					requests.requestMatchers(HttpMethod.GET, "/api/plants/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET, "/api/plants").permitAll();
 					
+					// 7. 이미지 관련
+					requests.requestMatchers("/uploads/**").permitAll();
+					
 					// 요청 /api/plants get
 					requests.anyRequest().authenticated();
 					
