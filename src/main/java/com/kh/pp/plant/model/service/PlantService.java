@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pp.board.model.dto.BoardImgDto;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.file.service.FileService;
@@ -28,6 +29,7 @@ public class PlantService {
 	private final PlantImgMapper plantImgMapper;
 	private final FileService fileService;
 
+	// Create
 	@Transactional
 	public void savePlant(@Valid PlantDto plant) {
 		validatePlant(plant);
@@ -82,15 +84,7 @@ public class PlantService {
 		}
 	}
 	
-	private void validatePlant(PlantDto plant) {
-		if (plant.getPlantName() == null || plant.getPlantName().isEmpty()) {
-			throw new FailSaveException("제목은 필수입니다.");
-		}
-		if (plant.getPlantInfo() == null || plant.getPlantInfo().isEmpty()) {
-			throw new FailSaveException("내용은 필수입니다.");
-		}
-	}
-	
+	// Read
 	public List<PlantDto> findPlantAll(int page) {
 		int offset = page * 10;
 		int limit = 10;
@@ -108,10 +102,17 @@ public class PlantService {
 		return plant;
 	}
 	
+	// Update
+	@Transactional
+	public void editPlant(PlantDto plant, Long memberNo, Long plantNo) {
+		plantMapper.editPlant(plant, memberNo, plantNo);
+	}
+
 	private void increaseCount(Long plantNo) {
 		plantMapper.increaseCount(plantNo);
 	}
 
+	// Delete
 	@Transactional
 	public void deletePlant(Long plantNo, Long memberNo) {
 	int result = plantMapper.deletePlant(plantNo, memberNo);
@@ -121,11 +122,7 @@ public class PlantService {
 		}
 	}
 	
-	@Transactional
-	public void editPlant(PlantDto plant, Long memberNo, Long plantNo) {
-		plantMapper.editPlant(plant, memberNo, plantNo);
-	}
-	
+	// ------ 접근 실패 시 ------
 	private PlantDto getPlantNoOrThrow(Long plantNo) {
 		PlantDto plantDetail = plantMapper.plantDetail(plantNo);
 		if (plantDetail == null) {
@@ -134,4 +131,46 @@ public class PlantService {
 		return plantDetail; 
 	}
 	
+	// ------ 데이터 빈 값 확인 ------
+	private void validatePlant(PlantDto plant) {
+		if (plant.getPlantName() == null || plant.getPlantName().isEmpty()) {
+			throw new FailSaveException("제목은 필수입니다.");
+		}
+		if (plant.getPlantInfo() == null || plant.getPlantInfo().isEmpty()) {
+			throw new FailSaveException("내용은 필수입니다.");
+		}
+	}
+	
+	// ------ 이미지 갯수 확인 ------
+	private void validatePlantImage(Long plantNo, List<MultipartFile> imageFiles) {
+		if (imageFiles == null || imageFiles.isEmpty()) {
+			return;
+		}
+	    int order = 1;
+
+        for (MultipartFile file : imageFiles) {
+            if (!file.isEmpty()) {
+                try {
+                    String saveName = fileService.store(file, "board");
+
+                    PlantImgDto imgDto = new PlantImgDto();
+                    imgDto.setPlantNo(plantNo);
+                    imgDto.setOriginalName(file.getOriginalFilename());
+                    imgDto.setSaveName(saveName);
+                    imgDto.setImgPath("/uploads/board/");
+                    imgDto.setImgOrder(order++);
+
+                    int imgResult = plantImgMapper.insertPlantImg(imgDto);
+	                    
+                    if (imgResult < 1) {
+                    	throw new FailSaveException("이미지 저장에 실패했습니다.");
+                    }
+                } catch (Exception e) {
+                    log.error("이미지 저장 실패", e);
+                    throw new FailSaveException("이미지 저장 중 오류가 발생했습니다.");
+                }
+            }
+        }
+	}
+	}
 }

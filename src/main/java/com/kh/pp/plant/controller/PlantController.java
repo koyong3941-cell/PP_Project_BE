@@ -28,6 +28,17 @@ import lombok.RequiredArgsConstructor;
 public class PlantController {
 	private final PlantService plantService; 
 	
+	// Create
+	@PostMapping
+	public ResponseEntity<ApiResponse<Void>> savePlant(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute @Valid PlantDto plant){
+		Long memberNoFromToken = userDetails.getMemberNo();
+		plant.setMemberNo(memberNoFromToken);
+		
+		plantService.savePlant(plant);
+		return ResponseEntity.status(201).body(ApiResponse.created(null));
+	}
+	
+	// Read
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<PlantDto>>> findPlantAll(@RequestParam(value = "page", defaultValue ="0") int page){
 		List<PlantDto> plants = plantService.findPlantAll(page);
@@ -43,22 +54,7 @@ public class PlantController {
 		return ResponseEntity.status(200).body(ApiResponse.success(plant));
 	}
 	
-	@PostMapping
-	public ResponseEntity<ApiResponse<Void>> savePlant(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute @Valid PlantDto plant){
-		Long memberNoFromToken = userDetails.getMemberNo();
-		plant.setMemberNo(memberNoFromToken);
-		
-		plantService.savePlant(plant);
-		return ResponseEntity.status(201).body(ApiResponse.created(null));
-	}
-	
-	@DeleteMapping("/{plantNo}")
-	public ResponseEntity<ApiResponse<Void>> deletePlant(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "plantNo") Long plantNo){
-		Long memberNoFromToken = userDetails.getMemberNo();
-		plantService.deletePlant(plantNo, memberNoFromToken);
-		return ResponseEntity.status(200).body(ApiResponse.created("deleted", null));
-	}
-	
+	// Update
 	@PatchMapping("/{plantNo}")
 	public ResponseEntity<ApiResponse<Void>> editPlant(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute  @Valid PlantDto plant,
 			@PathVariable(name = "plantNo") Long plantNo){
@@ -66,5 +62,14 @@ public class PlantController {
 		plantService.editPlant(plant, memberNoFromToken, plantNo);
 		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
 	}
+
+	// Delete
+	@DeleteMapping("/{plantNo}")
+	public ResponseEntity<ApiResponse<Void>> deletePlant(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "plantNo") Long plantNo){
+		Long memberNoFromToken = userDetails.getMemberNo();
+		plantService.deletePlant(plantNo, memberNoFromToken);
+		return ResponseEntity.status(200).body(ApiResponse.created("deleted", null));
+	}
+	
 	
 }

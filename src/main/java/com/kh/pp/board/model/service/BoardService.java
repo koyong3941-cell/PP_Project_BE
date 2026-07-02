@@ -30,11 +30,11 @@ public class BoardService {
 	private final BoardImgMapper boardImgMapper;
 	private final FileService fileService;
 	
-	// 보드 저장 및 검증 메서드
+	// Create
 	@Transactional
 	public void saveBoard(BoardDto board) {
 		validateBoard(board);
-		validateImage(board.getImageFiles());
+		long count = validateImages(board.getImageFiles());
 		
 		Board boardEntity = Board.builder()
 				.memberNo(board.getMemberNo())
@@ -50,11 +50,11 @@ public class BoardService {
 		if (result < 1) {
 			throw new FailSaveException("작성에 실패했습니다.");
 		}
-		
-		Long boardNo = boardMapper.getLastBoardNoByMemberNo(board.getMemberNo());
-		
-		// 이미지 처리
-	    saveImages(boardNo, board.getImageFiles());
+		if (count > 0) {
+			Long boardNo = boardMapper.getLastBoardNoByMemberNo(board.getMemberNo());
+			
+			saveBoardImages(boardNo, board.getImageFiles());
+		}
 	}
 	
 
@@ -91,17 +91,17 @@ public class BoardService {
 	}
 
 	public BoardDto boardDetail(Long boardNo) {
-		increaseCount(boardNo);
+		increaseBoardCount(boardNo);
 		BoardDto board = getBoardNoOrThrow(boardNo);
 		
-		List<BoardImgDto> images = boardImgMapper.findByBoardNo(boardNo);
+		List<BoardImgDto> images = boardImgMapper.findBoardImgByBoardNo(boardNo);
 		board.setBoardImages(images);
 		
 		return board;
 	}
 	
-	private void increaseCount(Long boardNo) {
-		boardMapper.increaseCount(boardNo);
+	private void increaseBoardCount(Long boardNo) {
+		boardMapper.increaseBoardCount(boardNo);
 	}
 	
 	
@@ -110,17 +110,18 @@ public class BoardService {
 	public void editBoard(BoardDto board, Long memberNo, Long boardNo) {
 		
 		validateBoard(board);
-		validateImage(board.getImageFiles());
+		long count = validateImages(board.getImageFiles());
 		
 		int result = boardMapper.editBoard(board, memberNo, boardNo);
 		
 		if (result < 1) {
 			throw new FailUpdateException("수정에 실패했습니다.");
 		}
-		
-		boardImgMapper.deleteByBoardNo(boardNo);
-		
-		saveImages(boardNo, board.getImageFiles());
+		if(count > 0) {
+			boardImgMapper.deleteBoardImgByBoardNo(boardNo);
+			
+			saveBoardImages(boardNo, board.getImageFiles());
+		}
 	}
 	
 	// Delete
@@ -146,8 +147,8 @@ public class BoardService {
 	}
 	
 	// ------ 카테고리 조회 검증 ------	
-	public List<Category> categoryInfo() {
-		return boardMapper.categoryInfo(); 
+	public List<Category> boardCategoryAll() {
+		return boardMapper.boardCategoryAll(); 
 	}
 	
 	// ------ 게시글 입력값 검증 ------
@@ -161,9 +162,9 @@ public class BoardService {
 	}
 	
 	// ------ 게시글 이미지 검증 ------
-	private void validateImage(List<MultipartFile> imageFiles) {
+	private long validateImages(List<MultipartFile> imageFiles) {
 		if (imageFiles == null) {
-			return;
+			return 0;
 		}
 		
 		long count = imageFiles.stream()
@@ -173,10 +174,12 @@ public class BoardService {
 		if (count > 5) {
 			throw new FailSaveException("이미지는 최대 5장까지 업로드할 수 있습니다.");
 		}
+		
+		return count;
 	}
 	
 	// ------ 이미지 저장 ------
-	private void saveImages(Long boardNo, List<MultipartFile> imageFiles) {
+	private void saveBoardImages(Long boardNo, List<MultipartFile> imageFiles) {
 		if (imageFiles == null || imageFiles.isEmpty()) {
 			return;
 		}

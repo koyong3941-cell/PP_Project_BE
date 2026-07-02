@@ -129,7 +129,7 @@
 				B.DEL_YN = 'N'
     </select>
 
-	<select id="categoryInfo">
+	<select id="boardCategoryAll">
 		SELECT 
 				CATEGORY_NO
 			 , 	CATEGORY_NAME
@@ -151,7 +151,7 @@
    				MEMBER_NO = #{memberNo}
 	</update>
 	
-	<update id="increaseCount">
+	<update id="increaseBoardCount">
 		UPDATE 
 				BOARD 
 		   SET 
