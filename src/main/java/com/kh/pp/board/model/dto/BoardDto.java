@@ -30,10 +30,10 @@ public class BoardDto {
 	@NotNull(message = "카테고리를 선택해주세요.")
 	private Integer categoryNo;
 	private Long memberNo;
-	@NotBlank(message = "공백일 수 없습니다.")
+	@NotBlank(message = "제목은 공백일 수 없습니다.")
 	@Size(max = 200, message = "제목은 최대 200자까지 입력 가능합니다.")
 	private String boardTitle;
-	@NotBlank(message = "공백일 수 없습니다.")
+	@NotBlank(message = "내용은 공백일 수 없습니다.")
 	@Size(max = 2000, message = "내용은 최대 2000자까지 입력 가능합니다.")
 	private String boardContent;
 	private Integer count;
