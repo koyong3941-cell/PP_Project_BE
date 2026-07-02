@@ -24,20 +24,6 @@
 				)
 	</insert>
 	
-	<select id="getLastBoardNoByMemberNo" resultType="java.lang.Long">
-		SELECT
-				BOARD_NO
-		  FROM
-		  		BOARD
-		 WHERE
-		 		MEMBER_NO = #{memberNo}
-		 ORDER
-		 	BY
-		    	BOARD_NO DESC
-		 FETCH
-		 		FIRST 1 ROWS ONLY
-	</select>
-	
 <!-- Read -->
 	<sql id="findBoardQuery">
 		SELECT 
@@ -137,6 +123,20 @@
 				CATEGORY
 	</select>
    
+   	<select id="getLastBoardNoByMemberNo" resultType="java.lang.Long">
+		SELECT
+				BOARD_NO
+		  FROM
+		  		BOARD
+		 WHERE
+		 		MEMBER_NO = #{memberNo}
+		 ORDER
+		 	BY
+		    	BOARD_NO DESC
+		 FETCH
+		 		FIRST 1 ROWS ONLY
+	</select>
+	
 <!-- Update -->
 	<update id="editBoard" parameterType="Board">
    		UPDATE

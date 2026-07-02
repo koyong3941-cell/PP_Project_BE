@@ -6,42 +6,28 @@
 <!-- Create -->
 	<insert id="savePlant" parameterType="Plant">
 		INSERT
-		INTO
-			PLANT	
-			(
-			MEMBER_NO 
-			,PLANT_NAME
-			,CLASSIFICATION
-			,PLANT_INFO
-			,CARBON_CAPTURE
-			,GROWTH_INFO
-			,PLANT_API
-			)	
+		  INTO
+				PLANT	
+				(
+				MEMBER_NO 
+			 ,	PLANT_NAME
+			 ,	CLASSIFICATION
+			 ,	PLANT_INFO
+			 ,	CARBON_CAPTURE
+			 ,	GROWTH_INFO
+			 ,	PLANT_API
+				)	
 		VALUES
-			(
-			#{memberNo}
-			,#{plantName}
-			,#{classification}
-			,#{plantInfo}
-			,#{carbonCapture}
-			,#{growthInfo}
-			,#{plantApi}
-			)
+				(
+				#{memberNo}
+			 ,	#{plantName}
+			 ,	#{classification}
+			 ,	#{plantInfo}
+			 ,	#{carbonCapture}
+			 ,	#{growthInfo}
+			 ,	#{plantApi}
+				)
 	</insert>
-	
-	<select id="getLastPlantNoByMemberNo" resultType="java.lang.Long">
-		SELECT
-			PLANT_NO
-		FROM
-			PLANT
-		WHERE
-			MEMBER_NO = #{memberNo}
-		ORDER
-		BY
-			PLANT_NO DESC
-		FETCH
-			FIRST 1 ROWS ONLY
-	</select>
 	
 <!-- Read -->
 	<select id="findPlantAll">
@@ -72,7 +58,6 @@
 			NEXT #{limit} ROWS ONLY
 	</select>
 	
-	
     <select id="plantDetail">
 		SELECT
 			p.PLANT_NO
@@ -94,6 +79,20 @@
 		AND
 			p.DEL_YN = 'N'
     </select>
+    
+    <select id="getLastPlantNoByMemberNo" resultType="java.lang.Long">
+		SELECT
+			PLANT_NO
+		FROM
+			PLANT
+		WHERE
+			MEMBER_NO = #{memberNo}
+		ORDER
+		BY
+			PLANT_NO DESC
+		FETCH
+			FIRST 1 ROWS ONLY
+	</select>
     
 <!-- Update -->
     <update id="editPlant">

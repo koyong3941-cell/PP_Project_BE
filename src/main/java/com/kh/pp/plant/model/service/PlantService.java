@@ -15,7 +15,6 @@ import com.kh.pp.plant.model.dto.PlantDto;
 import com.kh.pp.plant.model.dto.PlantImgDto;
 import com.kh.pp.plant.model.vo.Plant;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,8 +29,7 @@ public class PlantService {
 
 	// Create
 	@Transactional
-	public void savePlant(@Valid PlantDto plant) {
-		validatePlant(plant);
+	public void savePlant(PlantDto plant) {
 		long count = validatePlantImages(plant.getImageFiles());
 		
 		Plant plantEntity = Plant.builder()
@@ -46,42 +44,12 @@ public class PlantService {
 		
 		plantMapper.savePlant(plantEntity);
 		
-		Long plantNo = plantMapper.getLastPlantNoByMemberNo(plant.getMemberNo());
-		
-		if (plant.getImageFiles() != null) {
-			long validImageCount = plant.getImageFiles().stream()
-					.filter(file -> !file.isEmpty())
-					.count();
-			
-			if (validImageCount > 5) {
-				throw new FailSaveException("이미지는 최대 5장까지 업로드할 수 있습니다.");
-			}
+		if(count > 0) {
+			Long plantNo = plantMapper.getLastPlantNoByMemberNo(plant.getMemberNo());
+
+			saveBoardImage(plantNo, plant.getImageFiles());
 		}
 		
-		if (plant.getImageFiles() != null && !plant.getImageFiles().isEmpty()) {
-			int order = 1;
-			
-			for (MultipartFile file : plant.getImageFiles()) {
-				if (!file.isEmpty()) {
-					try {
-						String saveName = fileService.store(file, "plant");
-						
-						PlantImgDto imgDto = new PlantImgDto();
-						imgDto.setPlantNo(plantNo);
-						imgDto.setOriginalName(file.getOriginalFilename());
-						imgDto.setSaveName(saveName);
-						imgDto.setImgPath("/uploads/plant/");
-						imgDto.setImgOrder(order++);
-						
-						plantImgMapper.insertPlantImg(imgDto);
-						
-					} catch (Exception e) {
-						log.error("이미지 저장 실패", e);
-						throw new FailSaveException("이미지 저장 중 오류가 발생했습니다.");
-					}
-				}
-			}
-		}
 	}
 	
 	// Read
@@ -131,16 +99,6 @@ public class PlantService {
 		return plantDetail; 
 	}
 	
-	// ------ 식물 데이터 빈 값 확인 ------
-	private void validatePlant(PlantDto plant) {
-		if (plant.getPlantName() == null || plant.getPlantName().isEmpty()) {
-			throw new FailSaveException("제목은 필수입니다.");
-		}
-		if (plant.getPlantInfo() == null || plant.getPlantInfo().isEmpty()) {
-			throw new FailSaveException("내용은 필수입니다.");
-		}
-	}
-	
 	// ------ 식물 이미지 갯수 확인 ------
 	private long validatePlantImages(List<MultipartFile> imageFiles) {
 		if (imageFiles == null) {
@@ -168,7 +126,7 @@ public class PlantService {
         for (MultipartFile file : imageFiles) {
             if (!file.isEmpty()) {
                 try {
-                    String saveName = fileService.store(file, "board");
+                    String saveName = fileService.store(file, "plant");
 
                     PlantImgDto imgDto = new PlantImgDto();
                     imgDto.setPlantNo(plantNo);
