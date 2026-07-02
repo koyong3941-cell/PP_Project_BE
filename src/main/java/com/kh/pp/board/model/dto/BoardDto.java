@@ -54,5 +54,6 @@ public class BoardDto {
 	
 	// 이미지 출력용
 	private List<BoardImgDto> boardImages;
+	private String profileImage;
 	
 }
