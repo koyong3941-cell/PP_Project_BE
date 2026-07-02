@@ -34,7 +34,7 @@ public class BoardService {
 	@Transactional
 	public void saveBoard(BoardDto board) {
 		validateBoard(board);
-		long count = validateImages(board.getImageFiles());
+		long count = validateBoardImages(board.getImageFiles());
 		
 		Board boardEntity = Board.builder()
 				.memberNo(board.getMemberNo())
@@ -42,8 +42,6 @@ public class BoardService {
 				.boardContent(board.getBoardContent())
 				.categoryNo(board.getCategoryNo())
 				.build();	
-		
-
 		
 		int result = boardMapper.saveBoard(boardEntity);
 		
@@ -110,9 +108,17 @@ public class BoardService {
 	public void editBoard(BoardDto board, Long memberNo, Long boardNo) {
 		
 		validateBoard(board);
-		long count = validateImages(board.getImageFiles());
+		long count = validateBoardImages(board.getImageFiles());
 		
-		int result = boardMapper.editBoard(board, memberNo, boardNo);
+		Board boardEntity = Board.builder()
+				.boardNo(boardNo)
+				.memberNo(board.getMemberNo())
+				.boardTitle(board.getBoardTitle())
+				.boardContent(board.getBoardContent())
+				.categoryNo(board.getCategoryNo())
+				.build();
+		
+		int result = boardMapper.editBoard(boardEntity);
 		
 		if (result < 1) {
 			throw new FailUpdateException("수정에 실패했습니다.");
@@ -151,7 +157,7 @@ public class BoardService {
 		return boardMapper.boardCategoryAll(); 
 	}
 	
-	// ------ 게시글 입력값 검증 ------
+	// ------ 게시글 데이터 빈 값 확인 ------
 	private void validateBoard(BoardDto board) {
 		if (board.getBoardTitle() == null || board.getBoardTitle().isEmpty()) {
 			throw new FailSaveException("제목은 필수입니다.");
@@ -161,8 +167,8 @@ public class BoardService {
 		}
 	}
 	
-	// ------ 게시글 이미지 검증 ------
-	private long validateImages(List<MultipartFile> imageFiles) {
+	// ------ 게시글 이미지 갯수 확인 ------
+	private long validateBoardImages(List<MultipartFile> imageFiles) {
 		if (imageFiles == null) {
 			return 0;
 		}
@@ -178,7 +184,7 @@ public class BoardService {
 		return count;
 	}
 	
-	// ------ 이미지 저장 ------
+	// ------ 게시글 이미지 저장 ------
 	private void saveBoardImages(Long boardNo, List<MultipartFile> imageFiles) {
 		if (imageFiles == null || imageFiles.isEmpty()) {
 			return;

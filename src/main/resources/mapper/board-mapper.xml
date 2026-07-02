@@ -138,15 +138,15 @@
 	</select>
    
 <!-- Update -->
-	<update id="editBoard">
+	<update id="editBoard" parameterType="Board">
    		UPDATE
    				BOARD
    		   SET
-   				CATEGORY_NO = #{board.categoryNo}
-   			 ,	BOARD_TITLE = #{board.boardTitle}
-   			 ,	BOARD_CONTENT = #{board.boardContent}
+   				CATEGORY_NO = #{categoryNo}
+   			 ,	BOARD_TITLE = #{boardTitle}
+   			 ,	BOARD_CONTENT = #{boardContent}
    		 WHERE
-   				BOARD_NO = #{board.boardNo}
+   				BOARD_NO = #{boardNo}
    		   AND
    				MEMBER_NO = #{memberNo}
 	</update>

@@ -33,6 +33,7 @@ public class PlantService {
 	@Transactional
 	public void savePlant(@Valid PlantDto plant) {
 		validatePlant(plant);
+		long count = validatePlantImages(plant.getImageFiles());
 		
 		Plant plantEntity = Plant.builder()
 				.memberNo(plant.getMemberNo())
@@ -93,7 +94,7 @@ public class PlantService {
 	}
 
 	public PlantDto plantDetail(Long plantNo) {
-		increaseCount(plantNo);
+		increasePlantCount(plantNo);
 		PlantDto plant = getPlantNoOrThrow(plantNo);
 
 		List<PlantImgDto> images = plantImgMapper.findByPlantNo(plantNo);
@@ -108,8 +109,8 @@ public class PlantService {
 		plantMapper.editPlant(plant, memberNo, plantNo);
 	}
 
-	private void increaseCount(Long plantNo) {
-		plantMapper.increaseCount(plantNo);
+	private void increasePlantCount(Long plantNo) {
+		plantMapper.increasePlantCount(plantNo);
 	}
 
 	// Delete
@@ -131,7 +132,7 @@ public class PlantService {
 		return plantDetail; 
 	}
 	
-	// ------ 데이터 빈 값 확인 ------
+	// ------ 식물 데이터 빈 값 확인 ------
 	private void validatePlant(PlantDto plant) {
 		if (plant.getPlantName() == null || plant.getPlantName().isEmpty()) {
 			throw new FailSaveException("제목은 필수입니다.");
@@ -141,8 +142,25 @@ public class PlantService {
 		}
 	}
 	
-	// ------ 이미지 갯수 확인 ------
-	private void validatePlantImage(Long plantNo, List<MultipartFile> imageFiles) {
+	// ------ 식물 이미지 갯수 확인 ------
+	private long validatePlantImages(List<MultipartFile> imageFiles) {
+		if (imageFiles == null) {
+			return 0;
+		}
+		
+		long count = imageFiles.stream()
+							   .filter(file -> !file.isEmpty())
+							   .count();
+			
+		if (count > 5) {
+			throw new FailSaveException("이미지는 최대 5장까지 업로드할 수 있습니다.");
+		}
+		
+		return count;
+	}
+	
+	// ------ 식물 이미지 저장 ------
+	private void saveBoardImage(Long plantNo, List<MultipartFile> imageFiles) {
 		if (imageFiles == null || imageFiles.isEmpty()) {
 			return;
 		}
@@ -157,7 +175,7 @@ public class PlantService {
                     imgDto.setPlantNo(plantNo);
                     imgDto.setOriginalName(file.getOriginalFilename());
                     imgDto.setSaveName(saveName);
-                    imgDto.setImgPath("/uploads/board/");
+                    imgDto.setImgPath("/uploads/plant/");
                     imgDto.setImgOrder(order++);
 
                     int imgResult = plantImgMapper.insertPlantImg(imgDto);
@@ -171,6 +189,5 @@ public class PlantService {
                 }
             }
         }
-	}
 	}
 }

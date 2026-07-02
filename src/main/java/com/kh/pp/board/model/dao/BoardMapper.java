@@ -31,7 +31,7 @@ public interface BoardMapper {
 
 	List<Category> boardCategoryAll();
 	// Update
-	int editBoard(@Param("board")BoardDto board, @Param("memberNo") Long memberNo, Long boardNo);
+	int editBoard(Board boardEntity);
 	
 	void increaseBoardCount(Long boardNo);
 
