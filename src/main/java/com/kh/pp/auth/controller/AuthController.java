@@ -1,6 +1,7 @@
 package com.kh.pp.auth.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.pp.auth.model.dto.LoginRequestDto;
 import com.kh.pp.auth.model.dto.LoginResponse;
 import com.kh.pp.auth.model.service.AuthService;
+import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.api.ApiResponse;
 import com.kh.pp.token.model.service.TokenService;
 
@@ -30,8 +32,9 @@ public class AuthController {
 		return ResponseEntity.ok(ApiResponse.success(res));
 	}
 	@PostMapping("/logout")
-	public ResponseEntity<ApiResponse<Void>> logout(@RequestParam(name = "memberNo") Long memberNo){
-		tokenService.logout(memberNo);
+	public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal CustomUserDetails userDetails){
+		Long memberNoFromToken = userDetails.getMemberNo();
+		tokenService.logout(memberNoFromToken);
 		
 		return ResponseEntity.status(200).body(ApiResponse.success("로그아웃 성공", null));
 	}

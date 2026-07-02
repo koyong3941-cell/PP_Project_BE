@@ -42,6 +42,8 @@ public class SecurityConfiguration {
 					requests.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll();
 					// 3. 회원 관련
 					requests.requestMatchers(HttpMethod.POST, "/api/members").permitAll();
+					requests.requestMatchers(HttpMethod.DELETE, "/api/members/**").authenticated();
+					requests.requestMatchers(HttpMethod.PATCH, "/api/members/**").authenticated();
 					// 4. 게시판 관련 (보드/공지사항 등)
 					requests.requestMatchers(HttpMethod.POST, "/api/boards").permitAll();
 					requests.requestMatchers(HttpMethod.PATCH, "/api/boards/**").permitAll();
