@@ -1,5 +1,6 @@
 package com.kh.pp.plant.model.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -59,12 +60,35 @@ public class PlantService {
 
 		return plantMapper.findPlantAll(offset, limit);
 	}
+	
+	public List<PlantDto> findplantByKeyword(int page, String keyword, String target) {
+		int offset = page * 10;
+		int limit = 10;
+		
+		if (keyword == null || keyword.trim().isEmpty()) {
+			return plantMapper.findPlantAll(offset, limit);
+		}
+		
+		List<String> keywordList = new ArrayList<>();
+		String[] words = keyword.trim().split("\\s+");
+		for (String word : words) {
+			if (!word.isEmpty()) {
+				keywordList.add(word);
+			}
+		}
+		
+		if (target == null || target.trim().isEmpty()) {
+			target = "all";
+		}
+		
+		return plantMapper.findPlantByKeyword(offset, limit, keywordList, target);
+	}
 
 	public PlantDto plantDetail(Long plantNo) {
 		increasePlantCount(plantNo);
 		PlantDto plant = getPlantNoOrThrow(plantNo);
 
-		List<PlantImgDto> images = plantImgMapper.findByPlantNo(plantNo);
+		List<PlantImgDto> images = plantImgMapper.findPlantImgByPlantNo(plantNo);
 		plant.setPlantImages(images);
 		
 		return plant;
@@ -147,4 +171,6 @@ public class PlantService {
             }
         }
 	}
+
+
 }

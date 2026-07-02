@@ -17,6 +17,12 @@ public interface PlantMapper {
 	// Read
 	List<PlantDto> findPlantAll(@Param("offset") int offset, @Param("limit") int limit);
 	
+	List<PlantDto> findPlantByKeyword(
+		@Param("offset") int offset
+		, @Param("limit") int limit
+		, @Param("keywordList") List<String> keywordList
+		, @Param("target") String target);
+
 	PlantDto plantDetail(Long plantNo);
 	
 	Long getLastPlantNoByMemberNo(Long memberNo);
@@ -28,6 +34,7 @@ public interface PlantMapper {
 
 	// Delete
 	int deletePlant(@Param("plantNo")Long plantNo, @Param("memberNo")Long memberNo);
+
 
 	
 }

@@ -30,28 +30,88 @@
 	</insert>
 	
 <!-- Read -->
-	<select id="findPlantAll">
+	<sql id="findPlantQuery">
 		SELECT 
-			p.PLANT_NO
-			, m.MEMBER_NAME
-			, p.PLANT_NAME
-			, p.CLASSIFICATION
-			, p.PLANT_INFO
-			, p.COUNT
-			, p.CARBON_CAPTURE
-			, p.CREATE_DATE
-			, p.GROWTH_INFO
-			, p.PLANT_API
-			, p.DEL_YN
+				P.PLANT_NO
+			 ,	M.MEMBER_NAME
+			 ,	P.PLANT_NAME
+			 ,	P.CLASSIFICATION
+			 ,	P.COUNT
+			 ,	P.CREATE_DATE
+			 ,	(SELECT COUNT(*) FROM PLANT_REVIEW WHERE PLANT_NO = P.PLANT_NO) AS REVIEW_COUNT
+			 ,	COALESCE(
+    				(SELECT	
+    						ROUND(AVG(RATING)) 
+             		   FROM 
+             		   		PLANT_REVIEW 
+             		  WHERE 
+             		  		PLANT_NO = P.PLANT_NO),
+             		0
+             	) AS AVG_RATING
 		FROM
-			PLANT p
+			PLANT P
 		JOIN
-			MEMBER m USING(MEMBER_NO)
+			MEMBER M USING(MEMBER_NO)
 		WHERE
-			p.DEL_YN = 'N'
+			P.DEL_YN = 'N'	
+	</sql>
+	
+	<select id="findPlantAll">
+		<include refid="findPlantQuery" />
 		ORDER 
 		BY
-			p.PLANT_NO DESC
+			P.PLANT_NO DESC
+	    OFFSET 
+	    	#{offset} ROWS
+		FETCH 
+			NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<select id="findPlantByKeyword">
+		<include refid="findPlantQuery" />
+		   AND	(
+				<choose>
+					<when test="target == 'writer'">
+						<foreach collection="keywordList" item="word" separator="AND">
+							M.MEMBER_NAME LIKE '%' || #{word} || '%'
+						</foreach>
+					</when>
+					<when test="target == 'plantName'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		P.PLANT_NAME LIKE '%' || #{word} || '%'
+                		</foreach>
+            		</when>
+            		<when test="target == 'classification'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		P.CLASSIFICATION LIKE '%' || #{word} || '%'
+                		</foreach>
+                	</when>
+            		<when test="target == 'growthInfo'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		P.GROWTH_INFO LIKE '%' || #{word} || '%'
+                		</foreach>
+                	</when>
+            		<when test="target == 'plantInfo'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		P.PLANT_INFO LIKE '%' || #{word} || '%'
+                		</foreach>          
+            		</when>
+            		<otherwise>
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		(
+		                        M.MEMBER_NAME   LIKE '%' || #{word} || '%'
+		                        OR P.PLANT_NAME LIKE '%' || #{word} || '%'
+		                        OR P.CLASSIFICATION LIKE '%' || #{word} || '%'
+		                        OR P.GROWTH_INFO LIKE '%' || #{word} || '%'
+		                        OR P.PLANT_INFO LIKE '%' || #{word} || '%'
+		                    )
+		                </foreach>
+            		</otherwise>
+				</choose>
+		   		)
+		ORDER 
+		BY
+			P.PLANT_NO DESC
 	    OFFSET 
 	    	#{offset} ROWS
 		FETCH 
@@ -60,24 +120,24 @@
 	
     <select id="plantDetail">
 		SELECT
-			p.PLANT_NO
-			,p.PLANT_NAME
-			,p.CLASSIFICATION
-			,p.COUNT
-			,p.CARBON_CAPTURE
-			,p.CREATE_DATE
-			,p.PLANT_INFO
-			,p.GROWTH_INFO
-			,m.MEMBER_ID
-			,p.PLANT_API
+				P.PLANT_NO
+			 ,	P.PLANT_NAME
+			 ,	P.CLASSIFICATION
+			 ,	P.COUNT
+			 ,	P.CARBON_CAPTURE
+			 ,	P.CREATE_DATE
+			 ,	P.PLANT_INFO
+			 ,	P.GROWTH_INFO
+			 ,	M.MEMBER_ID
+			 ,	P.PLANT_API
 		FROM 
-			PLANT p
+			PLANT P
 		Join
-			MEMBER m USING(MEMBER_NO)
+			MEMBER M USING(MEMBER_NO)
 		WHERE 
-			p.PLANT_NO = #{plantNo}
+			P.PLANT_NO = #{plantNo}
 		AND
-			p.DEL_YN = 'N'
+			P.DEL_YN = 'N'
     </select>
     
     <select id="getLastPlantNoByMemberNo" resultType="java.lang.Long">

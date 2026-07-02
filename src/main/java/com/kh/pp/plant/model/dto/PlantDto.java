@@ -48,6 +48,11 @@ public class PlantDto {
 	private	String plantApi;
 	private String delYn;
 	
+	// Join
+	private String memberName;
+	private Integer reviewCount;
+	private Integer avgRating;
+	
 	// 이미지 입력용
 	@Size(max = 5, message = "이미지는 최대 5장까지만 가능합니다.")
 	private List<MultipartFile> imageFiles;
