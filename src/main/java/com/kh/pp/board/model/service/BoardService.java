@@ -105,9 +105,8 @@ public class BoardService {
 	// Update
 	@Transactional
 	public void editBoard(BoardDto board, Long memberNo, Long boardNo) {
-		
 		long count = validateBoardImages(board.getImageFiles());
-		
+
 		Board boardEntity = Board.builder()
 				.boardNo(boardNo)
 				.memberNo(board.getMemberNo())
@@ -155,7 +154,6 @@ public class BoardService {
 		return boardMapper.boardCategoryAll(); 
 	}
 	
-	// ------ 게시글 이미지 갯수 확인 ------
 	private long validateBoardImages(List<MultipartFile> imageFiles) {
 		if (imageFiles == null) {
 			return 0;

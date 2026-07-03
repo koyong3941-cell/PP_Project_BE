@@ -53,17 +53,13 @@ public class SecurityConfiguration {
 					// 5. 공지사항 관련
 					requests.requestMatchers(HttpMethod.GET, "/api/notices/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET, "/api/notices").permitAll();
-					requests.requestMatchers(HttpMethod.GET, "/api/admin/notices/**").permitAll();
-					requests.requestMatchers(HttpMethod.GET, "/api/admin/notices").permitAll();
-					requests.requestMatchers(HttpMethod.POST,"/api/admin/notices").permitAll();
-					
-
 					// 6. 식물 게시판 관련
 					requests.requestMatchers(HttpMethod.GET, "/api/plants/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET, "/api/plants").permitAll();
-					
 					// 7. 이미지 관련
 					requests.requestMatchers("/uploads/**").permitAll();
+					// 8. 마이페이지 및 센서 관련
+					requests.requestMatchers("api/sensor/**").authenticated();
 					
 					// 요청 /api/plants get
 					requests.anyRequest().authenticated(); 

@@ -10,5 +10,5 @@ import com.kh.pp.plant.model.dto.PlantImgDto;
 public interface PlantImgMapper {
 	int insertPlantImg(PlantImgDto plantImgDto);
 	
-	List<PlantImgDto> findByPlantNo(Long plantNo);
+	List<PlantImgDto> findPlantImgByPlantNo(Long plantNo);
 }

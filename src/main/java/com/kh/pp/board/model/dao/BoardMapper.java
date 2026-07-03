@@ -15,8 +15,6 @@ public interface BoardMapper {
 	// Create
 	int saveBoard(Board boardEntity);
 
-	Long getLastBoardNoByMemberNo(Long memberNo);
-	
 	// Read
 	List<BoardDto> findBoardAll(@Param("offset") int offset, @Param("limit") int limit);
 
@@ -30,6 +28,9 @@ public interface BoardMapper {
 	BoardDto boardDetail(Long boardNo);
 
 	List<Category> boardCategoryAll();
+
+	Long getLastBoardNoByMemberNo(Long memberNo);
+	
 	// Update
 	int editBoard(Board boardEntity);
 	

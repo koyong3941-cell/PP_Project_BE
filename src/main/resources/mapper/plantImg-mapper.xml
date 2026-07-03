@@ -24,7 +24,7 @@
 			    )
 	</insert>
    
-	<select id="findByPlantNo" resultType="com.kh.pp.plant.model.dto.PlantImgDto">
+	<select id="findPlantImgByPlantNo" resultType="com.kh.pp.plant.model.dto.PlantImgDto">
 		SELECT 
 	         	ORIGINAL_NAME
 	         ,	SAVE_NAME
