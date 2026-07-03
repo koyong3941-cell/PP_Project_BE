@@ -14,19 +14,19 @@ import com.kh.pp.notice.model.vo.Notice;
 public interface NoticeMapper {
 	List<NoticeDto> findNoticeAll(@Param("offset") int offset, @Param("limit") int limit);
 
-	NoticeDto findById(Long noticeNo);
+	NoticeDto findByNoticeId(Long noticeNo);
 	
-	List<NoticeDto> search(@Param("keyword")String keyword,@Param("offset")int offset,@Param("limit") int limit);
+	List<NoticeDto> Noticesearch(@Param("keyword")String keyword,@Param("offset")int offset,@Param("limit") int limit);
 	
-	void save(Notice notice);
+	int save(Notice noticeEntity);
 
-	void update(@Param("notice")NoticeDto notice,@Param("noticeNo")Long noticeNo,@Param("file") MultipartFile file);
+	int editNotice(Notice noticeEntity);
 
-	void delete(@Param("noticeNo")Long noticeNo);
+	void deleteNotice(@Param("noticeNo")Long noticeNo);
 	
 	void updateCount(Long noticeNo);
 
-	Long getLastBoardNoByMemberNo(int memberNo);
+	Long getLastNoticeNoByMemberNo(Long memberNo);
 
 
 

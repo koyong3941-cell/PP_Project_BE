@@ -21,7 +21,7 @@ public class NoticeImgDto {
 	private Long noticeImgNo;
 	private Long noticeNo;
 	private String originalName;
-	private String savename;
+	private String saveName;
 	private String imgPath;
 	private Integer imgOrder;
 	private Date createDate;

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
+import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.common.api.ApiResponse;
 import com.kh.pp.notice.model.dto.NoticeDto;
 import com.kh.pp.notice.model.service.NoticeService;
@@ -26,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/notices")
+@RequestMapping("/api/admins/notices")
 @RequiredArgsConstructor
 public class AdminNoticeController {
 
@@ -43,19 +44,19 @@ public class AdminNoticeController {
 	
 	//상세조회
 	@GetMapping("/{noticeNo}")
-	public ResponseEntity<ApiResponse<NoticeDto>> findById(
+	public ResponseEntity<ApiResponse<NoticeDto>> findByNoticeId(
 			@PathVariable(name="noticeNo") Long noticeNo){
 		
 		return ResponseEntity.ok(
-				ApiResponse.success(noticeService.findById(noticeNo)));
+				ApiResponse.success(noticeService.findByNoticeId(noticeNo)));
 	}
 	
 	//검색
 	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<List<NoticeDto>>> search(
+	public ResponseEntity<ApiResponse<List<NoticeDto>>> Noticesearch(
 			@RequestParam(name="keyword") String keyword,
 			@RequestParam(defaultValue="0",name="page") int page){
-		List<NoticeDto> notices = noticeService.search(keyword,page);
+		List<NoticeDto> notices = noticeService.Noticesearch(keyword,page);
 		
 		return ResponseEntity.ok(
 				ApiResponse.success(notices));
@@ -64,39 +65,40 @@ public class AdminNoticeController {
 	//작성
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> save(
-			@Valid NoticeDto notice,
-			@RequestParam(name="file", required=false) MultipartFile file,
+			@ModelAttribute @Valid NoticeDto notice,
 			@AuthenticationPrincipal CustomUserDetails userDetails){
 		
+		Long memberNoFromToken = userDetails.getMemberNo();
+		notice.setMemberNo(memberNoFromToken);
 		
-		log.info("게시글 정보 : {} / 파일정보 : {}",notice,file.getOriginalFilename(),userDetails.getUsername());
 		
+		noticeService.save(notice);
 		return ResponseEntity.status(201).body(ApiResponse.success("save",null));
 		
 	}
 	
 	//수정
 	@PatchMapping("/{noticeNo}")
-	public ResponseEntity<ApiResponse<Void>> update(
+	public ResponseEntity<ApiResponse<Void>> editNotice(
 			@Valid NoticeDto notice,
-			@RequestParam(name="file",required=false) MultipartFile file,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@PathVariable(name = "noticeNo") Long noticeNo){
 	
-		noticeService.update(notice,file,userDetails,noticeNo);
+		Long memberNoFromToken = userDetails.getMemberNo();
+		noticeService.editNotice(notice,memberNoFromToken,noticeNo);
 		
 		
-		return ResponseEntity.status(200).body(ApiResponse.success("update",null));
+		return ResponseEntity.status(200).body(ApiResponse.success("edited",null));
 	}
 	
 	
 	//삭제
 	@DeleteMapping("/{noticeNo}")
-	public ResponseEntity<ApiResponse<Void>> delete(
+	public ResponseEntity<ApiResponse<Void>> deleteNotice(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@PathVariable(name = "noticeNo") Long noticeNo){
 		
-		noticeService.delete(userDetails,noticeNo);
+		noticeService.deleteNotice(userDetails,noticeNo);
 		return ResponseEntity.ok(ApiResponse.success(null));
 	}
 	

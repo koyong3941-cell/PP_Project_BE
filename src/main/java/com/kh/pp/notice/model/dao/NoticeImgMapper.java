@@ -10,6 +10,7 @@ import com.kh.pp.notice.model.dto.NoticeImgDto;
 public interface NoticeImgMapper {
 	int insertNoticeImg(NoticeImgDto noticeImgDto);
 	
-	List<NoticeImgDto> findByNoticeNo(Long noticeNo);
+	List<NoticeImgDto> findNoticeImgByNoticeNo(Long noticeNo);
 	
+	void deleteNoticeImgByNoticeNo(Long noticeNo);
 }

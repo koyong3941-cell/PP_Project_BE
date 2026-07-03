@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
+import com.kh.pp.board.model.dto.BoardImgDto;
 import com.kh.pp.exception.FailSaveException;
+import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.notice.model.dao.NoticeImgMapper;
 import com.kh.pp.notice.model.dao.NoticeMapper;
@@ -31,44 +33,27 @@ public class NoticeService {
 	
 	
 	@Transactional
-	public void save(NoticeDto notice, CustomUserDetails userDetails) {
-		validateNotice(notice);
+	public void save(NoticeDto notice) {
+		long count= validateNoticeImages(notice.getImageFiles());
 		
 		Notice noticeEntity = Notice.builder()
 				.memberNo(notice.getMemberNo())
 				.noticeTitle(notice.getNoticeTitle())
 				.noticeContent(notice.getNoticeContent())
 				.build();
-		noticeMapper.save(noticeEntity);
+		 int result =  noticeMapper.save(noticeEntity);
 		
-		Long noticeNo = noticeMapper.getLastBoardNoByMemberNo(notice.getMemberNo());
 		
-		if (notice.getImageFiles() != null) {
-			long validImageCount = notice.getImageFiles().stream()
-					.filter(file -> !file.isEmpty())
-					.count();
-			if(validImageCount > 5) {
-				throw new FailSaveException("이미지는 최대 5장까지 업로드 할수 있습니다");
-			}
+		if(result < 1) {
+			throw new FailSaveException("작성에 실패했습니다");
 		}
-		
-		if(notice.getImageFiles() != null && !notice.getImageFiles().isEmpty()) {
-			int order = 1;
+		if(count > 0) {
+			Long noticeNo = noticeMapper.getLastNoticeNoByMemberNo(notice.getNoticeNo());
 			
-			for (MultipartFile file : notice.getImageFiles()) {
-				if(!file.isEmpty()) {
-					try {
-						String save = fileService.store(file,"notice");
-					
-						NoticeImgDto imgDto = new NoticeImgDto();
-						
-					}catch(Exception e) {
-						log.error("이미지 저장 실패",e);
-						throw new FailSaveException("이미지 저장중 오류가 발생했습니다");
-					}
-				}
-			}
+			saveNoticeImages(noticeNo,notice.getImageFiles());
+			
 		}
+	
 	}
 	
 	private void validateNotice(NoticeDto notice) {
@@ -88,33 +73,96 @@ public class NoticeService {
 		return noticeMapper.findNoticeAll(offset,limit);
 	}
 	
+	private long validateNoticeImages(List<MultipartFile> imageFiles) {
+		if(imageFiles == null) {
+			return 0;
+		}
+		long count = imageFiles.stream()
+								.filter(file -> !file.isEmpty())
+								.count();
+		
+		if(count > 5) {
+			throw new FailSaveException("이미지는 최대 5장까지 업로드 할수 있습니다");
+		}
+		
+		return count;
+		
+	}
+	
 	@Transactional
-	public NoticeDto findById(Long noticeNo) {
+	public NoticeDto findByNoticeId(Long noticeNo) {
 		noticeMapper.updateCount(noticeNo);
-		return noticeMapper.findById(noticeNo);
+		return noticeMapper.findByNoticeId(noticeNo);
 	}
 	
 
-	public void update(NoticeDto notice,MultipartFile file,CustomUserDetails userDetails, Long noticeNo) {
+	public void editNotice(NoticeDto notice,Long memberNoFromToken, Long noticeNo) {
+		long count =validateNoticeImages(notice.getImageFiles());
+
+		Notice noticeEntity = Notice.builder()
+				.noticeTitle(notice.getNoticeTitle())
+				.noticeContent(notice.getNoticeContent())
+				.build();
 		
-
+		int result = noticeMapper.editNotice(noticeEntity);
 		
-		noticeMapper.update(notice,noticeNo,file);
-	}
-	
-	
-	public void delete(CustomUserDetails userDetails, Long noticeNo) {
-		noticeMapper.delete(noticeNo);
-	}
-
-	public List<NoticeDto> search(String keyword,int page) {
-		int offset = page;
-		int limit = 1;
+		if(result < 1) {
+			throw new FailUpdateException("수정에 실패했습니다");
+		}
+		if(count > 0) {
+			noticeImgMapper.deleteNoticeImgByNoticeNo(noticeNo);
+			
+			saveNoticeImages(noticeNo,notice.getImageFiles());
+		}
 		
-		return noticeMapper.search(keyword,offset,limit);
+	}
+	
+	
+	public void deleteNotice(CustomUserDetails userDetails, Long noticeNo) {
+		noticeMapper.deleteNotice(noticeNo);
+	}
+
+	public List<NoticeDto> Noticesearch(String keyword,int page) {
+		int offset = page * 10;
+		int limit = 10;
+		
+		if(keyword == null || keyword.trim().isEmpty()) {
+			return noticeMapper.findNoticeAll(offset,limit);
+		}
+		
+		return noticeMapper.Noticesearch(keyword,offset,limit);
 	
 	}
 
+	private void saveNoticeImages(Long noticeNo, List<MultipartFile> imageFiles) {
+		if (imageFiles == null || imageFiles.isEmpty()) {
+			return;
+		}
+	    int order = 1;
 
+        for (MultipartFile file : imageFiles) {
+            if (!file.isEmpty()) {
+                try {
+                    String saveName = fileService.store(file, "notice");
+
+                    NoticeImgDto imgDto = new NoticeImgDto();
+                    imgDto.setNoticeNo(noticeNo);
+                    imgDto.setOriginalName(file.getOriginalFilename());
+                    imgDto.setSaveName(saveName);
+                    imgDto.setImgPath("/uploads/notice/");
+                    imgDto.setImgOrder(order++);
+
+                    int imgResult = noticeImgMapper.insertNoticeImg(imgDto);
+	                    
+                    if (imgResult < 1) {
+                    	throw new FailSaveException("이미지 저장에 실패했습니다.");
+                    }
+                } catch (Exception e) {
+                    log.error("이미지 저장 실패", e);
+                    throw new FailSaveException("이미지 저장 중 오류가 발생했습니다.");
+                }
+            }
+        }
+	}
 
 }

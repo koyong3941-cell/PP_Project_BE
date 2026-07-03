@@ -10,11 +10,11 @@ import lombok.Value;
 @Value
 @Builder
 public class Notice {
-	private int noticeNo; 
-	private int memberNo;
+	private Long noticeNo; 
+	private Long memberNo;
 	private String noticeTitle;
 	private String noticeContent;
-	private int noticeCount;
+	private Integer noticeCount;
 	private Date createDate;
 	private String delYn;
 }

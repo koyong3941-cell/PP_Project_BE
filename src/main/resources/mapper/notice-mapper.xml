@@ -44,7 +44,7 @@
     		ROWS ONLY
     </select>
     
-    <select id="findById">
+    <select id="findByNoticeId">
     SELECT
     	 M.MEMBER_NAME
     	 , N.NOTICE_TITLE
@@ -65,7 +65,7 @@
     	 	 N.NOTICE_NO = #{noticeNo}
     </select>
     
-    <select id="search">
+    <select id="Noticesearch">
     SELECT
     	 NOTICE_TITLE
     	 , NOTICE_CONTENT
@@ -93,8 +93,12 @@
     
     </select>
     
-   <insert id="save">
-   INSERT INTO NOTICE(
+   
+    
+   <insert id="save" parameterType="notice">
+   INSERT
+    INTO
+     NOTICE(
 		MEMBER_NO,
 		NOTICE_TITLE,
 		NOTICE_CONTENT
@@ -107,7 +111,7 @@
    		,#{noticeContent}
    	)
    </insert>
-   <update id="update">
+   <update id="editNotice">
     UPDATE
     	 NOTICE
     
@@ -122,7 +126,7 @@
    
    </update>
     
-   <update id="delete">
+   <update id="deleteNotice">
     UPDATE
     	NOTICE
     	
