@@ -15,5 +15,7 @@ public class MemberRequestDto {
 	private String memberName;
 	private String email;
 	private String imgPath;
+    private String saveName;
+    private String delYn;
 
 }
