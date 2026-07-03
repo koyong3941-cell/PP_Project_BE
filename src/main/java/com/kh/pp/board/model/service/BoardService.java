@@ -13,6 +13,7 @@ import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.board.model.dto.BoardImgDto;
 import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.vo.Board;
+import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
@@ -56,11 +57,15 @@ public class BoardService {
 	
 
 	// Read
-	public List<BoardDto> findBoardAll(int page) {
-		int offset = page * 10;
-		int limit = 10;
+	public PageResponse<BoardDto> findBoardAll(int page) {
+		int size = 10;
+		int offset = page * size;
 		
-		return boardMapper.findBoardAll(offset, limit);
+		List<BoardDto> boards = boardMapper.findBoardAll(offset, size);
+		
+		long totalElements = boardMapper.getBoardtotalElements();
+		
+		return new PageResponse<>(boards, totalElements, page, size);
 	}
 	
 	public List<BoardDto> findBoardByKeyword(int page, String keyword, String target) {

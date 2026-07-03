@@ -19,6 +19,7 @@ import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.service.BoardService;
 import com.kh.pp.common.api.ApiResponse;
+import com.kh.pp.common.page.PageResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +43,8 @@ public class BoardController {
 	
 	// Read
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="0") int page){
-		List<BoardDto> boards = boardService.findBoardAll(page);
+	public ResponseEntity<ApiResponse<PageResponse<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="0") int page){
+		PageResponse<BoardDto> boards = boardService.findBoardAll(page);
 		
 		return ResponseEntity.ok(ApiResponse.success(boards));
 	}

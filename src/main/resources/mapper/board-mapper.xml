@@ -148,6 +148,15 @@
 		 		FIRST 1 ROWS ONLY
 	</select>
 	
+	<select id="getBoardtotalElements">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		BOARD
+		 WHERE
+		 		DEL_YN = 'N'
+	</select>
+	
 <!-- Update -->
 	<update id="editBoard" parameterType="Board">
    		UPDATE

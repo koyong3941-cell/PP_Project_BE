@@ -31,6 +31,8 @@ public interface BoardMapper {
 
 	Long getLastBoardNoByMemberNo(Long memberNo);
 	
+	int getBoardtotalElements();
+	
 	// Update
 	int editBoard(Board boardEntity);
 	
