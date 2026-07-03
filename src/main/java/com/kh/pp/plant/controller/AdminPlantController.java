@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/admin/plants")
+@RequestMapping("/api/admins/plants")
 public class AdminPlantController {
 	private final PlantService plantService; 
 	

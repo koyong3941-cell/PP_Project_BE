@@ -191,7 +191,7 @@
    			 ,	PLANT_API = #{plantApi}
    			 
    		 WHERE
-   				PLANT_NO = #{plant.plantNo}
+   				PLANT_NO = #{plantNo}
 	</update>
 	
 	<update id="increasePlantCount">
