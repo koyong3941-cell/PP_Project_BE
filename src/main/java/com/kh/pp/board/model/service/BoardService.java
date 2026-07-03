@@ -120,9 +120,10 @@ public class BoardService {
 		if (result < 1) {
 			throw new FailUpdateException("수정에 실패했습니다.");
 		}
+		
+		boardImgMapper.deleteBoardImgByBoardNo(boardNo);
+		
 		if(count > 0) {
-			boardImgMapper.deleteBoardImgByBoardNo(boardNo);
-			
 			saveBoardImages(boardNo, board.getImageFiles());
 		}
 	}
