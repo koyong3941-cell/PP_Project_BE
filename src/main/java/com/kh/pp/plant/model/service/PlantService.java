@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
+import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.plant.model.dao.PlantImgMapper;
 import com.kh.pp.plant.model.dao.PlantMapper;
@@ -43,12 +44,15 @@ public class PlantService {
 				.plantApi(plant.getPlantApi())
 				.build();	
 		
-		plantMapper.savePlant(plantEntity);
+		int result = plantMapper.savePlant(plantEntity);
 		
+		if(result < 1) {
+			throw new FailSaveException("작성에 실패했습니다.");
+		}
 		if(count > 0) {
 			Long plantNo = plantMapper.getLastPlantNoByMemberNo(plant.getMemberNo());
 
-			saveBoardImage(plantNo, plant.getImageFiles());
+			savePlantImg(plantNo, plant.getImageFiles());
 		}
 		
 	}
@@ -61,7 +65,7 @@ public class PlantService {
 		return plantMapper.findPlantAll(offset, limit);
 	}
 	
-	public List<PlantDto> findplantByKeyword(int page, String keyword, String target) {
+	public List<PlantDto> findPlantByKeyword(int page, String keyword, String target) {
 		int offset = page * 10;
 		int limit = 10;
 		
@@ -85,19 +89,44 @@ public class PlantService {
 	}
 
 	public PlantDto plantDetail(Long plantNo) {
-		increasePlantCount(plantNo);
-		PlantDto plant = getPlantNoOrThrow(plantNo);
-
+		PlantDto plant = plantMapper.plantDetail(plantNo);
+		if (plant == null) {
+			throw new FailSaveException("해당 식물이 존재하지 않습니다.");
+		}
 		List<PlantImgDto> images = plantImgMapper.findPlantImgByPlantNo(plantNo);
 		plant.setPlantImages(images);
+		increasePlantCount(plantNo);
 		
 		return plant;
 	}
 	
 	// Update
 	@Transactional
-	public void editPlant(PlantDto plant, Long memberNo, Long plantNo) {
-		plantMapper.editPlant(plant, memberNo, plantNo);
+	public void editPlant(PlantDto plant) {
+		long count = validatePlantImages(plant.getImageFiles());
+		
+		Plant plantEntity = Plant.builder()
+				.plantNo(plant.getPlantNo())
+				.memberNo(plant.getMemberNo())
+				.plantName(plant.getPlantName())
+				.classification(plant.getClassification())
+				.plantInfo(plant.getPlantInfo())
+				.carbonCapture(plant.getCarbonCapture())
+				.growthInfo(plant.getGrowthInfo())
+				.plantApi(plant.getPlantApi())
+				.build();
+		
+		int result = plantMapper.editPlant(plantEntity);
+		
+		if (result < 1) {
+			throw new FailUpdateException("수정에 실패했습니다.");
+		}
+		
+		plantImgMapper.deletePlantImgByPlantNo(plant.getPlantNo());
+		
+		if(count > 0) {
+			savePlantImg(plant.getPlantNo(), plant.getImageFiles());
+		}
 	}
 
 	private void increasePlantCount(Long plantNo) {
@@ -114,14 +143,6 @@ public class PlantService {
 		}
 	}
 	
-	// ------ 접근 실패 시 ------
-	private PlantDto getPlantNoOrThrow(Long plantNo) {
-		PlantDto plantDetail = plantMapper.plantDetail(plantNo);
-		if (plantDetail == null) {
-			throw new FailSaveException("유효하지 않은 접근입니다.");
-		}
-		return plantDetail; 
-	}
 	
 	// ------ 식물 이미지 갯수 확인 ------
 	private long validatePlantImages(List<MultipartFile> imageFiles) {
@@ -141,7 +162,7 @@ public class PlantService {
 	}
 	
 	// ------ 식물 이미지 저장 ------
-	private void saveBoardImage(Long plantNo, List<MultipartFile> imageFiles) {
+	private void savePlantImg(Long plantNo, List<MultipartFile> imageFiles) {
 		if (imageFiles == null || imageFiles.isEmpty()) {
 			return;
 		}

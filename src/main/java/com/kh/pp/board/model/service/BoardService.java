@@ -50,7 +50,7 @@ public class BoardService {
 		if (count > 0) {
 			Long boardNo = boardMapper.getLastBoardNoByMemberNo(board.getMemberNo());
 			
-			saveBoardImages(boardNo, board.getImageFiles());
+			saveBoardImg(boardNo, board.getImageFiles());
 		}
 	}
 	
@@ -86,29 +86,28 @@ public class BoardService {
 		// 앞단에서 카테고리별로 보이는 기능 추가하면 수정해야됨
 		return boardMapper.findBoardByKeyword(offset, limit, keywordList, target);
 	}
-
+	
 	public BoardDto boardDetail(Long boardNo) {
-		increaseBoardCount(boardNo);
-		BoardDto board = getBoardNoOrThrow(boardNo);
+		BoardDto board = boardMapper.boardDetail(boardNo);
+		if (board == null) {
+			throw new FailSaveException("해당 게시글이 존재하지 않습니다.");
+		}
 		
 		List<BoardImgDto> images = boardImgMapper.findBoardImgByBoardNo(boardNo);
 		board.setBoardImages(images);
+		increaseBoardCount(boardNo);
 		
 		return board;
-	}
-	
-	private void increaseBoardCount(Long boardNo) {
-		boardMapper.increaseBoardCount(boardNo);
 	}
 	
 	
 	// Update
 	@Transactional
-	public void editBoard(BoardDto board, Long memberNo, Long boardNo) {
+	public void editBoard(BoardDto board) {
 		long count = validateBoardImages(board.getImageFiles());
 
 		Board boardEntity = Board.builder()
-				.boardNo(boardNo)
+				.boardNo(board.getBoardNo())
 				.memberNo(board.getMemberNo())
 				.boardTitle(board.getBoardTitle())
 				.boardContent(board.getBoardContent())
@@ -120,12 +119,16 @@ public class BoardService {
 		if (result < 1) {
 			throw new FailUpdateException("수정에 실패했습니다.");
 		}
-		
-		boardImgMapper.deleteBoardImgByBoardNo(boardNo);
+		// 기존 이미지 삭제처리 (DEL_YN을 'Y'로)
+		boardImgMapper.deleteBoardImgByBoardNo(board.getBoardNo());
 		
 		if(count > 0) {
-			saveBoardImages(boardNo, board.getImageFiles());
+			saveBoardImg(board.getBoardNo(), board.getImageFiles());
 		}
+	}
+	
+	private void increaseBoardCount(Long boardNo) {
+		boardMapper.increaseBoardCount(boardNo);
 	}
 	
 	// Delete
@@ -138,23 +141,12 @@ public class BoardService {
 		}
 	}
 	
-	
-	
-	// ------ 접근 실패 시  ------	
-	private BoardDto getBoardNoOrThrow(Long boardNo) {
-		BoardDto boardDetail = boardMapper.boardDetail(boardNo);
-		if (boardDetail == null) {
-			throw new FailSaveException("유효하지 않은 접근입니다.");
-		}
-		return boardDetail; 
-
-	}
-	
 	// ------ 카테고리 조회 검증 ------	
 	public List<Category> boardCategoryAll() {
 		return boardMapper.boardCategoryAll(); 
 	}
 	
+	// ------ 이미지 갯수 확인 ------
 	private long validateBoardImages(List<MultipartFile> imageFiles) {
 		if (imageFiles == null) {
 			return 0;
@@ -172,7 +164,7 @@ public class BoardService {
 	}
 	
 	// ------ 게시글 이미지 저장 ------
-	private void saveBoardImages(Long boardNo, List<MultipartFile> imageFiles) {
+	private void saveBoardImg(Long boardNo, List<MultipartFile> imageFiles) {
 		if (imageFiles == null || imageFiles.isEmpty()) {
 			return;
 		}

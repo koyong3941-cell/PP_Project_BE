@@ -59,7 +59,9 @@ public class AdminPlantController {
 	public ResponseEntity<ApiResponse<Void>> editPlant(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute  @Valid PlantDto plant,
 			@PathVariable(name = "plantNo") Long plantNo){
 		Long memberNoFromToken = userDetails.getMemberNo();
-		plantService.editPlant(plant, memberNoFromToken, plantNo);
+		plant.setMemberNo(memberNoFromToken);
+		plant.setPlantNo(plantNo);
+		plantService.editPlant(plant);
 		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
 	}
 	

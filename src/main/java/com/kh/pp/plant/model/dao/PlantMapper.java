@@ -12,7 +12,7 @@ import com.kh.pp.plant.model.vo.Plant;
 public interface PlantMapper {
 	
 	// Create
-	void savePlant(Plant plantEntity);
+	int savePlant(Plant plantEntity);
 
 	// Read
 	List<PlantDto> findPlantAll(@Param("offset") int offset, @Param("limit") int limit);
@@ -28,7 +28,7 @@ public interface PlantMapper {
 	Long getLastPlantNoByMemberNo(Long memberNo);
 
 	// Update
-	void editPlant(@Param("plant")PlantDto plant, @Param("memberNo")Long memberNo, @Param("plantNo")Long plantNo);
+	int editPlant(Plant plant);
 	
 	void increasePlantCount(Long plantNo);
 

@@ -33,7 +33,7 @@ public class PlantController {
 	public ResponseEntity<ApiResponse<List<PlantDto>>> findBoardByKeyword(@RequestParam(name = "page", defaultValue = "0") int page,
 																		  @RequestParam(name = "keyword", required = false) String keyword,
 																		  @RequestParam(name = "target", required = false) String target){
-		List<PlantDto> plants = plantService.findplantByKeyword(page, keyword, target);
+		List<PlantDto> plants = plantService.findPlantByKeyword(page, keyword, target);
 		
 		return ResponseEntity.ok(ApiResponse.success(plants));
 	}

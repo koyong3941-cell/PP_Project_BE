@@ -71,7 +71,9 @@ public class BoardController {
 													   @ModelAttribute  @Valid BoardDto board,
 													   @PathVariable(name = "boardNo") Long boardNo){
 		Long memberNoFromToken = userDetails.getMemberNo();
-		boardService.editBoard(board, memberNoFromToken, boardNo);
+		board.setMemberNo(memberNoFromToken);
+		board.setBoardNo(boardNo);
+		boardService.editBoard(board);
 		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
 	}
 	

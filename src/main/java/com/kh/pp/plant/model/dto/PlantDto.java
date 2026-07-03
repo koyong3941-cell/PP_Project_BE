@@ -24,7 +24,6 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlantDto {
 	
-	@Null(message = "식물 번호는 직접 입력할 수 없습니다.")
 	private Long plantNo;
 	private	Long memberNo;
 	@NotBlank(message = "식물 이름은 공백일 수 없습니다.")
@@ -59,4 +58,6 @@ public class PlantDto {
 		
 	// 이미지 출력용
 	private List<PlantImgDto> plantImages;
+	private String profileImage;
+	private String mainPlantImage;
 }
