@@ -25,15 +25,14 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BoardDto {
 	
-	@Null(message = "게시글 번호는 직접 입력할 수 없습니다.")
 	private Long boardNo;
 	@NotNull(message = "카테고리를 선택해주세요.")
 	private Integer categoryNo;
 	private Long memberNo;
-	@NotBlank(message = "공백일 수 없습니다.")
+	@NotBlank(message = "제목은 공백일 수 없습니다.")
 	@Size(max = 200, message = "제목은 최대 200자까지 입력 가능합니다.")
 	private String boardTitle;
-	@NotBlank(message = "공백일 수 없습니다.")
+	@NotBlank(message = "내용은 공백일 수 없습니다.")
 	@Size(max = 2000, message = "내용은 최대 2000자까지 입력 가능합니다.")
 	private String boardContent;
 	private Integer count;
@@ -48,11 +47,13 @@ public class BoardDto {
 	private Long likeCount;
 	private Long dislikeCount;
 	
+	
 	// 이미지 입력용
 	@Size(max = 5, message = "이미지는 최대 5장까지만 가능합니다.")
 	private List<MultipartFile> imageFiles;
 	
 	// 이미지 출력용
 	private List<BoardImgDto> boardImages;
+	private String profileImage;
 	
 }

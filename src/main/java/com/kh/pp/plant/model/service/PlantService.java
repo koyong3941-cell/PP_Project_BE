@@ -1,14 +1,16 @@
 package com.kh.pp.plant.model.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.pp.board.model.dto.BoardImgDto;
+import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
+import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.plant.model.dao.PlantImgMapper;
 import com.kh.pp.plant.model.dao.PlantMapper;
@@ -16,7 +18,6 @@ import com.kh.pp.plant.model.dto.PlantDto;
 import com.kh.pp.plant.model.dto.PlantImgDto;
 import com.kh.pp.plant.model.vo.Plant;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,8 +32,7 @@ public class PlantService {
 
 	// Create
 	@Transactional
-	public void savePlant(@Valid PlantDto plant) {
-		validatePlant(plant);
+	public void savePlant(PlantDto plant) {
 		long count = validatePlantImages(plant.getImageFiles());
 		
 		Plant plantEntity = Plant.builder()
@@ -45,68 +45,98 @@ public class PlantService {
 				.plantApi(plant.getPlantApi())
 				.build();	
 		
-		plantMapper.savePlant(plantEntity);
+		int result = plantMapper.savePlant(plantEntity);
 		
-		Long plantNo = plantMapper.getLastPlantNoByMemberNo(plant.getMemberNo());
-		
-		if (plant.getImageFiles() != null) {
-			long validImageCount = plant.getImageFiles().stream()
-					.filter(file -> !file.isEmpty())
-					.count();
-			
-			if (validImageCount > 5) {
-				throw new FailSaveException("이미지는 최대 5장까지 업로드할 수 있습니다.");
-			}
+		if(result < 1) {
+			throw new FailSaveException("작성에 실패했습니다.");
+		}
+		if(count > 0) {
+			Long plantNo = plantMapper.getLastPlantNoByMemberNo(plant.getMemberNo());
+
+			savePlantImg(plantNo, plant.getImageFiles());
 		}
 		
-		if (plant.getImageFiles() != null && !plant.getImageFiles().isEmpty()) {
-			int order = 1;
-			
-			for (MultipartFile file : plant.getImageFiles()) {
-				if (!file.isEmpty()) {
-					try {
-						String saveName = fileService.store(file, "plant");
-						
-						PlantImgDto imgDto = new PlantImgDto();
-						imgDto.setPlantNo(plantNo);
-						imgDto.setOriginalName(file.getOriginalFilename());
-						imgDto.setSaveName(saveName);
-						imgDto.setImgPath("/uploads/plant/");
-						imgDto.setImgOrder(order++);
-						
-						plantImgMapper.insertPlantImg(imgDto);
-						
-					} catch (Exception e) {
-						log.error("이미지 저장 실패", e);
-						throw new FailSaveException("이미지 저장 중 오류가 발생했습니다.");
-					}
-				}
-			}
-		}
 	}
 	
 	// Read
-	public List<PlantDto> findPlantAll(int page) {
-		int offset = page * 10;
-		int limit = 10;
+	public PageResponse<PlantDto> findPlantAll(int page) {
+		int size = 10;
+		int offset = page * size;
 
-		return plantMapper.findPlantAll(offset, limit);
+		List<PlantDto> plants = plantMapper.findPlantAll(offset, size);
+		
+		int totalElements = plantMapper.getPlantTotalElements();
+		
+		return new PageResponse<>(plants, totalElements, page, size);
+	}
+	
+	public PageResponse<PlantDto> findPlantByKeyword(int page, String keyword, String target) {
+		if (keyword == null || keyword.trim().isEmpty()) {
+			return findPlantAll(page);
+		}
+		
+		int size = 10;
+		int offset = page * size;
+		
+		
+		List<String> keywordList = new ArrayList<>();
+		String[] words = keyword.trim().split("\\s+");
+		for (String word : words) {
+			if (!word.isEmpty()) {
+				keywordList.add(word);
+			}
+		}
+		
+		if (target == null || target.trim().isEmpty()) {
+			target = "all";
+		}
+		
+		List<PlantDto> plants = plantMapper.findPlantByKeyword(offset, size, keywordList, target);
+	
+		int totalElements = plantMapper.getPlantTotalElementsByKeyword(keywordList, target);
+		
+		return new PageResponse<>(plants, totalElements, page, size);
 	}
 
 	public PlantDto plantDetail(Long plantNo) {
-		increasePlantCount(plantNo);
-		PlantDto plant = getPlantNoOrThrow(plantNo);
-
-		List<PlantImgDto> images = plantImgMapper.findByPlantNo(plantNo);
+		PlantDto plant = plantMapper.plantDetail(plantNo);
+		if (plant == null) {
+			throw new FailSaveException("해당 식물이 존재하지 않습니다.");
+		}
+		List<PlantImgDto> images = plantImgMapper.findPlantImgByPlantNo(plantNo);
 		plant.setPlantImages(images);
+		increasePlantCount(plantNo);
 		
 		return plant;
 	}
 	
 	// Update
 	@Transactional
-	public void editPlant(PlantDto plant, Long memberNo, Long plantNo) {
-		plantMapper.editPlant(plant, memberNo, plantNo);
+	public void editPlant(PlantDto plant) {
+		long count = validatePlantImages(plant.getImageFiles());
+		
+		Plant plantEntity = Plant.builder()
+				.plantNo(plant.getPlantNo())
+				.memberNo(plant.getMemberNo())
+				.plantName(plant.getPlantName())
+				.classification(plant.getClassification())
+				.plantInfo(plant.getPlantInfo())
+				.carbonCapture(plant.getCarbonCapture())
+				.growthInfo(plant.getGrowthInfo())
+				.plantApi(plant.getPlantApi())
+				.build();
+		
+		int result = plantMapper.editPlant(plantEntity);
+		
+		if (result < 1) {
+			throw new FailUpdateException("수정에 실패했습니다.");
+		}
+		
+		plantImgMapper.deletePlantImgByPlantNo(plant.getPlantNo());
+		
+		if(count > 0) {
+			savePlantImg(plant.getPlantNo(), plant.getImageFiles());
+		}
 	}
 
 	private void increasePlantCount(Long plantNo) {
@@ -123,24 +153,6 @@ public class PlantService {
 		}
 	}
 	
-	// ------ 접근 실패 시 ------
-	private PlantDto getPlantNoOrThrow(Long plantNo) {
-		PlantDto plantDetail = plantMapper.plantDetail(plantNo);
-		if (plantDetail == null) {
-			throw new FailSaveException("유효하지 않은 접근입니다.");
-		}
-		return plantDetail; 
-	}
-	
-	// ------ 식물 데이터 빈 값 확인 ------
-	private void validatePlant(PlantDto plant) {
-		if (plant.getPlantName() == null || plant.getPlantName().isEmpty()) {
-			throw new FailSaveException("제목은 필수입니다.");
-		}
-		if (plant.getPlantInfo() == null || plant.getPlantInfo().isEmpty()) {
-			throw new FailSaveException("내용은 필수입니다.");
-		}
-	}
 	
 	// ------ 식물 이미지 갯수 확인 ------
 	private long validatePlantImages(List<MultipartFile> imageFiles) {
@@ -160,7 +172,7 @@ public class PlantService {
 	}
 	
 	// ------ 식물 이미지 저장 ------
-	private void saveBoardImage(Long plantNo, List<MultipartFile> imageFiles) {
+	private void savePlantImg(Long plantNo, List<MultipartFile> imageFiles) {
 		if (imageFiles == null || imageFiles.isEmpty()) {
 			return;
 		}
@@ -169,7 +181,7 @@ public class PlantService {
         for (MultipartFile file : imageFiles) {
             if (!file.isEmpty()) {
                 try {
-                    String saveName = fileService.store(file, "board");
+                    String saveName = fileService.store(file, "plant");
 
                     PlantImgDto imgDto = new PlantImgDto();
                     imgDto.setPlantNo(plantNo);
@@ -190,4 +202,6 @@ public class PlantService {
             }
         }
 	}
+
+
 }

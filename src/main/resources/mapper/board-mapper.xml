@@ -24,20 +24,6 @@
 				)
 	</insert>
 	
-	<select id="getLastBoardNoByMemberNo" resultType="java.lang.Long">
-		SELECT
-				BOARD_NO
-		  FROM
-		  		BOARD
-		 WHERE
-		 		MEMBER_NO = #{memberNo}
-		 ORDER
-		 	BY
-		    	BOARD_NO DESC
-		 FETCH
-		 		FIRST 1 ROWS ONLY
-	</select>
-	
 <!-- Read -->
 	<sql id="findBoardQuery">
 		SELECT 
@@ -49,27 +35,25 @@
 			 ,	B.CREATE_DATE
 			 ,	(SELECT COUNT(*) FROM BOARD_COMMENT WHERE BOARD_NO = B.BOARD_NO) AS COMMENT_COUNT
 			 ,	(SELECT COUNT(*) FROM BOARD_LIKE WHERE BOARD_NO = B.BOARD_NO) AS LIKE_COUNT
+			 ,	(SELECT 
+						IMG_PATH || SAVE_NAME 
+             	   FROM 
+             	   		MEMBER_IMG 
+             	  WHERE 
+             	  		MEMBER_NO = B.MEMBER_NO 
+               	    AND 
+               	    	DEL_YN = 'N') AS PROFILE_IMAGE
 		  FROM
 				BOARD B
 		  JOIN
-				CATEGORY C USING(CATEGORY_NO)
+				CATEGORY C ON B.CATEGORY_NO = C.CATEGORY_NO
 		  JOIN
-				MEMBER M USING(MEMBER_NO)
+				MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
 		 WHERE
 				B.DEL_YN = 'N'
 	</sql>
 	
-	<select id="findBoardAll">
-		<include refid="findBoardQuery"/>
-		 ORDER 
-		    BY
-		    	B.BOARD_NO DESC
-	    OFFSET 	#{offset} ROWS FETCH
-		  NEXT  #{limit} ROWS ONLY	
-	</select>
-	
-	<select id="findBoardByKeyword">
-		<include refid="findBoardQuery"/>
+	<sql id="findBoardWhere">
 		   AND	(
 				<choose>
 					<when test="target == 'writer'">
@@ -98,11 +82,25 @@
             		</otherwise>
 				</choose>
 		   		)
+	</sql>
+	
+	<select id="findBoardAll">
+		<include refid="findBoardQuery"/>
 		 ORDER 
 		    BY
 		    	B.BOARD_NO DESC
 	    OFFSET 	#{offset} ROWS FETCH
-		  NEXT  #{limit} ROWS ONLY	
+		  NEXT  #{size} ROWS ONLY	
+	</select>
+	
+	<select id="findBoardByKeyword">
+		<include refid="findBoardQuery"/>
+		<include refid="findBoardWhere"/>
+		 ORDER 
+		    BY
+		    	B.BOARD_NO DESC
+	    OFFSET 	#{offset} ROWS FETCH
+		  NEXT  #{size} ROWS ONLY	
 	</select>
 
     <select id="boardDetail">
@@ -119,9 +117,9 @@
 			 
 		  FROM 
 				BOARD B
-		  Join 
+		  JOIN 
 				Category C USING(CATEGORY_NO)
-		  Join
+		  JOIN
 				MEMBER M USING(MEMBER_NO)
 		 WHERE 
 				B.BOARD_NO = #{boardNo}
@@ -137,6 +135,41 @@
 				CATEGORY
 	</select>
    
+   	<select id="getLastBoardNoByMemberNo" resultType="java.lang.Long">
+		SELECT
+				BOARD_NO
+		  FROM
+		  		BOARD
+		 WHERE
+		 		MEMBER_NO = #{memberNo}
+		 ORDER
+		 	BY
+		    	BOARD_NO DESC
+		 FETCH
+		 		FIRST 1 ROWS ONLY
+	</select>
+	
+	<select id="getBoardTotalElements">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		BOARD
+		 WHERE
+		 		DEL_YN = 'N'
+	</select>
+	
+	<select id="getBoardTotalElementsByKeyword">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		BOARD B
+		  JOIN
+		  		MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+		 WHERE
+		 		B.DEL_YN = 'N'
+		<include refid="findBoardWhere"/>
+	</select>
+	
 <!-- Update -->
 	<update id="editBoard" parameterType="Board">
    		UPDATE

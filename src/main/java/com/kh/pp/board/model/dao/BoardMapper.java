@@ -15,14 +15,12 @@ public interface BoardMapper {
 	// Create
 	int saveBoard(Board boardEntity);
 
-	Long getLastBoardNoByMemberNo(Long memberNo);
-	
 	// Read
-	List<BoardDto> findBoardAll(@Param("offset") int offset, @Param("limit") int limit);
+	List<BoardDto> findBoardAll(@Param("offset") int offset, @Param("size") int size);
 
 	List<BoardDto> findBoardByKeyword(
 		@Param("offset") int offset 
-		, @Param("limit") int limit
+		, @Param("size") int size
 		, @Param("keywordList") List<String> keywordList
 		, @Param("target") String target
 	);
@@ -30,6 +28,15 @@ public interface BoardMapper {
 	BoardDto boardDetail(Long boardNo);
 
 	List<Category> boardCategoryAll();
+
+	Long getLastBoardNoByMemberNo(Long memberNo);
+	
+	int getBoardTotalElements();
+	
+	int getBoardTotalElementsByKeyword(
+			@Param("keywordList") List<String> keywordList
+			, @Param("target") String target);
+	
 	// Update
 	int editBoard(Board boardEntity);
 	
