@@ -2,8 +2,10 @@ package com.kh.pp.comment.model.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -96,6 +98,45 @@ public interface CommentMapper {
 				DEL_YN = 'N'
 			""")
 	int isActiveBoard(Long boardNo);
+
+	@Insert("""
+			INSERT
+				INTO
+					COMMENT_LIKE
+					(
+					MEMBER_NO
+					,COMMENT_NO
+					)
+			VALUES
+				(
+				#{memberNo}
+				,#{commentNo}
+				)
+			""")
+	int commentLike(@Param("memberNo") Long memberNo, @Param("commentNo")Long commentNo);
+
+	@Delete("""
+				DELETE
+					FROM
+						COMMENT_LIKE
+					WHERE
+						MEMBER_NO = #{memberNo}
+					AND
+						COMMENT_NO =#{commentNo}
+			""")
+	int commentLikeAbort(@Param("memberNo") Long memberNo, @Param("commentNo")Long commentNo);
+	
+	@Select("""
+			SELECT
+				COUNT(*)
+			FROM
+				COMMENT_LIKE
+			WHERE
+						MEMBER_NO = #{memberNo}
+					AND
+						COMMENT_NO =#{commentNo}
+			""")
+	int commentLikeValidate(@Param("memberNo") Long memberNo, @Param("commentNo")Long commentNo);
 
 
 	

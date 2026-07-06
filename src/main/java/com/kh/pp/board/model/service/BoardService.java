@@ -202,7 +202,7 @@ public class BoardService {
         }
 	}
 
-
+	@Transactional
 	public void addBoardLike(Long memberNo, Long boardNo) {
 		int countResult = boardMapper.validateLikeExists(memberNo, boardNo);
 		
@@ -217,7 +217,7 @@ public class BoardService {
 		}
 	}
 	
-	
+	@Transactional
 	public void addBoardDislike(Long memberNo, Long boardNo) {
 		int countResult = boardMapper.validateDislikeExists(memberNo, boardNo);
 		

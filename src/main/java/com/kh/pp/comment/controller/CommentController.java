@@ -71,4 +71,23 @@ public class CommentController {
 		commentService.DeleteComment(comment);
 		return ResponseEntity.status(204).body(ApiResponse.noContent("댓글 수정 완료", null));
 	}
+	
+	// 댓글 좋아요 삭제* /api//boards/{boardNo}/comments/{commentNo}/like
+	@PostMapping("{commentNo}/like")
+	public ResponseEntity<ApiResponse<CommentDto>> commentLike(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name="commentNo") Long commentNo) {
+		Long memberNoFromToken = userDetails.getMemberNo();
+		commentService.commentLike(memberNoFromToken, commentNo);
+		
+		return ResponseEntity.status(200).body(ApiResponse.success("좋아요 완료", null));
+	}
+	
+	// 댓글 좋아요 삭제
+	@DeleteMapping("{commentNo}/like")
+	public ResponseEntity<ApiResponse<CommentDto>> commentLikeAbort(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name="commentNo") Long commentNo) {
+		Long memberNoFromToken = userDetails.getMemberNo();
+
+		commentService.commentLikeAbort(memberNoFromToken, commentNo);
+		
+		return ResponseEntity.status(200).body(ApiResponse.success("좋아요 취소 완료", null));
+	}
 }
