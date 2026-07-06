@@ -15,6 +15,7 @@ public interface NoticeMapper {
 			SELECT 
 				n.NOTICE_NO
 				,m.MEMBER_NO
+				,m.MEMBER_NAME
 				,n.NOTICE_TITLE
 				,n.NOTICE_CONTENT
 				,n.NOTICE_COUNT

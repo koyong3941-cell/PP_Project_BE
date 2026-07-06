@@ -14,6 +14,7 @@ import lombok.Value;
 public class Notice {
 	private Long noticeNo;
 	private Integer memberNo;
+	private String memberName;
 	private String noticeTitle;
 	private String noticeContent;
 	private Integer noticeCount;
