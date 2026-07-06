@@ -16,11 +16,11 @@ public interface BoardMapper {
 	int saveBoard(Board boardEntity);
 
 	// Read
-	List<BoardDto> findBoardAll(@Param("offset") int offset, @Param("limit") int limit);
+	List<BoardDto> findBoardAll(@Param("offset") int offset, @Param("size") int size);
 
 	List<BoardDto> findBoardByKeyword(
 		@Param("offset") int offset 
-		, @Param("limit") int limit
+		, @Param("size") int size
 		, @Param("keywordList") List<String> keywordList
 		, @Param("target") String target
 	);
@@ -31,9 +31,9 @@ public interface BoardMapper {
 
 	Long getLastBoardNoByMemberNo(Long memberNo);
 	
-	int getBoardtotalElements();
+	int getBoardTotalElements();
 	
-	int getBoardtotalElementsByKeyword(
+	int getBoardTotalElementsByKeyword(
 			@Param("keywordList") List<String> keywordList
 			, @Param("target") String target);
 	

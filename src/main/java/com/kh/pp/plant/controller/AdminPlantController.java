@@ -1,7 +1,5 @@
 package com.kh.pp.plant.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.api.ApiResponse;
+import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.plant.model.dto.PlantDto;
 import com.kh.pp.plant.model.service.PlantService;
 
@@ -38,10 +37,10 @@ public class AdminPlantController {
 		return ResponseEntity.status(201).body(ApiResponse.created(null));
 	}
 	
-	// Read
+	// Read (현재 일반 사용자와 똑같이 작동 중)
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<PlantDto>>> findPlantAll(@RequestParam(value = "page", defaultValue ="0") int page){
-		List<PlantDto> plants = plantService.findPlantAll(page);
+	public ResponseEntity<ApiResponse<PageResponse<PlantDto>>> findPlantAll(@RequestParam(value = "page", defaultValue ="0") int page){
+		PageResponse<PlantDto> plants = plantService.findPlantAll(page);
 	
 		return ResponseEntity.status(200).body(ApiResponse.success(plants));
 	}

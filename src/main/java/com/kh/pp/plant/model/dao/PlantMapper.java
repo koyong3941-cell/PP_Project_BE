@@ -15,17 +15,23 @@ public interface PlantMapper {
 	int savePlant(Plant plantEntity);
 
 	// Read
-	List<PlantDto> findPlantAll(@Param("offset") int offset, @Param("limit") int limit);
+	List<PlantDto> findPlantAll(@Param("offset") int offset, @Param("size") int size);
 	
 	List<PlantDto> findPlantByKeyword(
 		@Param("offset") int offset
-		, @Param("limit") int limit
+		, @Param("size") int size
 		, @Param("keywordList") List<String> keywordList
 		, @Param("target") String target);
 
 	PlantDto plantDetail(Long plantNo);
 	
 	Long getLastPlantNoByMemberNo(Long memberNo);
+	
+	int getPlantTotalElements();
+	
+	int getPlantTotalElementsByKeyword(
+			@Param("keywordList") List<String> keywordList
+			, @Param("target") String target);
 
 	// Update
 	int editPlant(Plant plant);

@@ -62,35 +62,7 @@
 				P.DEL_YN = 'N'	
 	</sql>
 	
-	<sql id="findPlantQueryGroup">
-		 GROUP
-		 	BY
-				P.PLANT_NO
-			 ,	M.MEMBER_NAME
-			 ,  P.PLANT_NAME
-			 ,	P.CLASSIFICATION
-			 ,	P.COUNT
-			 ,	P.CREATE_DATE
-			 ,	MI.IMG_PATH
-			 ,  MI.SAVE_NAME
-			 ,	PI.IMG_PATH
-			 ,	PI.SAVE_NAME
-	</sql>
-	
-	<select id="findPlantAll">
-		<include refid="findPlantQuery" />
-		<include refid="findPlantQueryGroup" />
-		 ORDER 
-		    BY
-				P.PLANT_NO DESC
-	    OFFSET 
-	    		#{offset} ROWS FETCH 
-		  NEXT 	
-		  		#{limit} ROWS ONLY
-	</select>
-	
-	<select id="findPlantByKeyword">
-		<include refid="findPlantQuery" />
+	<sql id="findPlantWhere">
 		   AND	(
 				<choose>
 					<when test="target == 'writer'">
@@ -131,6 +103,25 @@
             		</otherwise>
 				</choose>
 		   		)
+	</sql>
+	
+	<sql id="findPlantQueryGroup">
+		 GROUP
+		 	BY
+				P.PLANT_NO
+			 ,	M.MEMBER_NAME
+			 ,  P.PLANT_NAME
+			 ,	P.CLASSIFICATION
+			 ,	P.COUNT
+			 ,	P.CREATE_DATE
+			 ,	MI.IMG_PATH
+			 ,  MI.SAVE_NAME
+			 ,	PI.IMG_PATH
+			 ,	PI.SAVE_NAME
+	</sql>
+	
+	<select id="findPlantAll">
+		<include refid="findPlantQuery" />
 		<include refid="findPlantQueryGroup" />
 		 ORDER 
 		    BY
@@ -138,7 +129,20 @@
 	    OFFSET 
 	    		#{offset} ROWS FETCH 
 		  NEXT 	
-		  		#{limit} ROWS ONLY
+		  		#{size} ROWS ONLY
+	</select>
+	
+	<select id="findPlantByKeyword">
+		<include refid="findPlantQuery" />
+		<include refid="findPlantWhere" />
+		<include refid="findPlantQueryGroup" />
+		 ORDER 
+		    BY
+				P.PLANT_NO DESC
+	    OFFSET 
+	    		#{offset} ROWS FETCH 
+		  NEXT 	
+		  		#{size} ROWS ONLY
 	</select>
 	
     <select id="plantDetail">
@@ -175,6 +179,27 @@
 				PLANT_NO DESC
 		FETCH
 				FIRST 1 ROWS ONLY
+	</select>
+	
+	<select id="getPlantTotalElements">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT
+		 WHERE
+		 		DEL_YN = 'N'
+	</select>
+	
+	<select id="getPlantTotalElementsByKeyword">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT P
+		  JOIN
+		  		MEMBER M ON P.MEMBER_NO = M.MEMBER_NO
+		 WHERE
+		 		P.DEL_YN = 'N'
+		<include refid="findPlantWhere" />
 	</select>
     
 <!-- Update -->

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
@@ -58,20 +59,25 @@ public class PlantService {
 	}
 	
 	// Read
-	public List<PlantDto> findPlantAll(int page) {
-		int offset = page * 10;
-		int limit = 10;
+	public PageResponse<PlantDto> findPlantAll(int page) {
+		int size = 10;
+		int offset = page * size;
 
-		return plantMapper.findPlantAll(offset, limit);
+		List<PlantDto> plants = plantMapper.findPlantAll(offset, size);
+		
+		int totalElements = plantMapper.getPlantTotalElements();
+		
+		return new PageResponse<>(plants, totalElements, page, size);
 	}
 	
-	public List<PlantDto> findPlantByKeyword(int page, String keyword, String target) {
-		int offset = page * 10;
-		int limit = 10;
-		
+	public PageResponse<PlantDto> findPlantByKeyword(int page, String keyword, String target) {
 		if (keyword == null || keyword.trim().isEmpty()) {
-			return plantMapper.findPlantAll(offset, limit);
+			return findPlantAll(page);
 		}
+		
+		int size = 10;
+		int offset = page * size;
+		
 		
 		List<String> keywordList = new ArrayList<>();
 		String[] words = keyword.trim().split("\\s+");
@@ -85,7 +91,11 @@ public class PlantService {
 			target = "all";
 		}
 		
-		return plantMapper.findPlantByKeyword(offset, limit, keywordList, target);
+		List<PlantDto> plants = plantMapper.findPlantByKeyword(offset, size, keywordList, target);
+	
+		int totalElements = plantMapper.getPlantTotalElementsByKeyword(keywordList, target);
+		
+		return new PageResponse<>(plants, totalElements, page, size);
 	}
 
 	public PlantDto plantDetail(Long plantNo) {

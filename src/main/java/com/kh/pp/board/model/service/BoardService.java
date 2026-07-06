@@ -63,7 +63,7 @@ public class BoardService {
 		
 		List<BoardDto> boards = boardMapper.findBoardAll(offset, size);
 		
-		long totalElements = boardMapper.getBoardtotalElements();
+		int totalElements = boardMapper.getBoardTotalElements();
 		
 		return new PageResponse<>(boards, totalElements, page, size);
 	}
@@ -89,7 +89,7 @@ public class BoardService {
 		}
 		List<BoardDto> boards = boardMapper.findBoardByKeyword(offset, size, keywordList, target);
 		// 앞단에서 카테고리별로 보이는 기능 추가하면 수정해야됨
-		long totalElements = boardMapper.getBoardtotalElementsByKeyword(keywordList, target);
+		int totalElements = boardMapper.getBoardTotalElementsByKeyword(keywordList, target);
 		
 		return new PageResponse<>(boards, totalElements, page, size);
 	}
