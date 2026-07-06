@@ -68,13 +68,13 @@ public class BoardService {
 		return new PageResponse<>(boards, totalElements, page, size);
 	}
 	
-	public List<BoardDto> findBoardByKeyword(int page, String keyword, String target) {
-		int offset = page * 10;
-		int limit = 10;
-		
+	public PageResponse<BoardDto> findBoardByKeyword(int page, String keyword, String target) {
 		if (keyword == null || keyword.trim().isEmpty()) {
-	        return boardMapper.findBoardAll(offset, limit);
-	    }
+			return findBoardAll(page);
+		}
+
+		int size = 10;
+		int offset = page * size;
 		
 		List<String> keywordList = new ArrayList<>();
 		String[] words = keyword.trim().split("\\s+");
@@ -83,13 +83,15 @@ public class BoardService {
 				keywordList.add(word);
 			}
 		}
-				
+		
 		if (target == null || target.trim().isEmpty()) {
 			target = "all";
 		}
-
+		List<BoardDto> boards = boardMapper.findBoardByKeyword(offset, size, keywordList, target);
 		// 앞단에서 카테고리별로 보이는 기능 추가하면 수정해야됨
-		return boardMapper.findBoardByKeyword(offset, limit, keywordList, target);
+		long totalElements = boardMapper.getBoardtotalElementsByKeyword(keywordList, target);
+		
+		return new PageResponse<>(boards, totalElements, page, size);
 	}
 	
 	public BoardDto boardDetail(Long boardNo) {

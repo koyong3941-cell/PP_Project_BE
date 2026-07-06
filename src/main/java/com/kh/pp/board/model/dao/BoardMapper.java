@@ -33,6 +33,10 @@ public interface BoardMapper {
 	
 	int getBoardtotalElements();
 	
+	int getBoardtotalElementsByKeyword(
+			@Param("keywordList") List<String> keywordList
+			, @Param("target") String target);
+	
 	// Update
 	int editBoard(Board boardEntity);
 	
