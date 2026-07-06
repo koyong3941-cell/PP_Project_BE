@@ -18,7 +18,6 @@ public class SensorService {
 	private final SensorMapper sensorMapper;
 	
 	public List<SensorDto> sensorInfoRequest(Long memberNo) {
-
 		List<SensorDto> sensorInfoList = sensorMapper.sensorInfoRequest(memberNo);
 		
 		if(sensorInfoList == null) {
