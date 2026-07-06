@@ -21,6 +21,7 @@ public class NoticeDto {
 	
 	private Long noticeNo;
 	private Integer memberNo;
+	private String memberName;
 	@NotBlank
 	private String noticeTitle;
 	@NotBlank
