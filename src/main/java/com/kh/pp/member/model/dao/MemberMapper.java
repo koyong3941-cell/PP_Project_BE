@@ -32,8 +32,11 @@ public interface MemberMapper {
 				JOIN MEMBER_IMG I
 			  ON 
 			  	M.MEMBER_NO = I.MEMBER_NO
+			AND 
+				I.DEL_YN = 'N'
 			WHERE 
 				M.MEMBER_NO = #{memberNo}
+				
 			""")
 	MemberRequestDto memberMoreDetails(Long memberNo);
 
