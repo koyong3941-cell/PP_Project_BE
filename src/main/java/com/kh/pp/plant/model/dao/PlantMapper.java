@@ -12,23 +12,29 @@ import com.kh.pp.plant.model.vo.Plant;
 public interface PlantMapper {
 	
 	// Create
-	void savePlant(Plant plantEntity);
+	int savePlant(Plant plantEntity);
 
 	// Read
-	List<PlantDto> findPlantAll(@Param("offset") int offset, @Param("limit") int limit);
+	List<PlantDto> findPlantAll(@Param("offset") int offset, @Param("size") int size);
 	
 	List<PlantDto> findPlantByKeyword(
 		@Param("offset") int offset
-		, @Param("limit") int limit
+		, @Param("size") int size
 		, @Param("keywordList") List<String> keywordList
 		, @Param("target") String target);
 
 	PlantDto plantDetail(Long plantNo);
 	
 	Long getLastPlantNoByMemberNo(Long memberNo);
+	
+	int getPlantTotalElements();
+	
+	int getPlantTotalElementsByKeyword(
+			@Param("keywordList") List<String> keywordList
+			, @Param("target") String target);
 
 	// Update
-	void editPlant(@Param("plant")PlantDto plant, @Param("memberNo")Long memberNo, @Param("plantNo")Long plantNo);
+	int editPlant(Plant plant);
 	
 	void increasePlantCount(Long plantNo);
 

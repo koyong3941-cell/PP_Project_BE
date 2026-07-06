@@ -25,7 +25,6 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BoardDto {
 	
-	@Null(message = "게시글 번호는 직접 입력할 수 없습니다.")
 	private Long boardNo;
 	@NotNull(message = "카테고리를 선택해주세요.")
 	private Integer categoryNo;
@@ -47,6 +46,7 @@ public class BoardDto {
 	private Long commentCount;
 	private Long likeCount;
 	private Long dislikeCount;
+	
 	
 	// 이미지 입력용
 	@Size(max = 5, message = "이미지는 최대 5장까지만 가능합니다.")

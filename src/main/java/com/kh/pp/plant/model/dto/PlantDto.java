@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,6 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlantDto {
 	
-	@Null(message = "식물 번호는 직접 입력할 수 없습니다.")
 	private Long plantNo;
 	private	Long memberNo;
 	@NotBlank(message = "식물 이름은 공백일 수 없습니다.")
@@ -34,7 +34,7 @@ public class PlantDto {
 	@Size(max = 20, message = "식물종은 최대 20자까지 입력 가능합니다.")
 	private	String classification;
 	private	Integer count;
-	@NotBlank(message = "탄소포집량은 공백일 수 없습니다.")
+	@NotNull(message = "탄소포집량은 공백일 수 없습니다.")
 	private	Integer carbonCapture;
 	@Null(message = "작성일은 서버에서 자동으로 설정됩니다.")
 	private Date createDate;
@@ -59,4 +59,6 @@ public class PlantDto {
 		
 	// 이미지 출력용
 	private List<PlantImgDto> plantImages;
+	private String profileImage;
+	private String mainPlantImage;
 }

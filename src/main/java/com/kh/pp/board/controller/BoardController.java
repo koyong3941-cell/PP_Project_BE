@@ -19,6 +19,7 @@ import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.service.BoardService;
 import com.kh.pp.common.api.ApiResponse;
+import com.kh.pp.common.page.PageResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,17 +43,17 @@ public class BoardController {
 	
 	// Read
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="0") int page){
-		List<BoardDto> boards = boardService.findBoardAll(page);
+	public ResponseEntity<ApiResponse<PageResponse<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="0") int page){
+		PageResponse<BoardDto> boards = boardService.findBoardAll(page);
 		
 		return ResponseEntity.ok(ApiResponse.success(boards));
 	}
 	
 	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<List<BoardDto>>> findBoardByKeyword(@RequestParam(name = "page", defaultValue = "0") int page,
+	public ResponseEntity<ApiResponse<PageResponse<BoardDto>>> findBoardByKeyword(@RequestParam(name = "page", defaultValue = "0") int page,
 																		  @RequestParam(name = "keyword", required = false) String keyword,
 																		  @RequestParam(name = "target", required = false) String target){
-		List<BoardDto> boards = boardService.findBoardByKeyword(page, keyword, target);
+		PageResponse<BoardDto> boards = boardService.findBoardByKeyword(page, keyword, target);
 		
 		return ResponseEntity.ok(ApiResponse.success(boards));
 	}
@@ -71,7 +72,9 @@ public class BoardController {
 													   @ModelAttribute  @Valid BoardDto board,
 													   @PathVariable(name = "boardNo") Long boardNo){
 		Long memberNoFromToken = userDetails.getMemberNo();
-		boardService.editBoard(board, memberNoFromToken, boardNo);
+		board.setMemberNo(memberNoFromToken);
+		board.setBoardNo(boardNo);
+		boardService.editBoard(board);
 		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
 	}
 	
@@ -80,7 +83,7 @@ public class BoardController {
 	public ResponseEntity<ApiResponse<Void>> deleteBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "boardNo") Long boardNo){
 		Long memberNoFromToken = userDetails.getMemberNo();
 		boardService.deleteBoard(boardNo, memberNoFromToken);
-		return ResponseEntity.status(200).body(ApiResponse.created("deleted", null));
+		return ResponseEntity.status(204).body(ApiResponse.created("deleted", null));
 	}
 	
 	// 기타
