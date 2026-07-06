@@ -31,6 +31,8 @@ public interface CommentMapper {
 			  	M.MEMBER_NO = C.MEMBER_NO
 			WHERE
 				BOARD_NO = #{boardNo}
+			AND
+				C.DEL_YN = 'N'
 			""")
 	List<CommentDto> findCommentByBoardNo(Long boardNo);
 
@@ -82,6 +84,18 @@ public interface CommentMapper {
 				COMMENT_NO = #{commentNo}
 			""")
 	int DeleteComment(CommentDto comment);
+
+	@Select("""
+			SELECT
+				Count(*)
+			FROM
+				BOARD
+			WHERE
+				BOARD_NO = #{boardNo}
+			AND
+				DEL_YN = 'N'
+			""")
+	int isActiveBoard(Long boardNo);
 
 
 	

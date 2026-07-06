@@ -86,10 +86,21 @@ public class BoardController {
 		return ResponseEntity.status(204).body(ApiResponse.created("deleted", null));
 	}
 	
-	// 기타
+	// 카테고리 관련
 	@GetMapping("/category")
 	public ResponseEntity<ApiResponse<List<Category>>> findBoardCategoryAll() {
 		List<Category> category = boardService.boardCategoryAll();
 		return ResponseEntity.ok(ApiResponse.success(category));
+	}
+	
+	// 게시글 좋아요
+	@PostMapping("/{boardNo}/like")
+	public ResponseEntity<ApiResponse<Void>> addBoardLike(@AuthenticationPrincipal CustomUserDetails userDetails,
+													   @ModelAttribute @Valid BoardDto board){
+		Long memberNoFromToken = userDetails.getMemberNo();
+		board.setMemberNo(memberNoFromToken);
+		 
+		boardService.addBoardLike(board);
+		return ResponseEntity.status(201).body(ApiResponse.created(null));
 	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.pp.board.model.dao.BoardMapper;
 import com.kh.pp.comment.model.dao.CommentMapper;
 import com.kh.pp.comment.model.dto.CommentDto;
 import com.kh.pp.exception.FailDeleteException;
@@ -32,12 +33,20 @@ public class CommentService {
 
 	// 코멘트 작성 및 저장
 	public void saveComment(CommentDto comment) {
+		int isActive = commentMapper.isActiveBoard(comment.getBoardNo());
+		
+		isActiveBoard(isActive, new FailSaveException("코멘트 생성 요청에 실패하였습니다."));
+		
 		int result = commentMapper.saveComment(comment);
 		
 		checkAffectedRows(result, new FailSaveException("코멘트 생성 요청에 실패하였습니다."));
 	}
 
 	public void editComment(CommentDto comment) {
+		int isActive = commentMapper.isActiveBoard(comment.getBoardNo());
+		
+		isActiveBoard(isActive, new FailSaveException("코멘트 생성 요청에 실패하였습니다."));
+		
 		int result = commentMapper.editComment(comment);
 		
 		checkAffectedRows(result, new FailUpdateException("코멘트 수정 요청에 실패하였습니다."));
@@ -52,6 +61,12 @@ public class CommentService {
 	//공통 행 익셉션 처리
 	private void checkAffectedRows(int result, RuntimeException exception) {
 		if(result < 1) {
+			throw exception;
+		}
+	}
+	
+	private void isActiveBoard(int isActive, RuntimeException exception) {
+		if(isActive < 1) {
 			throw exception;
 		}
 	}
