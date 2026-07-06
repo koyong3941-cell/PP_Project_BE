@@ -96,11 +96,20 @@ public class BoardController {
 	// 게시글 좋아요
 	@PostMapping("/{boardNo}/like")
 	public ResponseEntity<ApiResponse<Void>> addBoardLike(@AuthenticationPrincipal CustomUserDetails userDetails,
-													   @ModelAttribute @Valid BoardDto board){
+															@PathVariable(name = "boardNo") Long boardNo){
 		Long memberNoFromToken = userDetails.getMemberNo();
-		board.setMemberNo(memberNoFromToken);
 		 
-		boardService.addBoardLike(board);
-		return ResponseEntity.status(201).body(ApiResponse.created(null));
+		boardService.addBoardLike(memberNoFromToken, boardNo);
+		return ResponseEntity.status(200).body(ApiResponse.created(null));
+	}
+	
+	// 게시글 싫어요
+	@PostMapping("/{boardNo}/dislike")
+	public ResponseEntity<ApiResponse<Void>> addBoardDislike(@AuthenticationPrincipal CustomUserDetails userDetails,
+															@PathVariable(name = "boardNo") Long boardNo){
+		Long memberNoFromToken = userDetails.getMemberNo();
+		 
+		boardService.addBoardDislike(memberNoFromToken, boardNo);
+		return ResponseEntity.status(200).body(ApiResponse.created(null));
 	}
 }

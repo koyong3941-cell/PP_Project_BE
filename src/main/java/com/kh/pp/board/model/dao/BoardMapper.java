@@ -44,7 +44,15 @@ public interface BoardMapper {
 
 	// Delete
 	int deleteBoard(@Param("boardNo") Long boardNo, @Param("memberNo") Long memberNo);
+	
+	//커멘트 좋아요 Update
+	int addBoardLike(@Param("memberNo") Long memberNo, @Param("boardNo") Long boardNo);
 
+	int addBoardDislike(@Param("memberNo") Long memberNo, @Param("boardNo") Long boardNo);
+
+	int validateLikeExists(@Param("memberNo") Long memberNo, @Param("boardNo") Long boardNo);
+
+	int validateDislikeExists(@Param("memberNo") Long memberNo, @Param("boardNo") Long boardNo);
 
 
 

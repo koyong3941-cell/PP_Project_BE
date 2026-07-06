@@ -201,4 +201,35 @@ public class BoardService {
             }
         }
 	}
+
+
+	public void addBoardLike(Long memberNo, Long boardNo) {
+		int countResult = boardMapper.validateLikeExists(memberNo, boardNo);
+		
+		if(countResult > 0) {
+			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
+		}
+		
+		int insertResult = boardMapper.addBoardLike(memberNo, boardNo);
+		
+		if(insertResult != 1) {
+			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
+		}
+	}
+	
+	
+	public void addBoardDislike(Long memberNo, Long boardNo) {
+		int countResult = boardMapper.validateDislikeExists(memberNo, boardNo);
+		
+		if(countResult > 0) {
+			throw new FailSaveException("싫어요 저장에 실패하였습니다.");
+		}
+		
+		int insertResult = boardMapper.addBoardDislike(memberNo, boardNo);
+		
+		if(insertResult != 1) {
+			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
+		}
+	}
+	
 }

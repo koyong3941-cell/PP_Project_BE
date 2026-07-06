@@ -204,4 +204,56 @@
    		   AND
    				MEMBER_NO = #{memberNo}
 	</update>
+<!-- BoardLikeUpdate -->
+	<insert id="addBoardLike" parameterType="Board">
+		INSERT
+		  INTO
+		  		BOARD_LIKE
+		  		(
+		  		MEMBER_NO 
+			 ,	BOARD_NO
+			  	)
+		VALUES
+				(
+				#{memberNo}
+			 ,  #{boardNo}
+				)
+	</insert>
+<!-- addBoardDislikeInsert -->
+	<insert id="addBoardDislike" parameterType="Board">
+		INSERT
+		  INTO
+		  		BOARD_DISLIKE
+		  		(
+		  		MEMBER_NO 
+			 ,	BOARD_NO
+			  	)
+		VALUES
+				(
+				#{memberNo}
+			 ,  #{boardNo}
+				)
+	</insert>
+<!-- validateLikeExists -->
+	<select id="validateLikeExists">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		BOARD_LIKE
+		 WHERE
+		 	MEMBER_NO = #{memberNo}
+		 AND
+		 	BOARD_NO = #{boardNo}
+	</select>
+<!-- validateDislikeExists -->
+<select id="validateDislikeExists">
+	SELECT
+			COUNT(*)
+	  FROM
+	  		BOARD_DISLIKE
+	 WHERE
+	 	MEMBER_NO = #{memberNo}
+	 AND
+	 	BOARD_NO = #{boardNo}
+</select>
 </mapper>
