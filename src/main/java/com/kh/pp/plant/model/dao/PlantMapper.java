@@ -25,8 +25,7 @@ public interface PlantMapper {
 
 	PlantDto plantDetail(Long plantNo);
 	
-	Long getLastPlantNoByMemberNo(Long memberNo);
-	
+	// Count
 	int getPlantTotalElements();
 	
 	int getPlantTotalElementsByKeyword(
@@ -39,8 +38,11 @@ public interface PlantMapper {
 	void increasePlantCount(Long plantNo);
 
 	// Delete
-	int deletePlant(@Param("plantNo")Long plantNo, @Param("memberNo")Long memberNo);
+	int deletePlant(Long plantNo);
 
+	// Validate
+	Long getLastPlantNoByMemberNo(Long memberNo);
 
+	int isActivePlant(Long plantNo);
 	
 }

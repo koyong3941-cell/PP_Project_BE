@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pp.plant.model.dao.PlantReviewImgMapper">
+
+	<insert id="insertPlantReviewImg">
+		INSERT 
+	      INTO 
+	     		PLANT_REVIEW_IMG 
+	   	    	(
+				REVIEW_NO
+		 	 , 	ORIGINAL_NAME
+			 , 	SAVE_NAME
+			 , 	IMG_PATH
+			 , 	IMG_ORDER
+			    )
+	    VALUES 
+	        	(
+				#{reviewNo}
+			 , 	#{originalName}
+			 , 	#{saveName}
+			 , 	#{imgPath}
+			 , 	#{imgOrder}
+			    )
+	</insert>
+
+</mapper>
