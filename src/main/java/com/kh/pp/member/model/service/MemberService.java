@@ -118,7 +118,7 @@ public class MemberService {
         imgDto.setMemberNo(memberNo);
         imgDto.setOriginalName(imageFile.getOriginalFilename());
         imgDto.setSaveName(saveName);
-        imgDto.setImgPath("/uploads/profile");
+        imgDto.setImgPath("/uploads/profile/");
 		
         memberImgMapper.userImgUpload(imgDto);
         
