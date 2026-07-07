@@ -142,7 +142,11 @@ public class BoardService {
 	
 	// Delete
 	@Transactional
-	public void deleteBoard(Long boardNo, Long memberNo) {
+	public void deleteBoard(Long boardNo, Long memberNo) {		
+		if(memberNo == null) {
+			throw new FailDeleteException("비로그인 상태이므로 삭제가 불가능합니다.");
+		}
+		
 		int result = boardMapper.deleteBoard(boardNo, memberNo);
 		
 		if (result < 1) {

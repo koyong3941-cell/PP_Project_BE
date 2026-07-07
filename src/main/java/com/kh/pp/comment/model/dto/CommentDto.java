@@ -17,7 +17,11 @@ public class CommentDto {
 	private Long CommentNo;
 	private Long memberNo;
 	private Long boardNo;
+	private Long commentLikeCount;
+	private String memberName;
 	private String commentContent;
 	private Date createDate;
 	private String delYn;
+	private String imgPath;
+	private String saveName;
 }

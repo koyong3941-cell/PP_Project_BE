@@ -104,8 +104,8 @@ public class CommentService {
 		}
 	}
 
-	public CommentLikeDto commentAllByCommentNo(Long commentNo) {
-		CommentLikeDto commentLike = commentMapper.commentAllByCommentNo(commentNo);
+	public CommentLikeDto commentLikeAllByCommentNo(Long commentNo) {
+		CommentLikeDto commentLike = commentMapper.commentLikeAllByCommentNo(commentNo);
 		
 		if (commentLike == null) {
 	        CommentLikeDto dto = new CommentLikeDto();

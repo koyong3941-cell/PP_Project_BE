@@ -94,7 +94,7 @@ public class CommentController {
 	
 	@GetMapping("{commentNo}/like")
 	public ResponseEntity<ApiResponse<CommentLikeDto>> commentAllByCommentNo(@PathVariable(name="commentNo") Long commentNo) {
-		CommentLikeDto likeDto = commentService.commentAllByCommentNo(commentNo);
+		CommentLikeDto likeDto = commentService.commentLikeAllByCommentNo(commentNo);
 		
 		return ResponseEntity.status(200).body(ApiResponse.success("좋아요 총 개수 조회 완료", likeDto));
 	}
