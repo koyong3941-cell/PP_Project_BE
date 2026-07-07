@@ -1,11 +1,16 @@
 package com.kh.pp.plant.model.service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pp.common.page.PageResponse;
+import com.kh.pp.common.review.ReviewResponse;
 import com.kh.pp.exception.DuplicateMemberException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.PlantNotFoundException;
@@ -13,6 +18,7 @@ import com.kh.pp.file.service.FileService;
 import com.kh.pp.plant.model.dao.PlantMapper;
 import com.kh.pp.plant.model.dao.PlantReviewImgMapper;
 import com.kh.pp.plant.model.dao.PlantReviewMapper;
+import com.kh.pp.plant.model.dto.PlantRatingDto;
 import com.kh.pp.plant.model.dto.PlantReviewDto;
 import com.kh.pp.plant.model.dto.PlantReviewImgDto;
 import com.kh.pp.plant.model.vo.PlantReview;
@@ -30,6 +36,8 @@ public class PlantReviewService {
 	private final PlantReviewImgMapper plantReviewImgMapper;
 	private final FileService fileService;
 
+	
+	// Create
 	@Transactional
 	public void savePlantReview(PlantReviewDto plantReview) {
 		long count = validatePlantImages(plantReview.getImageFiles());
@@ -62,14 +70,55 @@ public class PlantReviewService {
 		}
 	}
 	
+	// Read
+	public PageResponse<PlantReviewDto> findPlantReviewAll(int page, Long plantNo, Long memberNo) {
+		int size = 10;
+		int offset = page * size;
+		
+		int totalElements = plantReviewMapper.getPlantReviewTotalElements(plantNo);
+		if (totalElements == 0) {
+			return PageResponse.empty(page, size);
+		}
+		
+		List<PlantReviewDto> plantReviews = plantReviewMapper.findPlantReviewAll(offset, size, plantNo, memberNo);
+		
+		// 출력할 리뷰 번호들 추출(이미지 출력을 위해서)
+		List<Long> reviewNos = plantReviews.stream()
+	            .map(PlantReviewDto::getReviewNo)
+	            .collect(Collectors.toList());
+		
+		List<PlantReviewImgDto> images = plantReviewImgMapper.findImagesByReviewNos(reviewNos);
+		
+		Map<Long, List<PlantReviewImgDto>> imageMap = images.stream()
+				.collect(Collectors.groupingBy(PlantReviewImgDto::getReviewNo));
+		
+		for (PlantReviewDto plantReview : plantReviews) {
+		    List<PlantReviewImgDto> reviewImages = imageMap.getOrDefault(plantReview.getReviewNo(), Collections.emptyList());
+		    plantReview.setPlantReviewImages(reviewImages);
+		}
+		
+		return new PageResponse<>(plantReviews, totalElements, page, size);
+	}
 	
+	public PlantRatingDto getReviewRating(Long plantNo, Long memberNo) {
+		
+		PlantRatingDto rating = plantReviewMapper.getReviewRating(plantNo, memberNo);
+		
+		if(memberNo != null) {
+			int count = plantReviewMapper.hasWrittenReview(plantNo, memberNo);
+			boolean hasMyReview = count > 0;
+		}
+	
+		
+		return rating;
+	}
 	
 	// ------ 식물 게시글 활성 여부 확인 ------
 	private void isActivePlant(Long plantNo) {
 		int result = plantMapper.isActivePlant(plantNo);
 		
 		if (result < 1 ) {
-			throw new PlantNotFoundException("해당 식물 게시글이 존재하지 않습니다.");
+			throw new PlantNotFoundException("해당 식물을 찾을 수 없습니다.");
 		}
 	}
 	
@@ -121,4 +170,10 @@ public class PlantReviewService {
             }
         }
 	}
+
+
+
+
+
+
 }
