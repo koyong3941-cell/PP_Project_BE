@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.kh.pp.comment.model.dto.CommentDto;
+import com.kh.pp.comment.model.dto.CommentLikeDto;
 
 @Mapper
 public interface CommentMapper {
@@ -137,6 +138,16 @@ public interface CommentMapper {
 						COMMENT_NO =#{commentNo}
 			""")
 	int commentLikeValidate(@Param("memberNo") Long memberNo, @Param("commentNo")Long commentNo);
+
+	@Select("""
+			SELECT
+				COUNT(*) AS commentLikeCount
+			FROM
+				COMMENT_LIKE
+			WHERE
+				COMMENT_NO = #{commentNo}
+			""")
+	CommentLikeDto commentAllByCommentNo(Long commentNo);
 
 
 	

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.pp.board.model.dao.BoardMapper;
 import com.kh.pp.comment.model.dao.CommentMapper;
 import com.kh.pp.comment.model.dto.CommentDto;
+import com.kh.pp.comment.model.dto.CommentLikeDto;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
@@ -101,6 +102,18 @@ public class CommentService {
 		if(result > 0) {
 			throw new FailUserRequestException("이미 좋아요 한 상태로 좋아요에 실패하였습니다.");
 		}
+	}
+
+	public CommentLikeDto commentAllByCommentNo(Long commentNo) {
+		CommentLikeDto commentLike = commentMapper.commentAllByCommentNo(commentNo);
+		
+		if (commentLike == null) {
+	        CommentLikeDto dto = new CommentLikeDto();
+	        dto.setCommentLikeCount(0L);
+	        return dto;
+	    }
+		
+		return commentLike;
 	}
 	
 }

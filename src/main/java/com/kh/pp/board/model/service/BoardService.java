@@ -11,8 +11,10 @@ import com.kh.pp.board.model.dao.BoardImgMapper;
 import com.kh.pp.board.model.dao.BoardMapper;
 import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.board.model.dto.BoardImgDto;
+import com.kh.pp.board.model.dto.BoardReactionDto;
 import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.vo.Board;
+import com.kh.pp.comment.model.dto.CommentLikeDto;
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
@@ -230,6 +232,19 @@ public class BoardService {
 		if(insertResult != 1) {
 			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
 		}
+	}
+
+
+	public BoardReactionDto findBoardReactions(Long boardNo) {	
+		Integer likeCount = boardMapper.findBoardLikeReactions(boardNo);
+		Integer dislikeCount = boardMapper.findBoardDisLikeReactions(boardNo);
+		
+		BoardReactionDto reactionDto = new BoardReactionDto();
+			
+		reactionDto.setBoardLike(likeCount != null? likeCount:0);
+		reactionDto.setBoardDislike(dislikeCount != null? dislikeCount:0);
+		
+		return reactionDto;
 	}
 	
 }

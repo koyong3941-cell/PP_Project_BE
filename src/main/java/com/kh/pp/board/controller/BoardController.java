@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.board.model.dto.BoardDto;
+import com.kh.pp.board.model.dto.BoardReactionDto;
 import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.service.BoardService;
 import com.kh.pp.common.api.ApiResponse;
@@ -112,4 +113,12 @@ public class BoardController {
 		boardService.addBoardDislike(memberNoFromToken, boardNo);
 		return ResponseEntity.status(200).body(ApiResponse.created(null));
 	}
+	
+	@GetMapping("/{boardNo}/reactions")
+	public ResponseEntity<ApiResponse<BoardReactionDto>> findBoardReactions(@PathVariable(name = "boardNo") Long boardNo){
+		BoardReactionDto reactions = boardService.findBoardReactions(boardNo);
+		
+		return ResponseEntity.status(200).body(ApiResponse.created("조회 성공", reactions));
+	}
+
 }
