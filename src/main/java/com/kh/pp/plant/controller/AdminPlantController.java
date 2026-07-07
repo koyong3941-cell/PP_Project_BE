@@ -69,6 +69,6 @@ public class AdminPlantController {
 	public ResponseEntity<ApiResponse<Void>> deletePlant(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "plantNo") Long plantNo){
 		Long memberNoFromToken = userDetails.getMemberNo();
 		plantService.deletePlant(plantNo, memberNoFromToken);
-		return ResponseEntity.status(200).body(ApiResponse.created("deleted", null));
+		return ResponseEntity.status(204).body(ApiResponse.noContent("deleted", null));
 	}
 }
