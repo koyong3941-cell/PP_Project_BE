@@ -40,36 +40,36 @@ public class MemberPlantController {
 
 	// 식물 추가
 	@PostMapping
-	public ResponseEntity<ApiResponse<String>> memberPlantAdd(
+	public ResponseEntity<ApiResponse<Void>> memberPlantAdd(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@PathVariable Long memberNo,
-			@PathVariable Long plantNo,
-			@Valid @RequestBody MemberPlantRequestDto plantRequest) {
+			@PathVariable("memberNo") Long memberNo,
+			@PathVariable("plantNo") Long plantNo,
+			@Valid @RequestBody MemberPlantOwnedResponseDto plantRequest) {
 
-		memberPlantService.memberPlantAdd(userDetails.getMemberNo(), memberNo, plantNo, plantRequest.getMemberPlantCount());
-		return ResponseEntity.status(201).body(ApiResponse.created("작성 성공", "식물 추가에 성공했습니다."));
-	}
+		memberPlantService.memberPlantAdd(userDetails.getMemberNo(), memberNo, plantNo, plantRequest);
+		return ResponseEntity.status(201).body(ApiResponse.created("식물 추가에 성공했습니다.", null));
+	} 
 
 	// 식물 수정
 	@PatchMapping
-	public ResponseEntity<ApiResponse<String>> memberPlantEdit(
+	public ResponseEntity<ApiResponse<Void>> memberPlantEdit(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@PathVariable Long memberNo,
-			@PathVariable Long plantNo,
-			@Valid @RequestBody MemberPlantRequestDto plantRequest) {
+			@PathVariable("memberNo") Long memberNo,
+			@PathVariable("plantNo") Long plantNo,
+			@Valid @RequestBody MemberPlantOwnedResponseDto plantRequest) {
 
-		memberPlantService.memberPlantEdit(userDetails.getMemberNo(), memberNo, plantNo, plantRequest.getMemberPlantCount());
-		return ResponseEntity.status(200).body(ApiResponse.success("작성 성공", "식물 변경에 성공했습니다."));
+		memberPlantService.memberPlantEdit(userDetails.getMemberNo(), memberNo, plantNo, plantRequest);
+		return ResponseEntity.status(200).body(ApiResponse.success("식물 변경에 성공했습니다.", null));
 	}
 
 	// 식물 삭제
 	@DeleteMapping
 	public ResponseEntity<ApiResponse<String>> memberPlantDelete(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@PathVariable Long memberNo,
-			@PathVariable Long plantNo) {
+			@PathVariable("memberNo") Long memberNo,
+			@PathVariable("plantNo") Long plantNo) {
 
 		memberPlantService.memberPlantDelete(userDetails.getMemberNo(), memberNo, plantNo);
-		return ResponseEntity.status(200).body(ApiResponse.success("작성 성공", "식물 삭제에 성공했습니다."));
+		return ResponseEntity.status(200).body(ApiResponse.success("식물 삭제에 성공했습니다", null));
 	}
 }

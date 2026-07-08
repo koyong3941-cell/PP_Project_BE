@@ -20,4 +20,5 @@ public class MemberPlantOwnedResponseDto {
 	private Integer smallPlant;
 	private Integer middlePlant;
 	private Integer bigPlant;
+	private Integer countAllPlant;
 }

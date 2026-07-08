@@ -42,31 +42,32 @@ public class MemberPlantService {
 
 	// 식물 추가 (이미 보유중인 식물이면 수정으로 처리)
 	@Transactional
-	public void memberPlantAdd(Long tokenMemberNo, Long memberNo, Long plantNo, MemberPlantCountDto memberPlantCount) {
+	public void memberPlantAdd(Long tokenMemberNo, Long memberNo, Long plantNo, MemberPlantOwnedResponseDto plantRequest) {
 		validateMemberMatch(tokenMemberNo, memberNo);
 
 		// count(*)로 해당 유저가 이미 이 식물을 하나라도 보유중이면 PATCH(수정) 조건으로 전환
 		MemberPlantOwnedResponseDto existing = memberPlantMapper.memberPlantDetail(memberNo, plantNo);
-		if (existing != null) {
-			memberPlantEdit(tokenMemberNo, memberNo, plantNo, memberPlantCount);
-			return;
-		}
+		
+		 if (existing != null) {
+			 throw new FailUserRequestException("식물 추가에 실패했습니다, 기등록된 식물 값이 존재합니다.");
+		} 
 
 		int result = memberPlantMapper.memberPlantAdd(memberNo, plantNo,
-				memberPlantCount.getSmall(), memberPlantCount.getMiddle(), memberPlantCount.getBig());
+				plantRequest.getSmallPlant(), plantRequest.getMiddlePlant(), plantRequest.getBigPlant());
 
 		if (result != 1) {
 			throw new FailUserRequestException("식물 추가에 실패했습니다, 다시 시도해주세요.");
-		}
+		} 
+		
 	}
 
 	// 식물 개수 수정
 	@Transactional
-	public void memberPlantEdit(Long tokenMemberNo, Long memberNo, Long plantNo, MemberPlantCountDto memberPlantCount) {
+	public void memberPlantEdit(Long tokenMemberNo, Long memberNo, Long plantNo, MemberPlantOwnedResponseDto plantRequest) {
 		validateMemberMatch(tokenMemberNo, memberNo);
 
 		int result = memberPlantMapper.memberPlantEdit(memberNo, plantNo,
-				memberPlantCount.getSmall(), memberPlantCount.getMiddle(), memberPlantCount.getBig());
+				plantRequest.getSmallPlant(), plantRequest.getMiddlePlant(), plantRequest.getBigPlant());
 
 		if (result < 1) {
 			throw new FailUserRequestException("식물 변경에 실패했습니다, 다시 시도해주세요.");
