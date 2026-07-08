@@ -80,6 +80,11 @@ public class PlantReviewService {
 			throw new FailLikeException("이미 좋아요를 누르셨습니다.");
 		}
 		
+		Integer result = plantReviewMapper.addPlantReviewLike(memberNo, reviewNo);
+		
+		if (result == 0 || result == null) {
+			throw new FailLikeException("좋아요 입력을 실패했습니다.");
+		}
 	}
 	
 	// Read
@@ -163,7 +168,20 @@ public class PlantReviewService {
 		}
 	}
 	
-	
+	@Transactional
+	public void deletePlantReviewLike(Long memberNo, Long reviewNo) {
+		int activePlantReviewLike = plantReviewMapper.isActivePlantReviewLike(memberNo, reviewNo);
+		
+		if (activePlantReviewLike == 0) {
+			throw new FailLikeException("이미 좋아요가 취소되었습니다.");
+		}
+		
+		Integer result = plantReviewMapper.deletePlantReviewLike(memberNo, reviewNo);
+		
+		if (result == 0 || result == null) {
+			throw new FailLikeException("좋아요를 취소하지 못했습니다.");
+		}
+	}
 	
 	// ------ 식물 게시글 활성 여부 확인 ------
 	private void isActivePlant(Long plantNo) {
@@ -222,8 +240,5 @@ public class PlantReviewService {
             }
         }
 	}
-
-
-
 
 }

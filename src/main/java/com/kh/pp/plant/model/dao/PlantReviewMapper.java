@@ -15,6 +15,8 @@ public interface PlantReviewMapper {
 	// Create
 	int savePlantReview(PlantReview plantReviewEntity);
 	
+	Integer addPlantReviewLike(@Param("memberNo") Long memberNo, @Param("reviewNo") Long reviewNo);
+	
 	// Read
 	List<PlantReviewDto> findPlantReviewAll(
 			@Param("offset") int offset
@@ -34,6 +36,8 @@ public interface PlantReviewMapper {
 	// Delete
 	Integer deletePlantReview(@Param("memberNo") Long memberNo, @Param("reviewNo") Long reviewNo);
 	
+	Integer deletePlantReviewLike(@Param("memberNo") Long memberNo, @Param("reviewNo") Long reviewNo);
+
 	// Count
 	int getPlantReviewTotalElements(Long plantNo);
 	
@@ -43,5 +47,7 @@ public interface PlantReviewMapper {
 	int hasReviewByMemberNo(PlantReview plantReviewEntity);
 	
 	int isActivePlantReviewLike(@Param("memberNo") Long memberNo, @Param("reviewNo") Long reviewNo);
+
+
 
 }

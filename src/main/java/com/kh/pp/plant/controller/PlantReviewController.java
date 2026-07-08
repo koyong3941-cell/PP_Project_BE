@@ -43,7 +43,7 @@ public class PlantReviewController {
 		return ResponseEntity.status(201).body(ApiResponse.created(null));
 	}
 	
-	@PostMapping("/like")
+	@PostMapping("/{reviewNo}/like")
 	public ResponseEntity<ApiResponse<Void>> addPlantReviewLike (
 			@AuthenticationPrincipal CustomUserDetails userDetails
 			, @PathVariable(name = "reviewNo") Long reviewNo
@@ -100,5 +100,15 @@ public class PlantReviewController {
 		Long memberNo = userDetails.getMemberNo();
 		plantReviewService.deletePlantReview(memberNo, reviewNo);
 		return ResponseEntity.status(204).body(ApiResponse.noContent("deleted", null));
+	}
+	
+	@DeleteMapping("/{reviewNo}/like")
+	public ResponseEntity<ApiResponse<Void>> deletePlantReviewLike (
+			@AuthenticationPrincipal CustomUserDetails userDetails
+			, @PathVariable(name = "reviewNo") Long reviewNo
+			){
+		Long memberNo = userDetails.getMemberNo();
+		plantReviewService.deletePlantReviewLike(memberNo, reviewNo);
+		return ResponseEntity.status(204).body(ApiResponse.created(null));
 	}
 }

@@ -9,23 +9,36 @@
 		  INTO
 		  		PLANT_REVIEW
 				(
-			 	MEMBER_NO
-			 ,	PLANT_NO
-			 ,	RATING
-			 ,	REVIEW_TITLE
-			 ,	REVIEW_CONTENT			 
+				 	MEMBER_NO
+				 ,	PLANT_NO
+				 ,	RATING
+				 ,	REVIEW_TITLE
+				 ,	REVIEW_CONTENT			 
 				)
 		VALUES
 				(
-				#{memberNo}
-			 ,	#{plantNo}
-			 ,	#{rating}
-			 ,	#{reviewTitle}
-			 ,	#{reviewContent}
+					#{memberNo}
+				 ,	#{plantNo}
+				 ,	#{rating}
+				 ,	#{reviewTitle}
+				 ,	#{reviewContent}
 				)
 	</insert>
 	
-	
+	<insert id="addPlantReviewLike">
+		INSERT
+		  INTO
+		  		PLANT_REVIEW_LIKE
+		  		(
+					MEMBER_NO
+				,	REVIEW_NO
+				)
+		VALUES
+				(
+					#{memberNo}
+				,	#{reviewNo}
+				)
+	</insert>	
 
 <!-- Read -->
 	<select id="findPlantReviewAll">
@@ -131,6 +144,16 @@
 		   AND
 		   		DEL_YN = 'N'
 	</update>
+	
+	<delete id="deletePlantReviewLike">
+		DELETE 
+		  FROM 
+		  		PLANT_REVIEW_LIKE
+    	 WHERE 
+    	 		REVIEW_NO = #{reviewNo}
+      	   AND 	
+      	   		MEMBER_NO = #{memberNo}
+	</delete>
 
 <!-- Count -->
 	<select id="getPlantReviewTotalElements">
@@ -172,6 +195,15 @@
 		   		DEL_YN = 'N'
 	</select>
 	
-	<select id="isActivePlantReviewLike"></select>
+	<select id="isActivePlantReviewLike">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT_REVIEW_LIKE
+		 WHERE
+		 		REVIEW_NO = #{reviewNo}
+		   AND
+		 		MEMBER_NO = #{memberNo}
+	</select>
 	
 </mapper>
