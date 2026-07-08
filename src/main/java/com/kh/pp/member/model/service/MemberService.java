@@ -146,14 +146,14 @@ public class MemberService {
 			if(memberImg.getImgNo().equals(imageList)) {
 				continue;
 			}	
-			userImgDelete(memberNo, memberImg.getImgNo());
+			memberImgMapper.userImgDeleteList(memberNo, memberImg.getImgNo());
 		} 
 	}
 	
 	// 멤버 이미지 삭제
 	@Transactional
-	public void userImgDelete(Long memberNo, Long imgNo) {
-		memberImgMapper.userImgDelete(memberNo, imgNo);
+	public void userImgDelete(Long memberNo) {
+		memberImgMapper.userImgDelete(memberNo);
 	}
 
 }

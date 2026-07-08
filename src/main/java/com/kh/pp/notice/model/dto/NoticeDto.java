@@ -20,9 +20,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NoticeDto {
-
 	private Long noticeNo;
 	private Long memberNo;
 	@NotBlank
@@ -41,6 +39,4 @@ public class NoticeDto {
 	//이미지 출력용
 	private List<NoticeImgDto> noticeImages; 
 	private String profileImage;
-	
-	
 }

@@ -95,8 +95,8 @@ public class NoticeService {
 	}
 	
 	@Transactional
-	public NoticeDto NoticeDetail(Long noticeNo) {
-		NoticeDto notice = noticeMapper.NoticeDetail(noticeNo);
+	public NoticeDto noticeDetail(Long noticeNo) {
+		NoticeDto notice = noticeMapper.noticeDetail(noticeNo);
 		if(notice == null) {
 			throw new FailSaveException("해당 공지사항이 존재하지 않습니다.");
 		}
@@ -105,7 +105,10 @@ public class NoticeService {
 		notice.setNoticeImages(images);
 		increaseNoticeCount(noticeNo);
 		
-		return notice;
+		List<NoticeDto> notices = noticeMapper.findNoticeAll(offset,size);
+		int totalElements = noticeMapper.getNoticeTotalElements();
+		
+		return new PageResponse<>(notices,totalElements,page,size);
 	}
 	
 
@@ -149,6 +152,7 @@ public class NoticeService {
 		return noticeMapper.searchNotice(keyword,offset,size);
 	
 	}
+	
 
 	private void saveNoticeImages(Long noticeNo, List<MultipartFile> imageFiles) {
 		if (imageFiles == null || imageFiles.isEmpty()) {

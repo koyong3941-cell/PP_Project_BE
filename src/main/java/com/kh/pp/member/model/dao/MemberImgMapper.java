@@ -47,7 +47,7 @@ public interface MemberImgMapper {
 			AND
 				MEMBER_NO = #{memberNo}
 			""")
-	void userImgDelete(@Param("memberNo") Long memberNo, @Param("imgNo") Long imgNo);
+	void userImgDeleteList(@Param("memberNo") Long memberNo, @Param("imgNo") Long imgNo);
 
 	@Insert("""
 			INSERT
@@ -68,5 +68,17 @@ public interface MemberImgMapper {
 				)
 			""")
 	int userImgUpload(MemberImgDto imgDto);
+
+	@Update("""
+			UPDATE
+				MEMBER_IMG
+			SET
+				DEL_YN = 'Y'
+			WHERE
+				MEMBER_NO = #{memberNo}
+			AND
+				DEL_YN = 'N'
+			""")
+	void userImgDelete(Long memberNo);
 
 }

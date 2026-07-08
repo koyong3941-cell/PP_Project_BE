@@ -13,7 +13,7 @@ public interface NoticeMapper {
 
 	List<NoticeDto> findNoticeAll(@Param("offset") int offset, @Param("size") int size);
 
-	NoticeDto NoticeDetail(Long noticeNo);
+	NoticeDto noticeDetail(Long noticeNo);
 	
 	List<NoticeDto> searchNotice(@Param("keyword")String keyword,@Param("offset")int offset,@Param("size") int size);
 	

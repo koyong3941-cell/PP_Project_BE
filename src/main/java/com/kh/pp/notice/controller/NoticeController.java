@@ -35,11 +35,11 @@ public class NoticeController {
 	
 	//상세조회
 	@GetMapping("/{noticeNo}")
-	public ResponseEntity<ApiResponse<NoticeDto>> NoticeDetail(
+	public ResponseEntity<ApiResponse<NoticeDto>> noticeDetail(
 			@PathVariable(name= "noticeNo") Long noticeNo){
 		
 		
-		NoticeDto notice = noticeService.NoticeDetail(noticeNo);
+		NoticeDto notice = noticeService.noticeDetail(noticeNo);
 		
 		return ResponseEntity.status(200).body(ApiResponse.success(notice));
 	}

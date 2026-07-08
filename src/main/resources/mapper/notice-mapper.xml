@@ -10,8 +10,10 @@
 				,n.NOTICE_CONTENT
 				,n.NOTICE_COUNT
 				,m.MEMBER_ID
+				,m.MEMBER_NAME
+				,n.CREATE_DATE
 			FROM 
-				notice n
+				NOTICE n
 			Join
 				MEMBER m USING(MEMBER_NO)
 			WHERE 
@@ -112,7 +114,7 @@
     
    
     
-   <insert id="saveNotice" parameterType="notice">
+   <insert id="saveNotice">
    INSERT
     INTO
      NOTICE(
@@ -120,8 +122,7 @@
 		NOTICE_TITLE,
 		NOTICE_CONTENT
    )
-   	 
-   	VALUES
+	VALUES
    	(
 		#{memberNo}
    		,#{noticeTitle}
