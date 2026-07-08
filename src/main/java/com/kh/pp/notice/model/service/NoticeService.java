@@ -138,14 +138,15 @@ public class NoticeService {
 		noticeMapper.deleteNotice(noticeNo);
 	}
 
-	public List<NoticeDto> NoticeSearch(String keyword,int page) {
-		int offset = page * 10;
-		int limit = 10;
+	public List<NoticeDto> searchNotice(String keyword,int page) {
+		int size = 10;
+		int offset = page * size;
+		
 		if(keyword == null || keyword.trim().isEmpty()) {
-			return noticeMapper.findNoticeAll(offset,limit);
+			return noticeMapper.findNoticeAll(offset,size);
 		}
 		
-		return noticeMapper.NoticeSearch(keyword,offset,limit);
+		return noticeMapper.searchNotice(keyword,offset,size);
 	
 	}
 

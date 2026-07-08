@@ -46,12 +46,12 @@ public class NoticeController {
 	
 	//검색
 	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<List<NoticeDto>>> NoticeSearch(
+	public ResponseEntity<ApiResponse<List<NoticeDto>>> searchNotice(
 			@RequestParam(name="keyword") String keyword,
 			@RequestParam(defaultValue="0", name="page") int page){
 
 		
-		List<NoticeDto> notices = noticeService.NoticeSearch(keyword,page);
+		List<NoticeDto> notices = noticeService.searchNotice(keyword,page);
 		
 		return ResponseEntity.ok(ApiResponse.success(notices));
 	}

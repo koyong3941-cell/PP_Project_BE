@@ -78,7 +78,7 @@
     	 	 N.NOTICE_NO = #{noticeNo}
     </select>
     
-    <select id="NoticeSearch">
+    <select id="searchNotice">
 			SELECT 
 				n.NOTICE_NO
 				,m.MEMBER_NAME
@@ -107,7 +107,7 @@
 				)
 				ORDER BY n.NOTICE_NO DESC
 				OFFSET #{offset} ROWS
-				FETCH NEXT #{limit} ROWS ONLY
+				FETCH NEXT #{size} ROWS ONLY
     </select>
     
    

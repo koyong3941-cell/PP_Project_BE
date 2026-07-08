@@ -15,7 +15,7 @@ public interface NoticeMapper {
 
 	NoticeDto NoticeDetail(Long noticeNo);
 	
-	List<NoticeDto> NoticeSearch(@Param("keyword")String keyword,@Param("offset")int offset,@Param("limit") int limit);
+	List<NoticeDto> searchNotice(@Param("keyword")String keyword,@Param("offset")int offset,@Param("size") int size);
 	
 	int getNoticeTotalElements();
 	
