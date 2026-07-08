@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.board.model.dto.BoardImgDto;
+import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.file.service.FileService;
@@ -33,7 +34,7 @@ public class NoticeService {
 	
 	
 	@Transactional
-	public void save(NoticeDto notice) {
+	public void saveNotice(NoticeDto notice) {
 		long count= validateNoticeImages(notice.getImageFiles());
 		
 		Notice noticeEntity = Notice.builder()
@@ -41,7 +42,7 @@ public class NoticeService {
 				.noticeTitle(notice.getNoticeTitle())
 				.noticeContent(notice.getNoticeContent())
 				.build();
-		 int result =  noticeMapper.save(noticeEntity);
+		 int result =  noticeMapper.saveNotice(noticeEntity);
 		
 		
 		if(result < 1) {
@@ -66,11 +67,15 @@ public class NoticeService {
 		
 	}
 
-	public List<NoticeDto> findNoticeAll(int page){
-		int offset = page * 10;
-		int limit = 10;
+	public PageResponse<NoticeDto> findNoticeAll(int page){
+		int size = 10;
+		int offset = page * size;
+	
 		
-		return noticeMapper.findNoticeAll(offset,limit);
+		List<NoticeDto> notices = noticeMapper.findNoticeAll(offset,size);
+		int totalElements = noticeMapper.getNoticeTotalElements();
+		
+		return new PageResponse<>(notices,totalElements,page,size);
 	}
 	
 	private long validateNoticeImages(List<MultipartFile> imageFiles) {
@@ -90,8 +95,8 @@ public class NoticeService {
 	}
 	
 	@Transactional
-	public NoticeDto findByNoticeId(Long noticeNo) {
-		NoticeDto notice = noticeMapper.findByNoticeId(noticeNo);
+	public NoticeDto NoticeDetail(Long noticeNo) {
+		NoticeDto notice = noticeMapper.NoticeDetail(noticeNo);
 		if(notice == null) {
 			throw new FailSaveException("해당 공지사항이 존재하지 않습니다.");
 		}
@@ -133,15 +138,14 @@ public class NoticeService {
 		noticeMapper.deleteNotice(noticeNo);
 	}
 
-	public List<NoticeDto> Noticesearch(String keyword,int page) {
+	public List<NoticeDto> NoticeSearch(String keyword,int page) {
 		int offset = page * 10;
 		int limit = 10;
-		
 		if(keyword == null || keyword.trim().isEmpty()) {
 			return noticeMapper.findNoticeAll(offset,limit);
 		}
 		
-		return noticeMapper.Noticesearch(keyword,offset,limit);
+		return noticeMapper.NoticeSearch(keyword,offset,limit);
 	
 	}
 

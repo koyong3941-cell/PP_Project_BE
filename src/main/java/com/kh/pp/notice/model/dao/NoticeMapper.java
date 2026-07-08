@@ -11,13 +11,15 @@ import com.kh.pp.notice.model.vo.Notice;
 @Mapper
 public interface NoticeMapper {
 
-	List<NoticeDto> findNoticeAll(@Param("offset") int offset, @Param("limit") int limit);
+	List<NoticeDto> findNoticeAll(@Param("offset") int offset, @Param("size") int size);
 
-	NoticeDto findByNoticeId(Long noticeNo);
+	NoticeDto NoticeDetail(Long noticeNo);
 	
-	List<NoticeDto> Noticesearch(@Param("keyword")String keyword,@Param("offset")int offset,@Param("limit") int limit);
+	List<NoticeDto> NoticeSearch(@Param("keyword")String keyword,@Param("offset")int offset,@Param("limit") int limit);
 	
-	int save(Notice noticeEntity);
+	int getNoticeTotalElements();
+	
+	int saveNotice(Notice noticeEntity);
 
 	int editNotice(Notice noticeEntity);
 

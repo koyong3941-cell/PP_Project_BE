@@ -40,7 +40,7 @@ public class NoticeDto {
 	
 	//이미지 출력용
 	private List<NoticeImgDto> noticeImages; 
-
+	private String profileImage;
 	
 	
 }
