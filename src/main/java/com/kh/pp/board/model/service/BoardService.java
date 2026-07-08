@@ -61,9 +61,10 @@ public class BoardService {
 		int size = 10;
 		int offset = page * size;
 		
+		int totalElements = boardMapper.getBoardTotalElements();
+
 		List<BoardDto> boards = boardMapper.findBoardAll(offset, size);
 		
-		int totalElements = boardMapper.getBoardTotalElements();
 		
 		return new PageResponse<>(boards, totalElements, page, size);
 	}

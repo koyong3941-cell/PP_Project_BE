@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.comment.model.dto.CommentDto;
+import com.kh.pp.comment.model.dto.CommentLikeDto;
 import com.kh.pp.comment.model.service.CommentService;
 import com.kh.pp.common.api.ApiResponse;
 
@@ -30,8 +31,12 @@ public class CommentController {
 	
 	// 댓글 조회
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<CommentDto>>> findCommentByBoardNo(@PathVariable(name="boardNo") Long boardNo) {
-		List<CommentDto> commentList =  commentService.findCommentByBoardNo(boardNo);
+	public ResponseEntity<ApiResponse<List<CommentDto>>> findCommentByBoardNo(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable (name="boardNo") Long boardNo) {
+		Long memberNo = null;
+		if(userDetails != null) {
+			memberNo = userDetails.getMemberNo();
+		}	
+		List<CommentDto> commentList =  commentService.findCommentByBoardNo(boardNo, memberNo);
 		
 		return ResponseEntity.status(200).body(ApiResponse.success("조회 성공", commentList));
 	}
@@ -70,5 +75,30 @@ public class CommentController {
 		
 		commentService.DeleteComment(comment);
 		return ResponseEntity.status(204).body(ApiResponse.noContent("댓글 수정 완료", null));
+	}
+	
+	// 댓글 좋아요 삭제* /api//boards/{boardNo}/comments/{commentNo}/like
+	@PostMapping("{commentNo}/like")
+	public ResponseEntity<ApiResponse<CommentLikeDto>> commentLike(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name="commentNo") Long commentNo) {
+		Long memberNoFromToken = userDetails.getMemberNo();
+		commentService.commentLike(memberNoFromToken, commentNo);
+		
+		return ResponseEntity.status(200).body(ApiResponse.success("좋아요 완료", null));
+	}
+	
+	// 댓글 좋아요 삭제
+	@DeleteMapping("{commentNo}/like")
+	public ResponseEntity<ApiResponse<CommentLikeDto>> commentLikeAbort(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name="commentNo") Long commentNo) {
+		Long memberNoFromToken = userDetails.getMemberNo();
+		commentService.commentLikeAbort(memberNoFromToken, commentNo);
+		
+		return ResponseEntity.status(200).body(ApiResponse.success("좋아요 취소 완료", null));
+	}
+	
+	@GetMapping("{commentNo}/like")
+	public ResponseEntity<ApiResponse<CommentLikeDto>> commentAllByCommentNo(@PathVariable(name="commentNo") Long commentNo) {
+		CommentLikeDto likeCount = commentService.commentLikeAllByCommentNo(commentNo);
+		
+		return ResponseEntity.status(200).body(ApiResponse.success("좋아요 총 개수 조회 완료", likeCount));
 	}
 }

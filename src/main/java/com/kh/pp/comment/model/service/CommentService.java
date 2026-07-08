@@ -3,10 +3,11 @@ package com.kh.pp.comment.model.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.kh.pp.board.model.dao.BoardMapper;
 import com.kh.pp.comment.model.dao.CommentMapper;
 import com.kh.pp.comment.model.dto.CommentDto;
+import com.kh.pp.comment.model.dto.CommentLikeDto;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
@@ -22,12 +23,13 @@ public class CommentService {
 	private final CommentMapper commentMapper;
 
 	// 코멘트 리스트 조회 
-	public List<CommentDto> findCommentByBoardNo(Long boardNo) {
-		List<CommentDto> list = commentMapper.findCommentByBoardNo(boardNo);
+	public List<CommentDto> findCommentByBoardNo(Long boardNo, Long memberNo) {
+		List<CommentDto> list = commentMapper.findCommentByBoardNo(boardNo, memberNo);
 		
 		if(list == null) {
 			throw new FailUserRequestException("코멘트 요청에 실패하였습니다.");
 		}
+		
 		return list;
 	}
 
@@ -69,6 +71,50 @@ public class CommentService {
 		if(isActive < 1) {
 			throw exception;
 		}
+	}
+	// 좋아요
+	@Transactional
+	public void commentLike(Long memberNo, Long commentNo) {
+		commentLikeValidate(memberNo, commentNo);
+		
+		int result = commentMapper.commentLike(memberNo, commentNo);
+		
+		if(result != 1) {
+			throw new FailUserRequestException("좋아요 요청에 실패하였습니다.");
+		}
+		
+	}
+
+	// 좋아요 원복
+	@Transactional
+	public void commentLikeAbort(Long memberNo, Long commentNo) {		
+		int result = commentMapper.commentLikeAbort(memberNo, commentNo);
+		
+		if(result != 1) {
+			throw new FailUserRequestException("취소 요청에 실패하였습니다.");
+		}
+
+	}
+	
+	// 좋아요 유무 검증
+	private void commentLikeValidate(Long memberNo, Long commentNo) {
+		int result = commentMapper.commentLikeValidate(memberNo, commentNo);
+		
+		if(result > 0) {
+			throw new FailUserRequestException("이미 좋아요 한 상태로 좋아요에 실패하였습니다.");
+		}
+	}
+
+	public CommentLikeDto commentLikeAllByCommentNo(Long commentNo) {
+		CommentLikeDto commentLike = commentMapper.commentLikeAllByCommentNo(commentNo);
+		
+		if (commentLike == null) {
+	        CommentLikeDto dto = new CommentLikeDto();
+	        dto.setCommentLikeCount(0L);
+	        return dto;
+	    }
+		
+		return commentLike;
 	}
 	
 }
