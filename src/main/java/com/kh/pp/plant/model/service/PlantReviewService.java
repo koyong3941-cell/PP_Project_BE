@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.DuplicateMemberException;
+import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.exception.PlantNotFoundException;
@@ -115,6 +116,7 @@ public class PlantReviewService {
 		return rating;
 	}
 	
+	@Transactional
 	// Update
 	public void editPlantReview(PlantReviewDto plantReview, Long memberNo, Long reviewNo) {
 		long count = validatePlantReviewImages(plantReview.getImageFiles());
@@ -128,9 +130,9 @@ public class PlantReviewService {
 				.rating(plantReview.getRating())
 				.build();
 		
-		int result = plantReviewMapper.editPlantReview(plantReviewEntity);
+		Integer result = plantReviewMapper.editPlantReview(plantReviewEntity);
 		
-		if (result < 1) {
+		if (result == null || result == 0) {
 			throw new FailUpdateException("리뷰 수정에 실패했습니다.");
 		}
 		
@@ -140,6 +142,18 @@ public class PlantReviewService {
 			savePlantReviewImg(reviewNo, plantReview.getImageFiles());
 		}
 	}
+	
+	// Delete
+	@Transactional
+	public void deletePlantReview(Long memberNo, Long reviewNo) {
+		Integer result = plantReviewMapper.deletePlantReview( memberNo, reviewNo);
+		
+		if (result == 0 || result == null) {
+			throw new FailDeleteException("리뷰 삭제에 실패하였습니다.");
+		}
+	}
+	
+	
 	
 	// ------ 식물 게시글 활성 여부 확인 ------
 	private void isActivePlant(Long plantNo) {

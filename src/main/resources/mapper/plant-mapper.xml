@@ -203,6 +203,8 @@
    			 ,	PLANT_API = #{plantApi}
    		 WHERE
    				PLANT_NO = #{plantNo}
+		   AND
+		   		DEL_YN = 'N'
 	</update>
 	
 	<update id="increasePlantCount">
@@ -217,11 +219,13 @@
 <!-- Delete -->
 	<update id="deletePlant">
    		UPDATE
-   			PLANT
-   		SET
-   			DEL_YN = 'Y'
-   		WHERE
-   			PLANT_NO = #{plantNo}
+   				PLANT
+   		   SET
+   				DEL_YN = 'Y'
+   		 WHERE
+   				PLANT_NO = #{plantNo}
+		   AND
+		   		DEL_YN = 'N'
 	</update>
 	
 <!-- Validate -->

@@ -101,20 +101,34 @@
 	</select>
 	
 <!-- Update -->
-<select id="editPlantReview">
-	UPDATE
-			PLANT_REVIEW
-	   SET
-	   		RATING = #{rating}
-		 ,	REVIEW_TITLE = #{reviewTitle}
-		 ,	REVIEW_CONTENT = #{reviewContent}
-	 WHERE
-	 		PLANT_NO = #{plantNo}
-	   AND
-	   		MEMBER_NO = #{memberNo}
-	   AND
-	   		REVIEW_NO = #{reviewNo}
-</select>
+	<update id="editPlantReview">
+		UPDATE
+				PLANT_REVIEW
+		   SET
+		   		RATING = #{rating}
+			 ,	REVIEW_TITLE = #{reviewTitle}
+			 ,	REVIEW_CONTENT = #{reviewContent}
+		 WHERE
+		   		MEMBER_NO = #{memberNo}
+		   AND
+		   		REVIEW_NO = #{reviewNo}
+		   AND
+		   		DEL_YN = 'N'
+	</update>
+
+<!-- Delete -->
+	<update id="deletePlantReview">
+		UPDATE
+				PLANT_REVIEW
+		   SET
+		   		DEL_YN = 'Y'
+		 WHERE
+		   		MEMBER_NO = #{memberNo}
+		   AND
+		   		REVIEW_NO = #{reviewNo}
+		   AND
+		   		DEL_YN = 'N'
+	</update>
 
 <!-- Count -->
 	<select id="getPlantReviewTotalElements">

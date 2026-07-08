@@ -29,7 +29,10 @@ public interface PlantReviewMapper {
 	int hasWrittenReview(@Param("plantNo") Long plantNo, @Param("memberNo") Long memberNo);
 
 	// Update
-	int editPlantReview(PlantReview plantReviewEntity);
+	Integer editPlantReview(PlantReview plantReviewEntity);
+	
+	// Delete
+	Integer deletePlantReview(@Param("memberNo") Long memberNo, @Param("reviewNo") Long reviewNo);
 	
 	// Count
 	int getPlantReviewTotalElements(Long plantNo);
@@ -38,6 +41,7 @@ public interface PlantReviewMapper {
 	Long getLastReviewNoByMemberNo(Long memberNo);
 
 	int hasReviewByMemberNo(PlantReview plantReviewEntity);
+
 
 
 
