@@ -6,14 +6,10 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.kh.pp.plant.model.dto.PlantDto;
-import com.kh.pp.plant.model.vo.Plant;
 
 @Mapper
 public interface PlantMapper {
 	
-	// Create
-	int savePlant(Plant plantEntity);
-
 	// Read
 	List<PlantDto> findPlantAll(@Param("offset") int offset, @Param("size") int size);
 	
@@ -33,16 +29,9 @@ public interface PlantMapper {
 			, @Param("target") String target);
 
 	// Update
-	int editPlant(Plant plant);
-	
 	void increasePlantCount(Long plantNo);
 
-	// Delete
-	int deletePlant(Long plantNo);
-
 	// Validate
-	Long getLastPlantNoByMemberNo(Long memberNo);
-
 	int isActivePlant(Long plantNo);
 	
 }

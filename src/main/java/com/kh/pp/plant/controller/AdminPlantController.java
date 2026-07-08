@@ -16,7 +16,7 @@ import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.api.ApiResponse;
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.plant.model.dto.PlantDto;
-import com.kh.pp.plant.model.service.PlantService;
+import com.kh.pp.plant.model.service.AdminPlantService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/admins/plants")
 public class AdminPlantController {
-	private final PlantService plantService; 
+	private final AdminPlantService adminPlantService; 
 	
 	// Create
 	@PostMapping
@@ -33,28 +33,28 @@ public class AdminPlantController {
 		Long memberNoFromToken = userDetails.getMemberNo();
 		plant.setMemberNo(memberNoFromToken);
 		
-		plantService.savePlant(plant);
+		adminPlantService.savePlant(plant);
 		return ResponseEntity.status(201).body(ApiResponse.created(null));
 	}
 	
 	// Read (현재 일반 사용자와 똑같이 작동 중)
-	@GetMapping
-	public ResponseEntity<ApiResponse<PageResponse<PlantDto>>> findPlantAll(
-			@RequestParam(value = "page", defaultValue ="0") int page
-			, @RequestParam(name = "size", defaultValue = "10") int size
-			){
-		PageResponse<PlantDto> plants = plantService.findPlantAll(page, size);
-	
-		return ResponseEntity.status(200).body(ApiResponse.success(plants));
-	}
-	
-	@GetMapping("/{plantNo}")
-	public ResponseEntity<ApiResponse<PlantDto>> plantDetail(@PathVariable(name = "plantNo") Long plantNo){
-		
-		PlantDto plant = plantService.plantDetail(plantNo);
-
-		return ResponseEntity.status(200).body(ApiResponse.success(plant));
-	}
+	/*
+	 * @GetMapping public ResponseEntity<ApiResponse<PageResponse<PlantDto>>>
+	 * findPlantAll(
+	 * 
+	 * @RequestParam(value = "page", defaultValue ="0") int page
+	 * , @RequestParam(name = "size", defaultValue = "10") int size ){
+	 * PageResponse<PlantDto> plants = adminPlantService.findPlantAll(page, size);
+	 * 
+	 * return ResponseEntity.status(200).body(ApiResponse.success(plants)); }
+	 * 
+	 * @GetMapping("/{plantNo}") public ResponseEntity<ApiResponse<PlantDto>>
+	 * plantDetail(@PathVariable(name = "plantNo") Long plantNo){
+	 * 
+	 * PlantDto plant = adminPlantService.plantDetail(plantNo);
+	 * 
+	 * return ResponseEntity.status(200).body(ApiResponse.success(plant)); }
+	 */
 	
 	// Update
 	@PatchMapping("/{plantNo}")
@@ -66,7 +66,7 @@ public class AdminPlantController {
 		Long memberNoFromToken = userDetails.getMemberNo();
 		plant.setMemberNo(memberNoFromToken);
 		plant.setPlantNo(plantNo);
-		plantService.editPlant(plant);
+		adminPlantService.editPlant(plant);
 		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
 	}
 	
@@ -74,7 +74,7 @@ public class AdminPlantController {
 	@DeleteMapping("/{plantNo}")
 	public ResponseEntity<ApiResponse<Void>> deletePlant(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "plantNo") Long plantNo){
 		Long memberNoFromToken = userDetails.getMemberNo();
-		plantService.deletePlant(plantNo, memberNoFromToken);
+		adminPlantService.deletePlant(plantNo, memberNoFromToken);
 		return ResponseEntity.status(204).body(ApiResponse.noContent("deleted", null));
 	}
 }
