@@ -24,6 +24,8 @@
 			 ,	#{reviewContent}
 				)
 	</insert>
+	
+	
 
 <!-- Read -->
 	<select id="findPlantReviewAll">
@@ -169,5 +171,7 @@
 		   AND
 		   		DEL_YN = 'N'
 	</select>
+	
+	<select id="isActivePlantReviewLike"></select>
 	
 </mapper>

@@ -41,10 +41,7 @@ public interface PlantReviewMapper {
 	Long getLastReviewNoByMemberNo(Long memberNo);
 
 	int hasReviewByMemberNo(PlantReview plantReviewEntity);
-
-
-
-
-
+	
+	int isActivePlantReviewLike(@Param("memberNo") Long memberNo, @Param("reviewNo") Long reviewNo);
 
 }

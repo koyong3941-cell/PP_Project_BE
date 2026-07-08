@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.DuplicateMemberException;
 import com.kh.pp.exception.FailDeleteException;
+import com.kh.pp.exception.FailLikeException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.exception.PlantNotFoundException;
@@ -24,7 +25,6 @@ import com.kh.pp.plant.model.dto.PlantReviewDto;
 import com.kh.pp.plant.model.dto.PlantReviewImgDto;
 import com.kh.pp.plant.model.vo.PlantReview;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,6 +70,16 @@ public class PlantReviewService {
 			
 			savePlantReviewImg(reviewNo, plantReview.getImageFiles());
 		}
+	}
+	
+	@Transactional
+	public void addPlantReviewLike(Long memberNo, Long reviewNo) {
+		int activePlantReviewLike = plantReviewMapper.isActivePlantReviewLike(memberNo, reviewNo);
+		
+		if (activePlantReviewLike == 1) {
+			throw new FailLikeException("이미 좋아요를 누르셨습니다.");
+		}
+		
 	}
 	
 	// Read
@@ -212,6 +222,8 @@ public class PlantReviewService {
             }
         }
 	}
+
+
 
 
 }
