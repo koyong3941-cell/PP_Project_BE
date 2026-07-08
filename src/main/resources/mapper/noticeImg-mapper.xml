@@ -1,0 +1,53 @@
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pp.notice.model.dao.NoticeImgMapper">
+
+<insert id="insertNoticeImg" parameterType="com.kh.pp.notice.model.dto.NoticeImgDto">
+		INSERT 
+	      INTO 
+	     		NOTICE_IMG 
+	   	    	(
+				NOTICE_NO
+		 	 , 	ORIGINAL_NAME
+			 , 	SAVE_NAME
+			 , 	IMG_PATH
+			 , 	IMG_ORDER
+			    )
+	    VALUES 
+	        	(
+				#{noticeNo}
+			 , 	#{originalName}
+			 , 	#{saveName}
+			 , 	#{imgPath}
+			 , 	#{imgOrder}
+			    )
+	</insert>
+   
+	<select id="findNoticeImgByNoticeNo" resultType="com.kh.pp.notice.model.dto.NoticeImgDto">
+		SELECT 
+	         	ORIGINAL_NAME
+	         ,	SAVE_NAME
+	         ,	IMG_PATH
+	         ,	IMG_ORDER
+	      FROM 
+	    		NOTICE_IMG
+	     WHERE 
+	     		NOTICE_NO = #{boardNo}
+	       AND 
+	       		DEL_YN = 'N'
+	     ORDER
+	        BY 
+	        	IMG_ORDER ASC
+	</select>
+	
+	<update id="deleteNoticeImgByNoticeNo">
+		UPDATE
+				NOTICE_IMG
+		   SET
+		   		DEL_YN = 'Y'
+		 WHERE
+		 		NOTICE_NO = #{noticeNo}
+	</update>
+
+</mapper>

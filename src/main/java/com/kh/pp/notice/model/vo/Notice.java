@@ -2,19 +2,17 @@ package com.kh.pp.notice.model.vo;
 
 import java.sql.Date;
 
-import com.kh.pp.board.model.vo.Board;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 
+@Getter
 @Value
 @Builder
-@Getter
 public class Notice {
-	private Long noticeNo;
-	private Integer memberNo;
-	private String memberName;
+	
+	private Long noticeNo; 
+	private Long memberNo;
 	private String noticeTitle;
 	private String noticeContent;
 	private Integer noticeCount;
