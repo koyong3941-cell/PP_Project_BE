@@ -13,14 +13,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CommentDto {
-	private Long commentNo;
-	private Long memberNo;
-	private Long boardNo;
-	private String commentContent;
-	private Date createDate;
-	private String delYn;
-	private String imgPath;
-	private String saveName;
-	private Integer liked;
+public class CommentLikeDto {
+	private Long commentLikeCount;
 }

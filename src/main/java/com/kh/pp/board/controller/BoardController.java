@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.board.model.dto.BoardDto;
+import com.kh.pp.board.model.dto.BoardReactionDto;
 import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.service.BoardService;
 import com.kh.pp.common.api.ApiResponse;
@@ -96,11 +97,28 @@ public class BoardController {
 	// 게시글 좋아요
 	@PostMapping("/{boardNo}/like")
 	public ResponseEntity<ApiResponse<Void>> addBoardLike(@AuthenticationPrincipal CustomUserDetails userDetails,
-													   @ModelAttribute @Valid BoardDto board){
+															@PathVariable(name = "boardNo") Long boardNo){
 		Long memberNoFromToken = userDetails.getMemberNo();
-		board.setMemberNo(memberNoFromToken);
 		 
-		boardService.addBoardLike(board);
-		return ResponseEntity.status(201).body(ApiResponse.created(null));
+		boardService.addBoardLike(memberNoFromToken, boardNo);
+		return ResponseEntity.status(200).body(ApiResponse.created(null));
 	}
+	
+	// 게시글 싫어요
+	@PostMapping("/{boardNo}/dislike")
+	public ResponseEntity<ApiResponse<Void>> addBoardDislike(@AuthenticationPrincipal CustomUserDetails userDetails,
+															@PathVariable(name = "boardNo") Long boardNo){
+		Long memberNoFromToken = userDetails.getMemberNo();
+		 
+		boardService.addBoardDislike(memberNoFromToken, boardNo);
+		return ResponseEntity.status(200).body(ApiResponse.created(null));
+	}
+	
+	@GetMapping("/{boardNo}/reactions")
+	public ResponseEntity<ApiResponse<BoardReactionDto>> findBoardReactions(@PathVariable(name = "boardNo") Long boardNo){
+		BoardReactionDto reactions = boardService.findBoardReactions(boardNo);
+		
+		return ResponseEntity.status(200).body(ApiResponse.created("조회 성공", reactions));
+	}
+
 }

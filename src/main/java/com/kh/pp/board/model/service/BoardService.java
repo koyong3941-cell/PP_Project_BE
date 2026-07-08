@@ -11,6 +11,7 @@ import com.kh.pp.board.model.dao.BoardImgMapper;
 import com.kh.pp.board.model.dao.BoardMapper;
 import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.board.model.dto.BoardImgDto;
+import com.kh.pp.board.model.dto.BoardReactionDto;
 import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.vo.Board;
 import com.kh.pp.common.page.PageResponse;
@@ -61,10 +62,9 @@ public class BoardService {
 		int size = 10;
 		int offset = page * size;
 		
-		int totalElements = boardMapper.getBoardTotalElements();
-
 		List<BoardDto> boards = boardMapper.findBoardAll(offset, size);
 		
+		int totalElements = boardMapper.getBoardTotalElements();
 		
 		return new PageResponse<>(boards, totalElements, page, size);
 	}
@@ -141,7 +141,11 @@ public class BoardService {
 	
 	// Delete
 	@Transactional
-	public void deleteBoard(Long boardNo, Long memberNo) {
+	public void deleteBoard(Long boardNo, Long memberNo) {		
+		if(memberNo == null) {
+			throw new FailDeleteException("비로그인 상태이므로 삭제가 불가능합니다.");
+		}
+		
 		int result = boardMapper.deleteBoard(boardNo, memberNo);
 		
 		if (result < 1) {
@@ -202,4 +206,48 @@ public class BoardService {
             }
         }
 	}
+
+	@Transactional
+	public void addBoardLike(Long memberNo, Long boardNo) {
+		int countResult = boardMapper.validateLikeExists(memberNo, boardNo);
+		
+		if(countResult > 0) {
+			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
+		}
+		
+		int insertResult = boardMapper.addBoardLike(memberNo, boardNo);
+		
+		if(insertResult != 1) {
+			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
+		}
+	}
+	
+	@Transactional
+	public void addBoardDislike(Long memberNo, Long boardNo) {
+		int countResult = boardMapper.validateDislikeExists(memberNo, boardNo);
+		
+		if(countResult > 0) {
+			throw new FailSaveException("싫어요 저장에 실패하였습니다.");
+		}
+		
+		int insertResult = boardMapper.addBoardDislike(memberNo, boardNo);
+		
+		if(insertResult != 1) {
+			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
+		}
+	}
+
+
+	public BoardReactionDto findBoardReactions(Long boardNo) {	
+		Integer likeCount = boardMapper.findBoardLikeReactions(boardNo);
+		Integer dislikeCount = boardMapper.findBoardDisLikeReactions(boardNo);
+		
+		BoardReactionDto reactionDto = new BoardReactionDto();
+			
+		reactionDto.setBoardLike(likeCount != null? likeCount:0);
+		reactionDto.setBoardDislike(dislikeCount != null? dislikeCount:0);
+		
+		return reactionDto;
+	}
+	
 }

@@ -24,7 +24,6 @@ import lombok.ToString;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BoardDto {
-	
 	private Long boardNo;
 	@NotNull(message = "카테고리를 선택해주세요.")
 	private Integer categoryNo;
