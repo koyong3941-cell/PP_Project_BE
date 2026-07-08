@@ -40,4 +40,13 @@
 	        BY 
 	        	IMG_ORDER ASC
 	</select>
+	
+	<update id="deletePlantImgByPlantNo">
+		UPDATE
+				PLANT_IMG
+		   SET
+		   		DEL_YN = 'Y'
+		 WHERE
+		 		PLANT_NO = #{plantNo}
+	</update>
 </mapper>

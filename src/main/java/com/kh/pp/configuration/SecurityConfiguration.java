@@ -34,7 +34,7 @@ public class SecurityConfiguration {
 
 		return http.formLogin(AbstractHttpConfigurer::disable)
 				.csrf(AbstractHttpConfigurer::disable)	// "/api/admins/boards/{boardNo}"
-				.cors(Customizer.withDefaults()).authorizeRequests(requests ->{
+				.cors(Customizer.withDefaults()).authorizeHttpRequests(requests ->{
 					
 					// 1. 관리자 전용 경로 (가장 구체적이거나 제한이 강한 것)
 					requests.requestMatchers("/api/admins/**").hasRole("ADMIN");
@@ -45,9 +45,9 @@ public class SecurityConfiguration {
 					requests.requestMatchers(HttpMethod.DELETE, "/api/members/**").authenticated();
 					requests.requestMatchers(HttpMethod.PATCH, "/api/members/**").authenticated();
 					// 4. 게시판 관련 (보드/공지사항 등)
-					requests.requestMatchers(HttpMethod.POST, "/api/boards").permitAll();
-					requests.requestMatchers(HttpMethod.PATCH, "/api/boards/**").permitAll();
-					requests.requestMatchers(HttpMethod.DELETE, "/api/boards/**").permitAll();
+					requests.requestMatchers(HttpMethod.POST, "/api/boards/**").authenticated();
+					requests.requestMatchers(HttpMethod.PATCH, "/api/boards/**").authenticated();
+					requests.requestMatchers(HttpMethod.DELETE, "/api/boards/**").authenticated();
 					requests.requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll(); 
 					requests.requestMatchers(HttpMethod.GET, "/api/boards").permitAll();   
 					// 5. 공지사항 관련
@@ -59,7 +59,7 @@ public class SecurityConfiguration {
 					// 7. 이미지 관련
 					requests.requestMatchers("/uploads/**").permitAll();
 					// 8. 마이페이지 및 센서 관련
-					requests.requestMatchers("api/sensor/**").authenticated();
+					requests.requestMatchers("/api/sensor/**").authenticated();
 					
 					// 요청 /api/plants get
 					requests.anyRequest().authenticated(); 
@@ -73,7 +73,7 @@ public class SecurityConfiguration {
 
 	
 	@Bean
-	public AuthenticationManager authenticationManger(AuthenticationConfiguration authConfig) throws Exception {
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
 		return authConfig.getAuthenticationManager();
 	}
 	

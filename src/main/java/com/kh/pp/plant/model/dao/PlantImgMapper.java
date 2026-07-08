@@ -11,4 +11,6 @@ public interface PlantImgMapper {
 	int insertPlantImg(PlantImgDto plantImgDto);
 	
 	List<PlantImgDto> findPlantImgByPlantNo(Long plantNo);
+	
+	void deletePlantImgByPlantNo(Long plantNo);
 }

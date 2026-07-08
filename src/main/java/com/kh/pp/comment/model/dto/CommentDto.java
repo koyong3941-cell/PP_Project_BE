@@ -1,5 +1,27 @@
 package com.kh.pp.comment.model.dto;
 
-public class CommentDto {
+import java.util.Date;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class CommentDto {
+	private Long CommentNo;
+	private Long memberNo;
+	private Long boardNo;
+	private Long commentLikeCount;
+	private String memberName;
+	private String commentContent;
+	private Date createDate;
+	private String delYn;
+	private String imgPath;
+	private String saveName;
 }

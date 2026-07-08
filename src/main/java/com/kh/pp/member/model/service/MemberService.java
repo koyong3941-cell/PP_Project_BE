@@ -1,15 +1,21 @@
 package com.kh.pp.member.model.service;
 
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.pp.auth.model.vo.CustomUserDetails;
+import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailSignUpException;
 import com.kh.pp.exception.FailUserRequestException;
+import com.kh.pp.file.service.FileService;
+import com.kh.pp.member.model.dao.MemberImgMapper;
 import com.kh.pp.member.model.dao.MemberMapper;
 import com.kh.pp.member.model.dto.MemberDto;
 import com.kh.pp.member.model.dto.MemberEditValidation;
+import com.kh.pp.member.model.dto.MemberImgDto;
 import com.kh.pp.member.model.dto.MemberRequestDto;
 import com.kh.pp.member.model.vo.Member;
 
@@ -22,9 +28,12 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class MemberService {
 	private final MemberMapper memberMapper;
+	private final MemberImgMapper memberImgMapper;
+	private final FileService fileService;
 	private final PasswordEncoder passwordEncoder;
 	
 	//멤버 등록
+	@Transactional
 	public void signUp(MemberDto member) {
 		countByMemberId(member.getMemberId());
 		
@@ -37,8 +46,13 @@ public class MemberService {
 				.build();
 		
 		int result = memberMapper.signUp(memberEntity); 
+		
+		if (result != 1) {
+		    throw new FailSignUpException("회원가입에 실패했습니다.");
+		}
 	}
-	// 멤버 검증
+	
+	// 멤버 검증 SignUp과 호환 메서드 추후 findId 이런데서 써도 됨
 	private void countByMemberId(String memberId) { //.
 		int result = memberMapper.countByMemberId(memberId);
 		if(result > 0 ) { 
@@ -48,11 +62,19 @@ public class MemberService {
 
 	// 멤버 상세조회 *앞단에서 로그인 시 추가 정보를 페이로드에 담지 않고 스토리지 저장함
 	public MemberRequestDto memberMoreDetails(Long memberNo) {
-		MemberRequestDto  memberRequestResult = memberMapper.memberMoreDetails(memberNo);
-		if(memberRequestResult == null) {
+		MemberRequestDto  requestResult = memberMapper.memberMoreDetails(memberNo);
+		
+		if(requestResult == null) {
 			throw new FailUserRequestException("사용자 정보 요청에  실패하였습니다.");
 		}
-		return memberRequestResult;
+		
+		String delYn = requestResult.getDelYn();
+		
+		requestResult.setDelYn(
+				"N".equals(delYn)? "N":"Y"
+				);
+		
+		return requestResult;
 	}
 	
 	// 멤버 수정
@@ -79,5 +101,59 @@ public class MemberService {
 		}
 	}
 	
+	// 멤버 이미지 업로드
+	@Transactional 
+	public MemberImgDto userImgUpload(Long memberNo, MultipartFile imageFile) {
+		// 이미지 조회 조회 시 delYn n이 여러개 일 경우 낮은 imgNo를 가진 이미지 삭제(userImgDelete 메서드 재활용)
+		//만약 이미지 조회 시 2개 이상인 경우 imgNo가 낮은 번호를 del_yn Y로 변경
+		
+		if (imageFile == null || imageFile.isEmpty()) {
+			throw new FailUserRequestException("사용자 이미지 파일 업로드에  실패하였습니다, 다시 시도해주세요.");
+		}
+		
+		String saveName = fileService.store(imageFile, "profile");
+		
+		try {
+		MemberImgDto imgDto = new MemberImgDto();
+        imgDto.setMemberNo(memberNo);
+        imgDto.setOriginalName(imageFile.getOriginalFilename());
+        imgDto.setSaveName(saveName);
+        imgDto.setImgPath("/uploads/profile/");
+		
+        memberImgMapper.userImgUpload(imgDto);
+        
+        removeDuplicateImages(memberNo);
+        
+		return imgDto;
+		}catch (Exception e) {
+			throw new FailSaveException("저장에 실패했습니다.");
+		}
+	}
+	
+	private void removeDuplicateImages(Long memberNo) {
+		List<MemberImgDto> list = memberImgMapper.memberImgCount(memberNo);
+		//기존 /*list.size() > 1*/
+		if( list.size() > 1){
+			imageDupleDelete(memberNo, list);
+		}
+	}
+	
+	private void imageDupleDelete(Long memberNo, List<MemberImgDto> list) {
+		Long imageList = memberImgMapper.findMaxCount(memberNo);
+		// 가져온게 여러행일 경우*활성화 이미지가 중복, 가장 최근 이미지말고 다 Del_yn = Y업데이트 치게 구현
+		
+		for(MemberImgDto memberImg : list){
+			if(memberImg.getImgNo().equals(imageList)) {
+				continue;
+			}	
+			userImgDelete(memberNo, memberImg.getImgNo());
+		} 
+	}
+	
+	// 멤버 이미지 삭제
+	@Transactional
+	public void userImgDelete(Long memberNo, Long imgNo) {
+		memberImgMapper.userImgDelete(memberNo, imgNo);
+	}
 
 }

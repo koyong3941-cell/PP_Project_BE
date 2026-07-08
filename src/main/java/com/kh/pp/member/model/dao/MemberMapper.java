@@ -21,12 +21,22 @@ public interface MemberMapper {
 
 	@Select("""
 			SELECT 
-				MEMBER_NAME
-				,EMAIL	
-			FROM
-					MEMBER
+			    M.MEMBER_NAME,
+			    M.EMAIL,
+			    I.IMG_PATH,
+			    I.SAVE_NAME,
+			    I.DEL_YN
+			FROM 
+				MEMBER M
+			LEFT 
+				JOIN MEMBER_IMG I
+			  ON 
+			  	M.MEMBER_NO = I.MEMBER_NO
+			AND 
+				I.DEL_YN = 'N'
 			WHERE 
-					MEMBER_NO =#{memberNo}
+				M.MEMBER_NO = #{memberNo}
+				
 			""")
 	MemberRequestDto memberMoreDetails(Long memberNo);
 

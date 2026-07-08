@@ -11,8 +11,11 @@ import com.kh.pp.board.model.dao.BoardImgMapper;
 import com.kh.pp.board.model.dao.BoardMapper;
 import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.board.model.dto.BoardImgDto;
+import com.kh.pp.board.model.dto.BoardReactionDto;
 import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.vo.Board;
+import com.kh.pp.comment.model.dto.CommentLikeDto;
+import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
@@ -50,26 +53,30 @@ public class BoardService {
 		if (count > 0) {
 			Long boardNo = boardMapper.getLastBoardNoByMemberNo(board.getMemberNo());
 			
-			saveBoardImages(boardNo, board.getImageFiles());
+			saveBoardImg(boardNo, board.getImageFiles());
 		}
 	}
 	
 
 	// Read
-	public List<BoardDto> findBoardAll(int page) {
-		int offset = page * 10;
-		int limit = 10;
+	public PageResponse<BoardDto> findBoardAll(int page) {
+		int size = 10;
+		int offset = page * size;
 		
-		return boardMapper.findBoardAll(offset, limit);
+		List<BoardDto> boards = boardMapper.findBoardAll(offset, size);
+		
+		int totalElements = boardMapper.getBoardTotalElements();
+		
+		return new PageResponse<>(boards, totalElements, page, size);
 	}
 	
-	public List<BoardDto> findBoardByKeyword(int page, String keyword, String target) {
-		int offset = page * 10;
-		int limit = 10;
-		
+	public PageResponse<BoardDto> findBoardByKeyword(int page, String keyword, String target) {
 		if (keyword == null || keyword.trim().isEmpty()) {
-	        return boardMapper.findBoardAll(offset, limit);
-	    }
+			return findBoardAll(page);
+		}
+
+		int size = 10;
+		int offset = page * size;
 		
 		List<String> keywordList = new ArrayList<>();
 		String[] words = keyword.trim().split("\\s+");
@@ -78,37 +85,38 @@ public class BoardService {
 				keywordList.add(word);
 			}
 		}
-				
+		
 		if (target == null || target.trim().isEmpty()) {
 			target = "all";
 		}
-
+		List<BoardDto> boards = boardMapper.findBoardByKeyword(offset, size, keywordList, target);
 		// 앞단에서 카테고리별로 보이는 기능 추가하면 수정해야됨
-		return boardMapper.findBoardByKeyword(offset, limit, keywordList, target);
+		int totalElements = boardMapper.getBoardTotalElementsByKeyword(keywordList, target);
+		
+		return new PageResponse<>(boards, totalElements, page, size);
 	}
-
+	
 	public BoardDto boardDetail(Long boardNo) {
-		increaseBoardCount(boardNo);
-		BoardDto board = getBoardNoOrThrow(boardNo);
+		BoardDto board = boardMapper.boardDetail(boardNo);
+		if (board == null) {
+			throw new FailSaveException("해당 게시글이 존재하지 않습니다.");
+		}
 		
 		List<BoardImgDto> images = boardImgMapper.findBoardImgByBoardNo(boardNo);
 		board.setBoardImages(images);
+		increaseBoardCount(boardNo);
 		
 		return board;
-	}
-	
-	private void increaseBoardCount(Long boardNo) {
-		boardMapper.increaseBoardCount(boardNo);
 	}
 	
 	
 	// Update
 	@Transactional
-	public void editBoard(BoardDto board, Long memberNo, Long boardNo) {
+	public void editBoard(BoardDto board) {
 		long count = validateBoardImages(board.getImageFiles());
 
 		Board boardEntity = Board.builder()
-				.boardNo(boardNo)
+				.boardNo(board.getBoardNo())
 				.memberNo(board.getMemberNo())
 				.boardTitle(board.getBoardTitle())
 				.boardContent(board.getBoardContent())
@@ -120,16 +128,25 @@ public class BoardService {
 		if (result < 1) {
 			throw new FailUpdateException("수정에 실패했습니다.");
 		}
+		// 기존 이미지 삭제처리 (DEL_YN을 'Y'로)
+		boardImgMapper.deleteBoardImgByBoardNo(board.getBoardNo());
+		
 		if(count > 0) {
-			boardImgMapper.deleteBoardImgByBoardNo(boardNo);
-			
-			saveBoardImages(boardNo, board.getImageFiles());
+			saveBoardImg(board.getBoardNo(), board.getImageFiles());
 		}
+	}
+	
+	private void increaseBoardCount(Long boardNo) {
+		boardMapper.increaseBoardCount(boardNo);
 	}
 	
 	// Delete
 	@Transactional
-	public void deleteBoard(Long boardNo, Long memberNo) {
+	public void deleteBoard(Long boardNo, Long memberNo) {		
+		if(memberNo == null) {
+			throw new FailDeleteException("비로그인 상태이므로 삭제가 불가능합니다.");
+		}
+		
 		int result = boardMapper.deleteBoard(boardNo, memberNo);
 		
 		if (result < 1) {
@@ -137,23 +154,12 @@ public class BoardService {
 		}
 	}
 	
-	
-	
-	// ------ 접근 실패 시  ------	
-	private BoardDto getBoardNoOrThrow(Long boardNo) {
-		BoardDto boardDetail = boardMapper.boardDetail(boardNo);
-		if (boardDetail == null) {
-			throw new FailSaveException("유효하지 않은 접근입니다.");
-		}
-		return boardDetail; 
-
-	}
-	
 	// ------ 카테고리 조회 검증 ------	
 	public List<Category> boardCategoryAll() {
 		return boardMapper.boardCategoryAll(); 
 	}
 	
+	// ------ 이미지 갯수 확인 ------
 	private long validateBoardImages(List<MultipartFile> imageFiles) {
 		if (imageFiles == null) {
 			return 0;
@@ -171,7 +177,7 @@ public class BoardService {
 	}
 	
 	// ------ 게시글 이미지 저장 ------
-	private void saveBoardImages(Long boardNo, List<MultipartFile> imageFiles) {
+	private void saveBoardImg(Long boardNo, List<MultipartFile> imageFiles) {
 		if (imageFiles == null || imageFiles.isEmpty()) {
 			return;
 		}
@@ -201,4 +207,48 @@ public class BoardService {
             }
         }
 	}
+
+	@Transactional
+	public void addBoardLike(Long memberNo, Long boardNo) {
+		int countResult = boardMapper.validateLikeExists(memberNo, boardNo);
+		
+		if(countResult > 0) {
+			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
+		}
+		
+		int insertResult = boardMapper.addBoardLike(memberNo, boardNo);
+		
+		if(insertResult != 1) {
+			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
+		}
+	}
+	
+	@Transactional
+	public void addBoardDislike(Long memberNo, Long boardNo) {
+		int countResult = boardMapper.validateDislikeExists(memberNo, boardNo);
+		
+		if(countResult > 0) {
+			throw new FailSaveException("싫어요 저장에 실패하였습니다.");
+		}
+		
+		int insertResult = boardMapper.addBoardDislike(memberNo, boardNo);
+		
+		if(insertResult != 1) {
+			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
+		}
+	}
+
+
+	public BoardReactionDto findBoardReactions(Long boardNo) {	
+		Integer likeCount = boardMapper.findBoardLikeReactions(boardNo);
+		Integer dislikeCount = boardMapper.findBoardDisLikeReactions(boardNo);
+		
+		BoardReactionDto reactionDto = new BoardReactionDto();
+			
+		reactionDto.setBoardLike(likeCount != null? likeCount:0);
+		reactionDto.setBoardDislike(dislikeCount != null? dislikeCount:0);
+		
+		return reactionDto;
+	}
+	
 }

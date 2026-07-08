@@ -35,17 +35,14 @@
 			 ,	B.CREATE_DATE
 			 ,	(SELECT COUNT(*) FROM BOARD_COMMENT WHERE BOARD_NO = B.BOARD_NO) AS COMMENT_COUNT
 			 ,	(SELECT COUNT(*) FROM BOARD_LIKE WHERE BOARD_NO = B.BOARD_NO) AS LIKE_COUNT
-			 ,	COALESCE(
-					(SELECT 
-							IMG_PATH || SAVE_NAME 
-             		   FROM 
-             		   		MEMBER_IMG 
-             		  WHERE 
-             		  		MEMBER_NO = B.MEMBER_NO 
-               		    AND 
-               		    	DEL_YN = 'N'),
-					'/uploads/default/profile.png'
-			 	) AS PROFILE_IMAGE
+			 ,	(SELECT 
+						IMG_PATH || SAVE_NAME 
+             	   FROM 
+             	   		MEMBER_IMG 
+             	  WHERE 
+             	  		MEMBER_NO = B.MEMBER_NO 
+               	    AND 
+               	    	DEL_YN = 'N') AS PROFILE_IMAGE
 		  FROM
 				BOARD B
 		  JOIN
@@ -56,17 +53,7 @@
 				B.DEL_YN = 'N'
 	</sql>
 	
-	<select id="findBoardAll">
-		<include refid="findBoardQuery"/>
-		 ORDER 
-		    BY
-		    	B.BOARD_NO DESC
-	    OFFSET 	#{offset} ROWS FETCH
-		  NEXT  #{limit} ROWS ONLY	
-	</select>
-	
-	<select id="findBoardByKeyword">
-		<include refid="findBoardQuery"/>
+	<sql id="findBoardWhere">
 		   AND	(
 				<choose>
 					<when test="target == 'writer'">
@@ -95,11 +82,25 @@
             		</otherwise>
 				</choose>
 		   		)
+	</sql>
+	
+	<select id="findBoardAll">
+		<include refid="findBoardQuery"/>
 		 ORDER 
 		    BY
 		    	B.BOARD_NO DESC
 	    OFFSET 	#{offset} ROWS FETCH
-		  NEXT  #{limit} ROWS ONLY	
+		  NEXT  #{size} ROWS ONLY	
+	</select>
+	
+	<select id="findBoardByKeyword">
+		<include refid="findBoardQuery"/>
+		<include refid="findBoardWhere"/>
+		 ORDER 
+		    BY
+		    	B.BOARD_NO DESC
+	    OFFSET 	#{offset} ROWS FETCH
+		  NEXT  #{size} ROWS ONLY	
 	</select>
 
     <select id="boardDetail">
@@ -110,15 +111,16 @@
 			 ,	B.COUNT
 			 ,	C.CATEGORY_NAME
 			 ,	M.MEMBER_ID
+			 ,  B.CREATE_DATE
 			 ,	(SELECT COUNT(*) FROM BOARD_COMMENT WHERE BOARD_NO = B.BOARD_NO) AS COMMENT_COUNT
 			 ,	(SELECT COUNT(*) FROM BOARD_LIKE WHERE BOARD_NO = B.BOARD_NO) AS LIKE_COUNT
 			 ,	(SELECT COUNT(*) FROM BOARD_DISLIKE WHERE BOARD_NO = B.BOARD_NO) AS DISLIKE_COUNT
 			 
 		  FROM 
 				BOARD B
-		  Join 
+		  JOIN 
 				Category C USING(CATEGORY_NO)
-		  Join
+		  JOIN
 				MEMBER M USING(MEMBER_NO)
 		 WHERE 
 				B.BOARD_NO = #{boardNo}
@@ -146,6 +148,27 @@
 		    	BOARD_NO DESC
 		 FETCH
 		 		FIRST 1 ROWS ONLY
+	</select>
+	
+	<select id="getBoardTotalElements">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		BOARD
+		 WHERE
+		 		DEL_YN = 'N'
+	</select>
+	
+	<select id="getBoardTotalElementsByKeyword">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		BOARD B
+		  JOIN
+		  		MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+		 WHERE
+		 		B.DEL_YN = 'N'
+		<include refid="findBoardWhere"/>
 	</select>
 	
 <!-- Update -->
@@ -182,4 +205,56 @@
    		   AND
    				MEMBER_NO = #{memberNo}
 	</update>
+<!-- BoardLikeUpdate -->
+	<insert id="addBoardLike" parameterType="Board">
+		INSERT
+		  INTO
+		  		BOARD_LIKE
+		  		(
+		  		MEMBER_NO 
+			 ,	BOARD_NO
+			  	)
+		VALUES
+				(
+				#{memberNo}
+			 ,  #{boardNo}
+				)
+	</insert>
+<!-- addBoardDislikeInsert -->
+	<insert id="addBoardDislike" parameterType="Board">
+		INSERT
+		  INTO
+		  		BOARD_DISLIKE
+		  		(
+		  		MEMBER_NO 
+			 ,	BOARD_NO
+			  	)
+		VALUES
+				(
+				#{memberNo}
+			 ,  #{boardNo}
+				)
+	</insert>
+<!-- validateLikeExists -->
+	<select id="validateLikeExists">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		BOARD_LIKE
+		 WHERE
+		 	MEMBER_NO = #{memberNo}
+		 AND
+		 	BOARD_NO = #{boardNo}
+	</select>
+<!-- validateDislikeExists -->
+<select id="validateDislikeExists">
+	SELECT
+			COUNT(*)
+	  FROM
+	  		BOARD_DISLIKE
+	 WHERE
+	 	MEMBER_NO = #{memberNo}
+	 AND
+	 	BOARD_NO = #{boardNo}
+</select>
 </mapper>

@@ -38,37 +38,31 @@
 			 ,	P.CLASSIFICATION
 			 ,	P.COUNT
 			 ,	P.CREATE_DATE
-			 ,	(SELECT COUNT(*) FROM PLANT_REVIEW WHERE PLANT_NO = P.PLANT_NO) AS REVIEW_COUNT
-			 ,	COALESCE(
-    				(SELECT	
-    						ROUND(AVG(RATING)) 
-             		   FROM 
-             		   		PLANT_REVIEW 
-             		  WHERE 
-             		  		PLANT_NO = P.PLANT_NO),
-             		0
-             	) AS AVG_RATING
-		FROM
-			PLANT P
-		JOIN
-			MEMBER M USING(MEMBER_NO)
-		WHERE
-			P.DEL_YN = 'N'	
+			 ,	COUNT(PR.PLANT_NO) AS REVIEW_COUNT
+			 ,	COALESCE(ROUND(AVG(PR.RATING)), 0) AS AVG_RATING
+             ,	MI.IMG_PATH || MI.SAVE_NAME AS PROFILE_IMAGE
+			 ,	PI.IMG_PATH || PI.SAVE_NAME AS MAIN_PLANT_IMAGE
+		  FROM
+				PLANT P
+		  JOIN
+				MEMBER M ON P.MEMBER_NO = M.MEMBER_NO
+		  LEFT
+		  JOIN
+				MEMBER_IMG MI ON MI.MEMBER_NO = P.MEMBER_NO
+							 AND MI.DEL_YN = 'N'
+		  LEFT
+		  JOIN
+				PLANT_IMG PI ON PI.PLANT_NO = P.PLANT_NO 
+       						AND PI.IMG_ORDER = 1 
+       						AND PI.DEL_YN = 'N'
+       	  LEFT
+       	  JOIN
+       	  		PLANT_REVIEW PR ON PR.PLANT_NO = P.PLANT_NO
+		 WHERE
+				P.DEL_YN = 'N'	
 	</sql>
 	
-	<select id="findPlantAll">
-		<include refid="findPlantQuery" />
-		ORDER 
-		BY
-			P.PLANT_NO DESC
-	    OFFSET 
-	    	#{offset} ROWS
-		FETCH 
-			NEXT #{limit} ROWS ONLY
-	</select>
-	
-	<select id="findPlantByKeyword">
-		<include refid="findPlantQuery" />
+	<sql id="findPlantWhere">
 		   AND	(
 				<choose>
 					<when test="target == 'writer'">
@@ -109,13 +103,46 @@
             		</otherwise>
 				</choose>
 		   		)
-		ORDER 
-		BY
-			P.PLANT_NO DESC
+	</sql>
+	
+	<sql id="findPlantQueryGroup">
+		 GROUP
+		 	BY
+				P.PLANT_NO
+			 ,	M.MEMBER_NAME
+			 ,  P.PLANT_NAME
+			 ,	P.CLASSIFICATION
+			 ,	P.COUNT
+			 ,	P.CREATE_DATE
+			 ,	MI.IMG_PATH
+			 ,  MI.SAVE_NAME
+			 ,	PI.IMG_PATH
+			 ,	PI.SAVE_NAME
+	</sql>
+	
+	<select id="findPlantAll">
+		<include refid="findPlantQuery" />
+		<include refid="findPlantQueryGroup" />
+		 ORDER 
+		    BY
+				P.PLANT_NO DESC
 	    OFFSET 
-	    	#{offset} ROWS
-		FETCH 
-			NEXT #{limit} ROWS ONLY
+	    		#{offset} ROWS FETCH 
+		  NEXT 	
+		  		#{size} ROWS ONLY
+	</select>
+	
+	<select id="findPlantByKeyword">
+		<include refid="findPlantQuery" />
+		<include refid="findPlantWhere" />
+		<include refid="findPlantQueryGroup" />
+		 ORDER 
+		    BY
+				P.PLANT_NO DESC
+	    OFFSET 
+	    		#{offset} ROWS FETCH 
+		  NEXT 	
+		  		#{size} ROWS ONLY
 	</select>
 	
     <select id="plantDetail">
@@ -131,40 +158,52 @@
 			 ,	M.MEMBER_ID
 			 ,	P.PLANT_API
 		FROM 
-			PLANT P
+				PLANT P
 		Join
-			MEMBER M USING(MEMBER_NO)
+				MEMBER M USING(MEMBER_NO)
 		WHERE 
-			P.PLANT_NO = #{plantNo}
+				P.PLANT_NO = #{plantNo}
 		AND
-			P.DEL_YN = 'N'
+				P.DEL_YN = 'N'
     </select>
-    
-    <select id="getLastPlantNoByMemberNo" resultType="java.lang.Long">
+
+<!-- Count -->
+	<select id="getPlantTotalElements">
 		SELECT
-			PLANT_NO
-		FROM
-			PLANT
-		WHERE
-			MEMBER_NO = #{memberNo}
-		ORDER
-		BY
-			PLANT_NO DESC
-		FETCH
-			FIRST 1 ROWS ONLY
+				COUNT(*)
+		  FROM
+		  		PLANT
+		 WHERE
+		 		DEL_YN = 'N'
+	</select>
+	
+	<select id="getPlantTotalElementsByKeyword">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT P
+		  JOIN
+		  		MEMBER M ON P.MEMBER_NO = M.MEMBER_NO
+		 WHERE
+		 		P.DEL_YN = 'N'
+		<include refid="findPlantWhere" />
 	</select>
     
 <!-- Update -->
     <update id="editPlant">
    		UPDATE
-   			PLANT
-   		SET
-   			PLANT_NAME = #{plant.plantName}
-   			, PLANT_INFO = #{plant.plantInfo}
-   		WHERE
-   			PLANT_NO = #{plant.plantNo}
-   		AND
-   			MEMBER_NO = #{memberNo}
+   				PLANT
+   		   SET
+   		   		MEMBER_NO = #{memberNo}
+   			 ,	PLANT_NAME = #{plantName}
+   			 ,	CLASSIFICATION = #{classification}
+   			 ,	PLANT_INFO = #{plantInfo}
+   			 ,	CARBON_CAPTURE = #{carbonCapture}
+   			 ,	GROWTH_INFO = #{growthInfo}
+   			 ,	PLANT_API = #{plantApi}
+   			 
+   		 WHERE
+   				PLANT_NO = #{plantNo}
 	</update>
 	
 	<update id="increasePlantCount">
@@ -184,9 +223,31 @@
    			DEL_YN = 'Y'
    		WHERE
    			PLANT_NO = #{plantNo}
-   		AND
-   			MEMBER_NO = #{memberNo}
 	</update>
 	
+<!-- Validate -->
+    <select id="getLastPlantNoByMemberNo" resultType="java.lang.Long">
+		SELECT
+				PLANT_NO
+		FROM
+				PLANT
+		WHERE
+				MEMBER_NO = #{memberNo}
+		ORDER
+		   BY
+				PLANT_NO DESC
+		FETCH
+				FIRST 1 ROWS ONLY
+	</select>
 	
+	<select id="isActivePlant">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT
+		 WHERE
+		 		PLANT_NO = #{plantNo}
+		   AND
+		   		DEL_YN = 'N'
+	</select>
 </mapper>

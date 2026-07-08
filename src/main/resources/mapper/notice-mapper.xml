@@ -21,27 +21,22 @@
     </select>
     
     <select id="findNoticeAll">
-    		SELECT
-    			NOTICE_TITLE
-    			,NOTICE_CONTENT
-    			,NOTICE_COUNT
-    			,CREATE_DATE
-    			
-    		FROM
-    			NOTICE
-    			
-    		WHERE
-    			DEL_YN='N'
-    			
-    		ORDER
-    		BY
-    			NOTICE_NO
-    		DESC
-    		
-    		OFFSET #{offset} ROWS
-    		FETCH NEXT #{limit}
-    		
-    		ROWS ONLY
+			SELECT 
+				n.NOTICE_NO
+				,m.MEMBER_NAME
+				,n.NOTICE_TITLE
+				,n.NOTICE_CONTENT
+				,n.NOTICE_COUNT
+				,n.CREATE_DATE
+			FROM
+				NOTICE n
+			JOIN
+				MEMBER m ON (n.MEMBER_NO = m.MEMBER_NO)
+			WHERE
+				n.DEL_YN = 'N'
+				ORDER BY n.NOTICE_NO DESC
+				OFFSET #{offset} ROWS
+				FETCH NEXT #{limit} ROWS ONLY
     </select>
     
     <select id="findByNoticeId">

@@ -10,6 +10,7 @@ import lombok.Value;
 @Value
 @Builder
 public class Notice {
+	
 	private Long noticeNo; 
 	private Long memberNo;
 	private String noticeTitle;
