@@ -4,38 +4,32 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import com.kh.pp.notice.model.dto.NoticeDto;
+import com.kh.pp.notice.model.vo.Notice;
 
 @Mapper
 public interface NoticeMapper {
-	@Select("""
-			SELECT 
-				n.NOTICE_NO
-				,m.MEMBER_NO
-				,m.MEMBER_NAME
-				,n.NOTICE_TITLE
-				,n.NOTICE_CONTENT
-				,n.NOTICE_COUNT
-				,n.CREATE_DATE
-				,n.DEL_YN
-			FROM
-				NOTICE n
-			JOIN
-				MEMBER m ON (n.MEMBER_NO = m.MEMBER_NO)
-			WHERE
-				n.DEL_YN = 'N'
-				ORDER BY n.NOTICE_NO DESC
-				OFFSET #{offset} ROWS
-				FETCH NEXT #{limit} ROWS ONLY
-			""")
-	List<NoticeDto> findNoticeAll(@Param("offset") int offset, @Param("limit") int limit);
-	
-	@Update("UPDATE NOTICE SET NOTICE_COUNT = NOTICE_COUNT + 1 WHERE NOTICE_NO = #{noticeNo}")
-	void increaseCount(Long noticeNo);
-	
+
+	List<NoticeDto> findNoticeAll(@Param("offset") int offset, @Param("size") int size);
+
 	NoticeDto noticeDetail(Long noticeNo);
+	
+	List<NoticeDto> searchNotice(@Param("keyword")String keyword,@Param("offset")int offset,@Param("size") int size);
+	
+	int getNoticeTotalElements();
+	
+	int saveNotice(Notice noticeEntity);
+
+	int editNotice(Notice noticeEntity);
+
+	void deleteNotice(@Param("noticeNo")Long noticeNo);
+	
+	void updateCount(Long noticeNo);
+
+	Long getLastNoticeNoByMemberNo(Long memberNo);
+	
+	void increaseNoticeCount(Long noticeNo);
+
 
 }
