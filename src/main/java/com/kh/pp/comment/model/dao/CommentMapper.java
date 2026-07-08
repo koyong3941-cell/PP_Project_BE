@@ -27,10 +27,16 @@ public interface CommentMapper {
 	        C.DEL_YN,
 	        MI.IMG_PATH,
 	        MI.SAVE_NAME,(
-	            SELECT COUNT(*)
-	            FROM COMMENT_LIKE CL
-	            WHERE CL.COMMENT_NO = C.COMMENT_NO
-        ) AS COMMENT_LIKE_COUNT
+		        SELECT COUNT(*)
+		        FROM COMMENT_LIKE CL2
+		        WHERE CL2.COMMENT_NO = C.COMMENT_NO
+		    ) AS COMMENT_LIKE_COUNT,
+		CASE
+	        WHEN CL.COMMENT_NO IS NULL THEN 0
+			       ELSE 1
+		 END 
+			AS 
+			   LIKED
 	    FROM
 	        BOARD_COMMENT C
 	    LEFT JOIN MEMBER M
@@ -38,6 +44,9 @@ public interface CommentMapper {
 	    LEFT JOIN MEMBER_IMG MI
 	        ON MI.MEMBER_NO = M.MEMBER_NO
 	       AND MI.DEL_YN = 'N'
+	    LEFT JOIN COMMENT_LIKE CL
+		    ON CL.COMMENT_NO = C.COMMENT_NO
+		   AND CL.MEMBER_NO = #{memberNo}
 	    WHERE
 	        C.BOARD_NO = #{boardNo}
 	    AND
@@ -45,7 +54,7 @@ public interface CommentMapper {
 	    ORDER BY
 	        C.CREATE_DATE ASC
 	    """)
-	List<CommentDto> findCommentByBoardNo(Long boardNo);
+	List<CommentDto> findCommentByBoardNo(@Param("boardNo") Long boardNo, @Param("memberNo") Long memberNo);
 
 	// 댓글 생성
 	@Insert("""
@@ -156,6 +165,29 @@ public interface CommentMapper {
 				COMMENT_NO = #{commentNo}
 			""")
 	CommentLikeDto commentLikeAllByCommentNo(Long commentNo);
+
+	@Select("""
+		SELECT
+			B.COMMENT_NO,
+	    CASE
+	        WHEN C.COMMENT_NO IS NULL THEN 0
+	        ELSE 1
+		END 
+			AS LIKED
+		FROM 
+			BOARD_COMMENT B
+		LEFT JOIN 
+			COMMENT_LIKE C
+			    ON B.COMMENT_NO = C.COMMENT_NO
+		   AND 
+			   C.MEMBER_NO = #{memberNo}
+			WHERE 
+				B.BOARD_NO = #{boardNo}
+			AND
+		B.DEL_YN 
+				= 'N';
+			""")
+	boolean likeList(@Param("boardNo") Long boardNo, @Param("memberNo") Long memberNo);
 
 
 	
