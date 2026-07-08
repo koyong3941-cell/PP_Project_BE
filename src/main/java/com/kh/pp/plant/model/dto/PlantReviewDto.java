@@ -44,10 +44,17 @@ public class PlantReviewDto {
 	private Date createDate;
 	private String delYn;
 
+	// Join
+	private String memberName;
+	private Integer likeCount;
+	
+	// 사용자가 좋아요 했는지 확인용
+	private boolean isLiked;
+	
 	// 이미지 입력용
 	@Size(max = 5, message = "이미지는 최대 5장까지만 가능합니다.")
 	private List<MultipartFile> imageFiles;
 
 	// 이미지 출력용
-	private List<PlantImgDto> plantImages;
+	private List<PlantReviewImgDto> plantReviewImages;
 }

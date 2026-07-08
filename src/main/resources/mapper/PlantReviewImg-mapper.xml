@@ -24,5 +24,35 @@
 			 , 	#{imgOrder}
 			    )
 	</insert>
+	
+	<select id="findImagesByReviewNos">
+		SELECT
+			 	REVIEW_NO
+			 ,	ORIGINAL_NAME
+			 ,	SAVE_NAME
+			 ,	IMG_PATH
+			 ,	IMG_ORDER
+		  FROM
+		  		PLANT_REVIEW_IMG
+		 WHERE
+		 		REVIEW_NO IN
+		<foreach collection="reviewNos" item="reviewNo" open="(" close=")" separator=",">
+				#{reviewNo}
+		</foreach>
+		   AND
+		   		DEL_YN = 'N'
+		 ORDER
+		 	BY
+		 		REVIEW_NO, IMG_ORDER ASC
+	</select>
+	
+	<update id="deletePlantReviewImgByReviewNo">
+		UPDATE
+				PLANT_REVIEW_IMG
+		   SET
+		   		DEL_YN = 'Y'
+		 WHERE
+		 		REVIEW_NO = #{reviewNo}
+	</update>
 
 </mapper>

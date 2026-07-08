@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
+import com.kh.pp.exception.PlantNotFoundException;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.plant.model.dao.PlantImgMapper;
 import com.kh.pp.plant.model.dao.PlantMapper;
@@ -51,7 +53,7 @@ public class PlantService {
 			throw new FailSaveException("작성에 실패했습니다.");
 		}
 		if(count > 0) {
-			Long plantNo = plantMapper.getLastPlantNoByMemberNo(plant.getMemberNo());
+			Long plantNo = plantMapper.getLastPlantNoByMemberNo(plantEntity.getMemberNo());
 
 			savePlantImg(plantNo, plant.getImageFiles());
 		}
@@ -59,23 +61,24 @@ public class PlantService {
 	}
 	
 	// Read
-	public PageResponse<PlantDto> findPlantAll(int page) {
-		int size = 10;
+	public PageResponse<PlantDto> findPlantAll(int page, int size) {
 		int offset = page * size;
 
-		List<PlantDto> plants = plantMapper.findPlantAll(offset, size);
-		
 		int totalElements = plantMapper.getPlantTotalElements();
+		if (totalElements == 0) {
+			return PageResponse.empty(page, size);
+		}
+		
+		List<PlantDto> plants = plantMapper.findPlantAll(offset, size);
 		
 		return new PageResponse<>(plants, totalElements, page, size);
 	}
 	
-	public PageResponse<PlantDto> findPlantByKeyword(int page, String keyword, String target) {
+	public PageResponse<PlantDto> findPlantByKeyword(int page, int size, String keyword, String target) {
 		if (keyword == null || keyword.trim().isEmpty()) {
-			return findPlantAll(page);
+			return findPlantAll(page, size);
 		}
 		
-		int size = 10;
 		int offset = page * size;
 		
 		
@@ -91,10 +94,14 @@ public class PlantService {
 			target = "all";
 		}
 		
-		List<PlantDto> plants = plantMapper.findPlantByKeyword(offset, size, keywordList, target);
-	
 		int totalElements = plantMapper.getPlantTotalElementsByKeyword(keywordList, target);
 		
+		if (totalElements == 0) {
+			return PageResponse.empty(page, size);
+		}
+		
+		List<PlantDto> plants = plantMapper.findPlantByKeyword(offset, size, keywordList, target);
+	
 		return new PageResponse<>(plants, totalElements, page, size);
 	}
 
