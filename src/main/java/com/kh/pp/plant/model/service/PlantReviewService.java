@@ -104,11 +104,12 @@ public class PlantReviewService {
 		
 		PlantRatingDto rating = plantReviewMapper.getReviewRating(plantNo, memberNo);
 		
+		boolean hasMyReview = false;
 		if(memberNo != null) {
 			int count = plantReviewMapper.hasWrittenReview(plantNo, memberNo);
-			boolean hasMyReview = count > 0;
+			hasMyReview = count > 0;
 		}
-	
+		rating.setHasMyReview(hasMyReview);
 		
 		return rating;
 	}
