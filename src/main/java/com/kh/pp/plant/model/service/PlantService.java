@@ -153,9 +153,9 @@ public class PlantService {
 	// Delete
 	@Transactional
 	public void deletePlant(Long plantNo, Long memberNo) {
-	int result = plantMapper.deletePlant(plantNo);
+		int result = plantMapper.deletePlant(plantNo);
 		
-		if (result < 1) {
+		if (result == 0) {
 			throw new FailDeleteException("삭제에 실패하였습니다.");
 		}
 	}
