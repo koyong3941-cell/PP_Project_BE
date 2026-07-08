@@ -61,8 +61,7 @@ public class PlantService {
 	}
 	
 	// Read
-	public PageResponse<PlantDto> findPlantAll(int page) {
-		int size = 10;
+	public PageResponse<PlantDto> findPlantAll(int page, int size) {
 		int offset = page * size;
 
 		int totalElements = plantMapper.getPlantTotalElements();
@@ -75,12 +74,11 @@ public class PlantService {
 		return new PageResponse<>(plants, totalElements, page, size);
 	}
 	
-	public PageResponse<PlantDto> findPlantByKeyword(int page, String keyword, String target) {
+	public PageResponse<PlantDto> findPlantByKeyword(int page, int size, String keyword, String target) {
 		if (keyword == null || keyword.trim().isEmpty()) {
-			return findPlantAll(page);
+			return findPlantAll(page, size);
 		}
 		
-		int size = 10;
 		int offset = page * size;
 		
 		

@@ -73,7 +73,7 @@
 	<select id="getReviewRating">
 		SELECT 
     			COUNT(*) AS TOTAL_RATING
-    		 ,	ROUND(AVG(RATING)) / 2.0 AS AVERAGE_RATING
+    		 ,	ROUND(AVG(RATING)) AS AVERAGE_RATING
     		 ,	SUM(CASE WHEN RATING IN (1,2) THEN 1 ELSE 0 END) AS ONE
     		 ,	SUM(CASE WHEN RATING IN (3,4) THEN 1 ELSE 0 END) AS TWO
     		 ,	SUM(CASE WHEN RATING IN (5,6) THEN 1 ELSE 0 END) AS THREE
@@ -99,6 +99,22 @@
       	   AND 
       	   		DEL_YN = 'N'
 	</select>
+	
+<!-- Update -->
+<select id="editPlantReview">
+	UPDATE
+			PLANT_REVIEW
+	   SET
+	   		RATING = #{rating}
+		 ,	REVIEW_TITLE = #{reviewTitle}
+		 ,	REVIEW_CONTENT = #{reviewContent}
+	 WHERE
+	 		PLANT_NO = #{plantNo}
+	   AND
+	   		MEMBER_NO = #{memberNo}
+	   AND
+	   		REVIEW_NO = #{reviewNo}
+</select>
 
 <!-- Count -->
 	<select id="getPlantReviewTotalElements">

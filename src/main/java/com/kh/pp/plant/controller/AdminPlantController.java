@@ -39,8 +39,11 @@ public class AdminPlantController {
 	
 	// Read (현재 일반 사용자와 똑같이 작동 중)
 	@GetMapping
-	public ResponseEntity<ApiResponse<PageResponse<PlantDto>>> findPlantAll(@RequestParam(value = "page", defaultValue ="0") int page){
-		PageResponse<PlantDto> plants = plantService.findPlantAll(page);
+	public ResponseEntity<ApiResponse<PageResponse<PlantDto>>> findPlantAll(
+			@RequestParam(value = "page", defaultValue ="0") int page
+			, @RequestParam(name = "size", defaultValue = "10") int size
+			){
+		PageResponse<PlantDto> plants = plantService.findPlantAll(page, size);
 	
 		return ResponseEntity.status(200).body(ApiResponse.success(plants));
 	}
@@ -55,8 +58,11 @@ public class AdminPlantController {
 	
 	// Update
 	@PatchMapping("/{plantNo}")
-	public ResponseEntity<ApiResponse<Void>> editPlant(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute  @Valid PlantDto plant,
-			@PathVariable(name = "plantNo") Long plantNo){
+	public ResponseEntity<ApiResponse<Void>> editPlant(
+			@AuthenticationPrincipal CustomUserDetails userDetails
+			, @ModelAttribute @Valid PlantDto plant
+			, @PathVariable(name = "plantNo") Long plantNo
+			){
 		Long memberNoFromToken = userDetails.getMemberNo();
 		plant.setMemberNo(memberNoFromToken);
 		plant.setPlantNo(plantNo);

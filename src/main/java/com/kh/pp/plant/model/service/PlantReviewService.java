@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pp.common.page.PageResponse;
-import com.kh.pp.common.review.ReviewResponse;
 import com.kh.pp.exception.DuplicateMemberException;
 import com.kh.pp.exception.FailSaveException;
+import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.exception.PlantNotFoundException;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.plant.model.dao.PlantMapper;
@@ -23,6 +23,7 @@ import com.kh.pp.plant.model.dto.PlantReviewDto;
 import com.kh.pp.plant.model.dto.PlantReviewImgDto;
 import com.kh.pp.plant.model.vo.PlantReview;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +41,7 @@ public class PlantReviewService {
 	// Create
 	@Transactional
 	public void savePlantReview(PlantReviewDto plantReview) {
-		long count = validatePlantImages(plantReview.getImageFiles());
+		long count = validatePlantReviewImages(plantReview.getImageFiles());
 		
 		PlantReview plantReviewEntity = PlantReview.builder()
 				.memberNo(plantReview.getMemberNo())
@@ -114,6 +115,32 @@ public class PlantReviewService {
 		return rating;
 	}
 	
+	// Update
+	public void editPlantReview(PlantReviewDto plantReview, Long memberNo, Long reviewNo) {
+		long count = validatePlantReviewImages(plantReview.getImageFiles());
+		
+		PlantReview plantReviewEntity = PlantReview.builder()
+				.reviewNo(reviewNo)
+				.memberNo(memberNo)
+				.plantNo(plantReview.getPlantNo())
+				.reviewTitle(plantReview.getReviewTitle())
+				.reviewContent(plantReview.getReviewContent())
+				.rating(plantReview.getRating())
+				.build();
+		
+		int result = plantReviewMapper.editPlantReview(plantReviewEntity);
+		
+		if (result < 1) {
+			throw new FailUpdateException("리뷰 수정에 실패했습니다.");
+		}
+		
+		plantReviewImgMapper.deletePlantReviewImgByReviewNo(plantReviewEntity.getReviewNo());
+		
+		if(count > 0) {
+			savePlantReviewImg(reviewNo, plantReview.getImageFiles());
+		}
+	}
+	
 	// ------ 식물 게시글 활성 여부 확인 ------
 	private void isActivePlant(Long plantNo) {
 		int result = plantMapper.isActivePlant(plantNo);
@@ -124,7 +151,7 @@ public class PlantReviewService {
 	}
 	
 	// ------ 식물 리뷰 이미지 갯수 확인 ------
-	private long validatePlantImages(List<MultipartFile> imageFiles) {
+	private long validatePlantReviewImages(List<MultipartFile> imageFiles) {
 		if (imageFiles == null) {
 			return 0;
 		}
@@ -171,10 +198,6 @@ public class PlantReviewService {
             }
         }
 	}
-
-
-
-
 
 
 }

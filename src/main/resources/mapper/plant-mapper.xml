@@ -201,7 +201,6 @@
    			 ,	CARBON_CAPTURE = #{carbonCapture}
    			 ,	GROWTH_INFO = #{growthInfo}
    			 ,	PLANT_API = #{plantApi}
-   			 
    		 WHERE
    				PLANT_NO = #{plantNo}
 	</update>

@@ -45,5 +45,14 @@
 		 	BY
 		 		REVIEW_NO, IMG_ORDER ASC
 	</select>
+	
+	<update id="deletePlantReviewImgByReviewNo">
+		UPDATE
+				PLANT_REVIEW_IMG
+		   SET
+		   		DEL_YN = 'Y'
+		 WHERE
+		 		REVIEW_NO = #{reviewNo}
+	</update>
 
 </mapper>

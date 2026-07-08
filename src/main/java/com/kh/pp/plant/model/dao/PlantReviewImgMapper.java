@@ -13,5 +13,7 @@ public interface PlantReviewImgMapper {
 	int insertPlantReviewImg(PlantReviewImgDto imgDto);
 
 	List<PlantReviewImgDto> findImagesByReviewNos(@Param("reviewNos") List<Long> reviewNos);
+	
+	void deletePlantReviewImgByReviewNo(Long plantNo);
 
 }
