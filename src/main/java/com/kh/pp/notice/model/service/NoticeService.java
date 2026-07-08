@@ -91,8 +91,16 @@ public class NoticeService {
 	
 	@Transactional
 	public NoticeDto findByNoticeId(Long noticeNo) {
-		noticeMapper.updateCount(noticeNo);
-		return noticeMapper.findByNoticeId(noticeNo);
+		NoticeDto notice = noticeMapper.findByNoticeId(noticeNo);
+		if(notice == null) {
+			throw new FailSaveException("해당 공지사항이 존재하지 않습니다.");
+		}
+		
+		List<NoticeImgDto> images = noticeImgMapper.findNoticeImgByNoticeNo(noticeNo);
+		notice.setNoticeImages(images);
+		increaseNoticeCount(noticeNo);
+		
+		return notice;
 	}
 	
 
@@ -117,6 +125,9 @@ public class NoticeService {
 		
 	}
 	
+	private void increaseNoticeCount(Long noticeNo) {
+		noticeMapper.increaseNoticeCount(noticeNo);
+	}
 	
 	public void deleteNotice(CustomUserDetails userDetails, Long noticeNo) {
 		noticeMapper.deleteNotice(noticeNo);

@@ -26,7 +26,8 @@ public interface NoticeMapper {
 	void updateCount(Long noticeNo);
 
 	Long getLastNoticeNoByMemberNo(Long memberNo);
-
+	
+	void increaseNoticeCount(Long noticeNo);
 
 
 }

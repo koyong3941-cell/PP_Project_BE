@@ -10,9 +10,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -29,7 +34,11 @@ public class NoticeDto {
 	
 	// join
 	private String memberName;
+	
+	//이미지 입력용
 	private List<MultipartFile> imageFiles;
+	
+	//이미지 출력용
 	private List<NoticeImgDto> noticeImages; 
 
 	

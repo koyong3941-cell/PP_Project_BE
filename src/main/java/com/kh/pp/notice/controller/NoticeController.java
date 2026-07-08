@@ -35,8 +35,9 @@ public class NoticeController {
 	public ResponseEntity<ApiResponse<NoticeDto>> findByNoticeId(
 			@PathVariable(name= "noticeNo") Long noticeNo){
 		
-		return ResponseEntity.ok(
-				ApiResponse.success(noticeService.findByNoticeId(noticeNo)));
+		NoticeDto notice = noticeService.findByNoticeId(noticeNo);
+		
+		return ResponseEntity.status(200).body(ApiResponse.success(notice));
 	}
 	
 	//검색
