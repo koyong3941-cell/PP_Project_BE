@@ -74,9 +74,9 @@ public class MemberController {
 	}
 	// 유저 이미지 업로드 삭제
 	@DeleteMapping("profile/image")
-	public ResponseEntity<ApiResponse<Void>> userImgDelete(@AuthenticationPrincipal CustomUserDetails userDetails, Long imgNo){
+	public ResponseEntity<ApiResponse<Void>> userImgDelete(@AuthenticationPrincipal CustomUserDetails userDetails){
 		Long memberNoFromToken = userDetails.getMemberNo();
-		memberService.userImgDelete(memberNoFromToken, imgNo);
+		memberService.userImgDelete(memberNoFromToken);
 		return ResponseEntity.status(204).body(ApiResponse.noContent("삭제 성공", null));
 	}
 	
