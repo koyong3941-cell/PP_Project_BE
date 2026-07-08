@@ -166,21 +166,8 @@
 		AND
 				P.DEL_YN = 'N'
     </select>
-    
-    <select id="getLastPlantNoByMemberNo" resultType="java.lang.Long">
-		SELECT
-				PLANT_NO
-		FROM
-				PLANT
-		WHERE
-				MEMBER_NO = #{memberNo}
-		ORDER
-		   BY
-				PLANT_NO DESC
-		FETCH
-				FIRST 1 ROWS ONLY
-	</select>
-	
+
+<!-- Count -->
 	<select id="getPlantTotalElements">
 		SELECT
 				COUNT(*)
@@ -214,7 +201,6 @@
    			 ,	CARBON_CAPTURE = #{carbonCapture}
    			 ,	GROWTH_INFO = #{growthInfo}
    			 ,	PLANT_API = #{plantApi}
-   			 
    		 WHERE
    				PLANT_NO = #{plantNo}
 	</update>
@@ -236,9 +222,31 @@
    			DEL_YN = 'Y'
    		WHERE
    			PLANT_NO = #{plantNo}
-   		AND
-   			MEMBER_NO = #{memberNo}
 	</update>
 	
+<!-- Validate -->
+    <select id="getLastPlantNoByMemberNo" resultType="java.lang.Long">
+		SELECT
+				PLANT_NO
+		FROM
+				PLANT
+		WHERE
+				MEMBER_NO = #{memberNo}
+		ORDER
+		   BY
+				PLANT_NO DESC
+		FETCH
+				FIRST 1 ROWS ONLY
+	</select>
 	
+	<select id="isActivePlant">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT
+		 WHERE
+		 		PLANT_NO = #{plantNo}
+		   AND
+		   		DEL_YN = 'N'
+	</select>
 </mapper>

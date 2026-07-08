@@ -14,6 +14,7 @@ import com.kh.pp.board.model.dto.BoardImgDto;
 import com.kh.pp.board.model.dto.BoardReactionDto;
 import com.kh.pp.board.model.dto.Category;
 import com.kh.pp.board.model.vo.Board;
+import com.kh.pp.comment.model.dto.CommentLikeDto;
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;

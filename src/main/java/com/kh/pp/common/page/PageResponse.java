@@ -14,6 +14,10 @@ public class PageResponse<T> {
     private int currentPage;
     private int size;
     
+    public static <T> PageResponse<T> empty(int page, int size){
+    	return new PageResponse<>(List.of(), 0, page, size);
+    }
+
     public PageResponse(List<T> content, long totalElements, int currentPage, int size) {
         this.content = content;
         this.totalElements = totalElements;
@@ -21,4 +25,5 @@ public class PageResponse<T> {
         this.size = size;
         this.totalPages = size > 0 ? (int) Math.ceil((double) totalElements / size) : 0;
     }
+    
 }

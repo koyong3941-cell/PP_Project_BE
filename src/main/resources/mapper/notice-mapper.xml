@@ -122,8 +122,7 @@
 		NOTICE_TITLE,
 		NOTICE_CONTENT
    )
-   	 
-   	VALUES
+	VALUES
    	(
 		#{memberNo}
    		,#{noticeTitle}

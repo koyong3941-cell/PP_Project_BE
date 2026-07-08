@@ -105,7 +105,10 @@ public class NoticeService {
 		notice.setNoticeImages(images);
 		increaseNoticeCount(noticeNo);
 		
-		return notice;
+		List<NoticeDto> notices = noticeMapper.findNoticeAll(offset,size);
+		int totalElements = noticeMapper.getNoticeTotalElements();
+		
+		return new PageResponse<>(notices,totalElements,page,size);
 	}
 	
 
@@ -149,6 +152,7 @@ public class NoticeService {
 		return noticeMapper.searchNotice(keyword,offset,size);
 	
 	}
+	
 
 	private void saveNoticeImages(Long noticeNo, List<MultipartFile> imageFiles) {
 		if (imageFiles == null || imageFiles.isEmpty()) {
