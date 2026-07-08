@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class CommentService {
 	private final CommentMapper commentMapper;
 
@@ -62,7 +63,7 @@ public class CommentService {
 	
 	//공통 행 익셉션 처리
 	private void checkAffectedRows(int result, RuntimeException exception) {
-		if(result < 1) {
+		if(result != 1) {
 			throw exception;
 		}
 	}

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pp.plant.model.dao.PlantReviewMapper">
+<!-- Create -->
+	<insert id="savePlantReview">
+		INSERT
+		  INTO
+		  		PLANT_REVIEW
+				(
+			 	MEMBER_NO
+			 ,	PLANT_NO
+			 ,	RATING
+			 ,	REVIEW_TITLE
+			 ,	REVIEW_CONTENT			 
+				)
+		VALUES
+				(
+				#{memberNo}
+			 ,	#{plantNo}
+			 ,	#{rating}
+			 ,	#{reviewTitle}
+			 ,	#{reviewContent}
+				)
+	</insert>
+
+<!-- Read -->
+	<select id="findPlantReviewAll">
+		SELECT
+				R.REVIEW_NO
+			 ,	M.MEMBER_NAME
+			 ,	R.RATING
+			 ,	R.REVIEW_TITLE
+			 ,	R.REVIEW_CONTENT
+			 ,	R.CREATE_DATE
+			 ,	(
+				SELECT 
+						COUNT(*) 
+				  FROM 
+				  		PLANT_REVIEW_LIKE 
+				 WHERE 
+				 		REVIEW_NO = R.REVIEW_NO
+				) AS LIKE_COUNT
+			 ,	CASE WHEN #{memberNo} IS NOT NULL AND EXISTS
+			 	(
+					SELECT
+							1
+					  FROM
+					  		PLANT_REVIEW_LIKE
+					 WHERE
+					 		REVIEW_NO = R.REVIEW_NO
+					   AND
+					   		MEMBER_NO = #{memberNo}
+				)	THEN 1 ELSE 0 END AS IS_LIKED
+		  FROM
+		  		PLANT_REVIEW R
+		  JOIN
+		  		MEMBER M ON R.MEMBER_NO = M.MEMBER_NO
+		 WHERE
+		 		R.DEL_YN = 'N'
+		   AND
+		   		R.PLANT_NO = #{plantNo}
+		 ORDER
+			BY
+				R.CREATE_DATE DESC
+		OFFSET
+				#{offset} ROWS FETCH
+		  NEXT
+		  		#{size} ROWS ONLY
+	</select>
+	
+	<select id="getReviewRating">
+		SELECT 
+    			COUNT(*) AS TOTAL_RATING
+    		 ,	ROUND(AVG(RATING)) AS AVERAGE_RATING
+    		 ,	SUM(CASE WHEN RATING IN (1,2) THEN 1 ELSE 0 END) AS ONE
+    		 ,	SUM(CASE WHEN RATING IN (3,4) THEN 1 ELSE 0 END) AS TWO
+    		 ,	SUM(CASE WHEN RATING IN (5,6) THEN 1 ELSE 0 END) AS THREE
+    		 ,	SUM(CASE WHEN RATING IN (7,8) THEN 1 ELSE 0 END) AS FOUR
+    		 ,	SUM(CASE WHEN RATING IN (9,10) THEN 1 ELSE 0 END) AS FIVE
+   		  FROM 
+   		  		PLANT_REVIEW
+		 WHERE 
+		 		PLANT_NO = #{plantNo}
+  		   AND 
+  		   		DEL_YN = 'N'
+	</select>
+	
+	<select id="hasWrittenReview">
+		SELECT 
+				COUNT(*)
+    	  FROM 
+    	  		PLANT_REVIEW
+    	 WHERE 
+    	 		PLANT_NO = #{plantNo}
+      	   AND 
+      	   		MEMBER_NO = #{memberNo}
+      	   AND 
+      	   		DEL_YN = 'N'
+	</select>
+	
+<!-- Update -->
+<select id="editPlantReview">
+	UPDATE
+			PLANT_REVIEW
+	   SET
+	   		RATING = #{rating}
+		 ,	REVIEW_TITLE = #{reviewTitle}
+		 ,	REVIEW_CONTENT = #{reviewContent}
+	 WHERE
+	 		PLANT_NO = #{plantNo}
+	   AND
+	   		MEMBER_NO = #{memberNo}
+	   AND
+	   		REVIEW_NO = #{reviewNo}
+</select>
+
+<!-- Count -->
+	<select id="getPlantReviewTotalElements">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT_REVIEW
+		 WHERE
+		   		PLANT_NO = #{plantNo}
+		   AND
+		   		DEL_YN = 'N'
+	</select>
+	
+<!-- Validate -->
+	<select id="getLastReviewNoByMemberNo">
+		SELECT
+				REVIEW_NO
+		  FROM
+		  		PLANT_REVIEW
+		 WHERE
+		 		MEMBER_NO = #{memberNo}
+		 ORDER
+		    BY
+		    	REVIEW_NO DESC
+		 FETCH
+		 		FIRST 1 ROWS ONLY
+	</select>
+	
+	<select id="hasReviewByMemberNo">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT_REVIEW
+		 WHERE
+		   		PLANT_NO = #{plantNo}
+		   AND
+		 		MEMBER_NO = #{memberNo}
+		   AND
+		   		DEL_YN = 'N'
+	</select>
+	
+</mapper>
