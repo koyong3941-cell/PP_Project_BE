@@ -22,17 +22,23 @@ public class PlantController {
 	
 	// Read
 	@GetMapping
-	public ResponseEntity<ApiResponse<PageResponse<PlantDto>>> findPlantAll(@RequestParam(value = "page", defaultValue ="0") int page){
-		PageResponse<PlantDto> plants = plantService.findPlantAll(page);
+	public ResponseEntity<ApiResponse<PageResponse<PlantDto>>> findPlantAll(
+			@RequestParam(value = "page", defaultValue ="0") int page
+			, @RequestParam(name = "size", defaultValue = "10") int size
+			){
+		PageResponse<PlantDto> plants = plantService.findPlantAll(page, size);
 	
 		return ResponseEntity.status(200).body(ApiResponse.success(plants));
 	}
 	
 	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<PageResponse<PlantDto>>> findBoardByKeyword(@RequestParam(name = "page", defaultValue = "0") int page,
-																		  @RequestParam(name = "keyword", required = false) String keyword,
-																		  @RequestParam(name = "target", required = false) String target){
-		PageResponse<PlantDto> plants = plantService.findPlantByKeyword(page, keyword, target);
+	public ResponseEntity<ApiResponse<PageResponse<PlantDto>>> findBoardByKeyword(
+			@RequestParam(name = "page", defaultValue = "0") int page
+			, @RequestParam(name = "size", defaultValue = "10") int size
+			, @RequestParam(name = "keyword", required = false) String keyword
+			, @RequestParam(name = "target", required = false) String target
+			){
+		PageResponse<PlantDto> plants = plantService.findPlantByKeyword(page, size, keyword, target);
 		
 		return ResponseEntity.ok(ApiResponse.success(plants));
 	}

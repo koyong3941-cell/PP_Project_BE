@@ -2,6 +2,7 @@ package com.kh.pp.plant.model.dto;
 
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -25,4 +26,9 @@ public class PlantReviewImgDto {
 	private Integer imgOrder;
 	private Date createDate;
 	private String delYn;
+	
+	@JsonIgnore
+    public Long getReviewNo() {
+        return reviewNo;
+    }
 }

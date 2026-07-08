@@ -15,10 +15,13 @@ import lombok.ToString;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlantRatingDto {
-	private Integer averageRating;
+	private Integer totalRating;
+	private Double averageRating;
 	private Integer one;
 	private Integer two;
 	private Integer three;
 	private Integer four;
 	private Integer five;
+	
+	private boolean hasMyReview;
 }
