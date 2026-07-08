@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kh.pp.board.model.dao.BoardMapper;
 import com.kh.pp.comment.model.dao.CommentMapper;
 import com.kh.pp.comment.model.dto.CommentDto;
 import com.kh.pp.comment.model.dto.CommentLikeDto;
@@ -25,12 +24,13 @@ public class CommentService {
 	private final CommentMapper commentMapper;
 
 	// 코멘트 리스트 조회 
-	public List<CommentDto> findCommentByBoardNo(Long boardNo) {
-		List<CommentDto> list = commentMapper.findCommentByBoardNo(boardNo);
+	public List<CommentDto> findCommentByBoardNo(Long boardNo, Long memberNo) {
+		List<CommentDto> list = commentMapper.findCommentByBoardNo(boardNo, memberNo);
 		
 		if(list == null) {
 			throw new FailUserRequestException("코멘트 요청에 실패하였습니다.");
 		}
+		
 		return list;
 	}
 
@@ -83,6 +83,7 @@ public class CommentService {
 		if(result != 1) {
 			throw new FailUserRequestException("좋아요 요청에 실패하였습니다.");
 		}
+		
 	}
 
 	// 좋아요 원복
@@ -93,6 +94,7 @@ public class CommentService {
 		if(result != 1) {
 			throw new FailUserRequestException("취소 요청에 실패하였습니다.");
 		}
+
 	}
 	
 	// 좋아요 유무 검증
