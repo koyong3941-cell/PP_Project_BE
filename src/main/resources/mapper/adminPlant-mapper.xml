@@ -120,7 +120,7 @@
 		FROM 
 				PLANT
 		WHERE
-				P.PLANT_NO = #{plantNo}
+				PLANT_NO = #{plantNo}
     </select>
 
 <!-- Update -->
