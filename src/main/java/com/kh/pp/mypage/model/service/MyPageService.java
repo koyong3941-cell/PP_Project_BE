@@ -52,7 +52,7 @@ public class MyPageService {
 		    totalMiddle += middle;
 		    totalBig += big;
 		}
-		
+		// 총량 계산
 		Double allCap = totalSmall + totalMiddle + totalBig;
 		
 		PlantPageResponse<MyPageResponse> response =
