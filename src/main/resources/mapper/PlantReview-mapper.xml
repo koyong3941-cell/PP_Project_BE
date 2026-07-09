@@ -169,6 +169,17 @@
 	</select>
 	
 <!-- Validate -->
+	<select id="isActivePlant">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT
+		 WHERE
+		 		PLANT_NO = #{plantNo}
+		   AND
+		   		DEL_YN = 'N'
+	</select>
+	
 	<select id="getLastReviewNoByMemberNo">
 		SELECT
 				REVIEW_NO
