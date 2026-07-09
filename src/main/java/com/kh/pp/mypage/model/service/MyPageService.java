@@ -17,8 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class MyPageService {
 	private final MyPageMapper myPageMapper;
 	
-	public PlantPageResponse<MyPageResponse> plantList(Long memberNo) {
-		int size = 3;
+	public PlantPageResponse<MyPageResponse> plantList(Long memberNo, int size) {
 
 		int totalElements = myPageMapper.plantTotalElements(memberNo);
 		
