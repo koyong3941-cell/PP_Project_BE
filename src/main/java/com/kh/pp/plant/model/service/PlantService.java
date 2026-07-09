@@ -45,7 +45,6 @@ public class PlantService {
 		
 		int offset = page * size;
 		
-		
 		List<String> keywordList = new ArrayList<>();
 		String[] words = keyword.trim().split("\\s+");
 		for (String word : words) {
@@ -81,7 +80,7 @@ public class PlantService {
 		return plant;
 	}
 	
-	// Update
+	// Count
 	private void increasePlantCount(Long plantNo) {
 		plantMapper.increasePlantCount(plantNo);
 	}

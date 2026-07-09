@@ -1,14 +1,17 @@
 package com.kh.pp.plant.model.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
+import com.kh.pp.exception.PlantNotFoundException;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.plant.model.dao.AdminPlantMapper;
 import com.kh.pp.plant.model.dao.PlantImgMapper;
@@ -58,6 +61,61 @@ public class AdminPlantService {
 		
 	}
 	
+	// Read
+	public PageResponse<PlantDto> findPlantAll(int page, int size) {
+		int offset = page * size;
+		
+		int totalElements = adminPlantMapper.getPlantTotalElements();
+		if (totalElements == 0) {
+			return PageResponse.empty(page, size);
+		}
+		
+		List<PlantDto> plants = adminPlantMapper.findPlantAll(offset, size);
+		
+		return new PageResponse<>(plants, totalElements, page, size);
+	}
+	
+	public PageResponse<PlantDto> findPlantByKeyword(int page, int size, String keyword, String target) {
+		if (keyword == null || keyword.trim().isEmpty()) {
+			return findPlantAll(page, size);
+		}
+		
+		int offset = page * size;
+		
+		List<String> keywordList = new ArrayList<>();
+		String[] words = keyword.trim().split("\\s+");
+		for (String word : words) {
+			if (!word.isEmpty()) {
+				keywordList.add(word);
+			}
+		}
+		
+		if (target == null || target.trim().isEmpty()) {
+			target = "all";
+		}
+		
+		int totalElements = adminPlantMapper.getPlantTotalElementsByKeyword(keywordList, target);
+		
+		if (totalElements == 0) {
+			return PageResponse.empty(page, size);
+		}
+		
+		List<PlantDto> plants = adminPlantMapper.findPlantByKeyword(offset, size, keywordList, target);
+		
+		return new PageResponse<>(plants, totalElements, page, size);
+	}
+	
+	public PlantDto plantDetail(Long plantNo) {
+		PlantDto plant = adminPlantMapper.plantDetail(plantNo);
+		if (plant == null) {
+			throw new FailSaveException("해당 식물이 존재하지 않습니다.");
+		}
+		List<PlantImgDto> images = plantImgMapper.findPlantImgByPlantNo(plantNo);
+		plant.setPlantImages(images);
+		
+		return plant;
+	}
+	
 	// Update
 	@Transactional
 	public void editPlant(PlantDto plant) {
@@ -86,15 +144,34 @@ public class AdminPlantService {
 			savePlantImg(plant.getPlantNo(), plant.getImageFiles());
 		}
 	}
+	
+	@Transactional
+	public int restorePlants(List<Long> plantNos) {
+		if (plantNos == null || plantNos.isEmpty()) {
+	        throw new PlantNotFoundException("복구할 식물 번호를 선택해주세요.");
+	    }
+		
+		int result = adminPlantMapper.restorePlants(plantNos);
+		
+		if (result == 0) {
+			throw new FailDeleteException("복구에 실패하였습니다.");
+		}
+		return result;
+	}
 
 	// Delete
 	@Transactional
-	public void deletePlant(Long plantNo, Long memberNo) {
-		int result = adminPlantMapper.deletePlant(plantNo);
+	public int deletePlants(List<Long> plantNos) {
+		if (plantNos == null || plantNos.isEmpty()) {
+	        throw new PlantNotFoundException("삭제할 식물 번호를 선택해주세요.");
+	    }
+		
+		int result = adminPlantMapper.deletePlants(plantNos);
 		
 		if (result == 0) {
 			throw new FailDeleteException("삭제에 실패하였습니다.");
 		}
+		return result;
 	}
 	
 	
@@ -147,5 +224,4 @@ public class AdminPlantService {
         }
 	}
 
-	
 }

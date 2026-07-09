@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.pp.plant.model.dao.PlantMapper">
-<!-- Read -->
+<!-- Read Sql-->
 	<sql id="findPlantQuery">
 		SELECT 
 				P.PLANT_NO
@@ -94,29 +94,28 @@
 			 ,	PI.SAVE_NAME
 	</sql>
 	
+	<sql id="findPlantOffset">
+		 ORDER
+		 	BY
+		 		P.PLANT_NO DESC
+		OFFSET
+				#{offset} ROWS FETCH
+		  NEXT
+		  		#{size} ROWS ONLY
+	</sql>
+
+<!-- Read -->	
 	<select id="findPlantAll">
 		<include refid="findPlantQuery" />
 		<include refid="findPlantQueryGroup" />
-		 ORDER 
-		    BY
-				P.PLANT_NO DESC
-	    OFFSET 
-	    		#{offset} ROWS FETCH 
-		  NEXT 	
-		  		#{size} ROWS ONLY
+		<include refid="findPlantOffset" />
 	</select>
 	
 	<select id="findPlantByKeyword">
 		<include refid="findPlantQuery" />
 		<include refid="findPlantWhere" />
 		<include refid="findPlantQueryGroup" />
-		 ORDER 
-		    BY
-				P.PLANT_NO DESC
-	    OFFSET 
-	    		#{offset} ROWS FETCH 
-		  NEXT 	
-		  		#{size} ROWS ONLY
+		<include refid="findPlantOffset" />
 	</select>
 	
     <select id="plantDetail">
@@ -163,7 +162,6 @@
 		<include refid="findPlantWhere" />
 	</select>
     
-<!-- Update -->
     <update id="increasePlantCount">
 		UPDATE 
 			PLANT 
@@ -173,16 +171,4 @@
 			PLANT_NO = #{plantNo}
 	</update>
 	
-<!-- Validate -->
-	
-	<select id="isActivePlant">
-		SELECT
-				COUNT(*)
-		  FROM
-		  		PLANT
-		 WHERE
-		 		PLANT_NO = #{plantNo}
-		   AND
-		   		DEL_YN = 'N'
-	</select>
 </mapper>

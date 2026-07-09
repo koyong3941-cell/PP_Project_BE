@@ -28,10 +28,8 @@ public interface PlantMapper {
 			@Param("keywordList") List<String> keywordList
 			, @Param("target") String target);
 
-	// Update
 	void increasePlantCount(Long plantNo);
 
-	// Validate
-	int isActivePlant(Long plantNo);
+
 	
 }
