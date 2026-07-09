@@ -60,6 +60,7 @@ public class SecurityConfiguration {
 					requests.requestMatchers("/uploads/**").permitAll();
 					// 8. 마이페이지 및 센서 관련
 					requests.requestMatchers("/api/sensor/**").authenticated();
+					requests.requestMatchers(HttpMethod.GET, "/api/mypage/**").authenticated();
 					
 					// 요청 /api/plants get
 					requests.anyRequest().authenticated(); 
