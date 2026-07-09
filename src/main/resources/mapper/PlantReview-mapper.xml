@@ -44,6 +44,7 @@
 	<select id="findPlantReviewAll">
 		SELECT
 				R.REVIEW_NO
+			, R.MEMBER_NO
 			 ,	M.MEMBER_NAME
 			 ,	R.RATING
 			 ,	R.REVIEW_TITLE

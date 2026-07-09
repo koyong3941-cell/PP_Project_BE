@@ -51,9 +51,17 @@ public class MemberPlantService {
 		 if (existing != null) {
 			 throw new FailUserRequestException("식물 추가에 실패했습니다, 기등록된 식물 값이 존재합니다.");
 		} 
-
+		 
+		 log.info("memberNo={}", memberNo);
+		 log.info("plantNo={}", plantNo);
+		 log.info("small={}", plantRequest.getSmallPlant());
+		 log.info("middle={}", plantRequest.getMiddlePlant());
+		 log.info("big={}", plantRequest.getBigPlant());
+		 
 		int result = memberPlantMapper.memberPlantAdd(memberNo, plantNo,
 				plantRequest.getSmallPlant(), plantRequest.getMiddlePlant(), plantRequest.getBigPlant());
+		
+		log.info("update result={}", result);
 
 		if (result != 1) {
 			throw new FailUserRequestException("식물 추가에 실패했습니다, 다시 시도해주세요.");
@@ -65,10 +73,18 @@ public class MemberPlantService {
 	@Transactional
 	public void memberPlantEdit(Long tokenMemberNo, Long memberNo, Long plantNo, MemberPlantOwnedResponseDto plantRequest) {
 		validateMemberMatch(tokenMemberNo, memberNo);
+		
+		log.info("memberNo={}", memberNo);
+		 log.info("plantNo={}", plantNo);
+		 log.info("small={}", plantRequest.getSmallPlant());
+		 log.info("middle={}", plantRequest.getMiddlePlant());
+		 log.info("big={}", plantRequest.getBigPlant());
 
 		int result = memberPlantMapper.memberPlantEdit(memberNo, plantNo,
 				plantRequest.getSmallPlant(), plantRequest.getMiddlePlant(), plantRequest.getBigPlant());
 
+		log.info("update result={}", result);
+		
 		if (result < 1) {
 			throw new FailUserRequestException("식물 변경에 실패했습니다, 다시 시도해주세요.");
 		}
