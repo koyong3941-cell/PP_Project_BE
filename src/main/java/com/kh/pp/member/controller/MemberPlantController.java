@@ -72,4 +72,5 @@ public class MemberPlantController {
 		memberPlantService.memberPlantDelete(userDetails.getMemberNo(), memberNo, plantNo);
 		return ResponseEntity.status(200).body(ApiResponse.success("식물 삭제에 성공했습니다", null));
 	}
+
 }
