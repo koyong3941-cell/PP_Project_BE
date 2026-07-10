@@ -54,7 +54,7 @@ public class AdminPlantController {
 	}
 	
 	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<PageResponse<PlantDto>>> findBoardByKeyword(
+	public ResponseEntity<ApiResponse<PageResponse<PlantDto>>> findPlantByKeyword(
 			@RequestParam(name = "page", defaultValue = "0") int page
 			, @RequestParam(name = "size", defaultValue = "10") int size
 			, @RequestParam(name = "keyword", required = false) String keyword

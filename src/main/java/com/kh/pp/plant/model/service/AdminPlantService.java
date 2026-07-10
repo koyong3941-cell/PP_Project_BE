@@ -154,7 +154,7 @@ public class AdminPlantService {
 		int result = adminPlantMapper.restorePlants(plantNos);
 		
 		if (result == 0) {
-			throw new FailDeleteException("복구에 실패하였습니다.");
+			throw new FailUpdateException("복구에 실패하였습니다.");
 		}
 		return result;
 	}
