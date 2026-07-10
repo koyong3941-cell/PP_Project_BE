@@ -44,6 +44,16 @@ public class AdminMemberController {
 		return ResponseEntity.status(200).body(ApiResponse.success(admins));
 	}
 	
+	@GetMapping("/members")
+	public ResponseEntity<ApiResponse<PageResponse<MemberDto>>> findMemberAll(
+			@RequestParam(value = "page", defaultValue ="0") int page
+			, @RequestParam(name = "size", defaultValue = "10") int size
+			){
+		PageResponse<MemberDto> members = adminMemberService.findMemberAll(page, size);
+	
+		return ResponseEntity.status(200).body(ApiResponse.success(members));
+	}
+	
 	@GetMapping("/admins/search")
 	public ResponseEntity<ApiResponse<PageResponse<MemberDto>>> findAdminByKeyword(
 			@RequestParam(name = "page", defaultValue = "0") int page
@@ -56,10 +66,28 @@ public class AdminMemberController {
 		return ResponseEntity.ok(ApiResponse.success(admins));
 	}
 	
+	@GetMapping("/members/search")
+	public ResponseEntity<ApiResponse<PageResponse<MemberDto>>> findMemberByKeyword(
+			@RequestParam(name = "page", defaultValue = "0") int page
+			, @RequestParam(name = "size", defaultValue = "10") int size
+			, @RequestParam(name = "keyword", required = false) String keyword
+			, @RequestParam(name = "target", required = false) String target
+			){
+		PageResponse<MemberDto> members = adminMemberService.findMemberByKeyword(page, size, keyword, target);
+		
+		return ResponseEntity.ok(ApiResponse.success(members));
+	}
+	
 	// Update
 	@PatchMapping("/admins")
 	public ResponseEntity<ApiResponse<?>> restoreAdmins(@RequestBody MemberNoListDto request){
 		int result = adminMemberService.restoreAdmins(request.getMemberNos());
+		return ResponseEntity.ok(ApiResponse.success(result + "명 복구에 성공했습니다.", result));
+	}
+
+	@PatchMapping("/members")
+	public ResponseEntity<ApiResponse<?>> restoreMembers(@RequestBody MemberNoListDto request){
+		int result = adminMemberService.restoreMembers(request.getMemberNos());
 		return ResponseEntity.ok(ApiResponse.success(result + "명 복구에 성공했습니다.", result));
 	}
 	
@@ -70,4 +98,9 @@ public class AdminMemberController {
 		return ResponseEntity.ok(ApiResponse.success(result + "명 탈퇴에 성공했습니다.", result));
 	}
 	
+	@DeleteMapping("/members")
+	public ResponseEntity<ApiResponse<?>> deleteMembers(@RequestBody MemberNoListDto request){
+		int result = adminMemberService.deleteMembers(request.getMemberNos());
+		return ResponseEntity.ok(ApiResponse.success(result + "명 탈퇴에 성공했습니다.", result));
+	}
 }

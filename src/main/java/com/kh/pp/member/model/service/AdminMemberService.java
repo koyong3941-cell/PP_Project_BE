@@ -28,8 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminMemberService {
 	private final AdminMemberMapper adminMemberMapper;
 	private final MemberMapper memberMapper;
-	private final MemberImgMapper memberImgMapper;
-	private final FileService fileService;
 	private final PasswordEncoder passwordEncoder;
 
 	// Create
@@ -66,6 +64,19 @@ public class AdminMemberService {
 		return new PageResponse<>(admins, totalElements, page, size);
 	}
 
+	public PageResponse<MemberDto> findMemberAll(int page, int size) {
+		int offset = page * size;
+
+		int totalElements = adminMemberMapper.getMemberTotalElements();
+		if (totalElements == 0) {
+			return PageResponse.empty(page, size);
+		}
+		
+		List<MemberDto> members = adminMemberMapper.findMemberAll(offset, size);
+		
+		return new PageResponse<>(members, totalElements, page, size);
+	}
+	
 	public PageResponse<MemberDto> findAdminByKeyword(int page, int size, String keyword, String target) {
 		if (keyword == null || keyword.trim().isEmpty()) {
 			return findAdminAll(page, size);
@@ -96,6 +107,36 @@ public class AdminMemberService {
 		return new PageResponse<>(admins, totalElements, page, size);
 	}
 	
+	public PageResponse<MemberDto> findMemberByKeyword(int page, int size, String keyword, String target) {
+		if (keyword == null || keyword.trim().isEmpty()) {
+			return findMemberAll(page, size);
+		}
+		
+		int offset = page * size;
+		
+		List<String> keywordList = new ArrayList<>();
+		String[] words = keyword.trim().split("\\s+");
+		for (String word : words) {
+			if (!word.isEmpty()) {
+				keywordList.add(word);
+			}
+		}
+		
+		if (target == null || target.trim().isEmpty()) {
+			target = "all";
+		}
+		
+		int totalElements = adminMemberMapper.getMemberTotalElementsByKeyword(keywordList, target);
+		
+		if (totalElements == 0) {
+			return PageResponse.empty(page, size);
+		}
+		
+		List<MemberDto> members = adminMemberMapper.findMemberByKeyword(offset, size, keywordList, target);
+		
+		return new PageResponse<>(members, totalElements, page, size);
+	}
+	
 	// Update
 	@Transactional
 	public int restoreAdmins(List<Long> memberNos) {
@@ -111,6 +152,20 @@ public class AdminMemberService {
 		return result;
 	}
 	
+	@Transactional
+	public int restoreMembers(List<Long> memberNos) {
+		if (memberNos == null || memberNos.isEmpty()) {
+			throw new MemberNotFoundException("복구시킬 회원 번호를 선택해주세요.");
+		}
+		
+		int result = adminMemberMapper.restoreMembers(memberNos);
+		
+		if (result == 0) {
+			throw new FailUpdateException("복구에 실패하였습니다.");
+		}
+		return result;
+	}
+	
 	// Delete
 	@Transactional
 	public int deleteAdmins(List<Long> memberNos) {
@@ -119,7 +174,21 @@ public class AdminMemberService {
 		}
 		
 		int result = adminMemberMapper.deleteAdmins(memberNos);
-
+		
+		if (result == 0) {
+			throw new FailUpdateException("탈퇴에 실패하였습니다.");
+		}
+		return result;
+	}
+	
+	@Transactional
+	public int deleteMembers(List<Long> memberNos) {
+		if (memberNos == null || memberNos.isEmpty()) {
+			throw new MemberNotFoundException("탈퇴시킬 회원 번호를 선택해주세요.");
+		}
+		
+		int result = adminMemberMapper.deleteMembers(memberNos);
+		
 		if (result == 0) {
 			throw new FailUpdateException("탈퇴에 실패하였습니다.");
 		}

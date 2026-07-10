@@ -5,8 +5,8 @@
 <mapper namespace="com.kh.pp.member.model.dao.AdminMemberMapper">
 
 <!-- Read Sql-->
-	<sql id="findAdminQuery">
-			SELECT
+	<sql id="findQuery">
+		SELECT
 				MEMBER_NO
 			 ,	MEMBER_ID
 			 ,	MEMBER_NAME
@@ -15,11 +15,29 @@
 			 ,	DEL_YN
 		  FROM
 		  		MEMBER
+	</sql>
+	
+	<sql id="whereRoleAdmin">
 		 WHERE
-		 		ROLE = 'ROLE_ADMIN'
+		 		ROLE = 'ROLE_ADMIN'	
+	</sql>
+	
+	<sql id="whereRoleMember">
+		 WHERE
+		 		ROLE = 'ROLE_USER'	
 	</sql>
 
-	<sql id="findMemberWhere">
+	<sql id="findAdminQuery">
+		<include refid="findQuery"/>
+		<include refid="whereRoleAdmin"/>
+	</sql>
+	
+	<sql id="findMemberQuery">
+		<include refid="findQuery"/>
+		<include refid="whereRoleMember"/>
+	</sql>
+
+	<sql id="keywordWhere">
 		   AND	(
 				<choose>
 					<when test="target == 'memberName'">
@@ -66,58 +84,101 @@
 		<include refid="findMemberOffset"/>
 	</select>
 	
-	<select id="findAdminByKeyword">
-		<include refid="findAdminQuery"/>
-		<include refid="findMemberWhere"/>
+	<select id="findMemberAll">
+		<include refid="findMemberQuery"/>
 		<include refid="findMemberOffset"/>
 	</select>
 	
+	<select id="findAdminByKeyword">
+		<include refid="findAdminQuery"/>
+		<include refid="keywordWhere"/>
+		<include refid="findMemberOffset"/>
+	</select>
+	
+	<select id="findMemberByKeyword">
+		<include refid="findMemberQuery"/>
+		<include refid="keywordWhere"/>
+		<include refid="findMemberOffset"/>
+	</select>
+
+<!-- Member List Sql-->
+	<sql id="memberList">
+		   AND
+		 		MEMBER_NO IN
+		 		<foreach item="memberNo" collection="memberNos"
+		 				 open="(" separator="," close=")">
+		 			#{memberNo}		 
+		 		</foreach>
+	</sql>
+	
 <!-- Update -->
-	<update id="restoreAdmins">
+	<sql id="setDelN">
 		UPDATE
 				MEMBER
 		   SET
 		   		DEL_YN = 'N'
-		 WHERE
-		 		MEMBER_NO IN
-		 		<foreach item="memberNo" collection="memberNos"
-		 				 open="(" separator="," close=")">
-		 			#{memberNo}		 
-		 		</foreach>
+	</sql>
+
+	<update id="restoreAdmins">
+		<include refid="setDelN"/>
+		<include refid="whereRoleAdmin"/>
+		<include refid="memberList"/>
+	</update>
+	
+	<update id="restoreMembers">
+		<include refid="setDelN"/>
+		<include refid="whereRoleMember"/>
+		<include refid="memberList"/>
 	</update>
 
 <!-- Delete -->
-	<update id="deleteAdmins">
+	<sql id="setDelY">
 		UPDATE
 				MEMBER
 		   SET
 		   		DEL_YN = 'Y'
-		 WHERE
-		 		MEMBER_NO IN
-		 		<foreach item="memberNo" collection="memberNos"
-		 				 open="(" separator="," close=")">
-		 			#{memberNo}		 
-		 		</foreach>
+	</sql>
+
+	<update id="deleteAdmins">
+		<include refid="setDelY"/>
+		<include refid="whereRoleAdmin"/>
+		<include refid="memberList"/>
+	</update>
+
+	<update id="deleteMembers">
+		<include refid="setDelY"/>
+		<include refid="whereRoleMember"/>
+		<include refid="memberList"/>
 	</update>
 
 <!-- Count -->
-	<select id="getAdminTotalElements">
+	<sql id="memberCount">
 		SELECT
 				COUNT(*)
 		  FROM
 		  		MEMBER
-		 WHERE
-		 		ROLE = 'ROLE_ADMIN'
+	</sql>
+
+	<select id="getAdminTotalElements">
+		<include refid="memberCount"/>
+		<include refid="whereRoleAdmin"/>
+	</select>
+
+	<select id="getMemberTotalElements">
+		<include refid="memberCount"/>
+		<include refid="whereRoleMember"/>
 	</select>
 	
 	<select id="getAdminTotalElementsByKeyword">
-		SELECT
-				COUNT(*)
-		  FROM
-		  		MEMBER
-		 WHERE
-		 		ROLE = 'ROLE_ADMIN'
-		<include refid="findMemberWhere"/>
+		<include refid="memberCount"/>
+		<include refid="whereRoleAdmin"/>
+		<include refid="keywordWhere"/>
+	</select>
+	
+	<select id="getMemberTotalElementsByKeyword">
+		<include refid="memberCount"/>
+		<include refid="whereRoleMember"/>
+		<include refid="keywordWhere"/>
 	</select>
 
 </mapper>
