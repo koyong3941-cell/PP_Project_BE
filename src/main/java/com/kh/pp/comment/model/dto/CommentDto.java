@@ -24,5 +24,5 @@ public class CommentDto {
 	private String delYn;
 	private String imgPath;
 	private String saveName;
-	private Integer liked;
+	private Integer liked; 
 }

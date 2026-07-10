@@ -21,10 +21,18 @@ public interface MyPageMapper {
 				,M.MIDDLE_PLANT
 				,M.SMALL_PLANT
 				,P.CARBON_CAPTURE
+				,PI.IMG_PATH
+				,PI.SAVE_NAME
+				,PI.DEL_YN
 			FROM
 				MEMBER_PLANT M
 			JOIN
 				PLANT P ON M.PLANT_NO = P.PLANT_NO
+			LEFT JOIN 
+				PLANT_IMG PI
+					ON P.PLANT_NO = PI.PLANT_NO
+			AND
+				PI.DEL_YN = 'N'
 			WHERE
 				M.MEMBER_NO = #{memberNo}
 			ORDER 
