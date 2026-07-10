@@ -20,6 +20,7 @@ import com.kh.pp.exception.FailLikeException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailSignUpException;
 import com.kh.pp.exception.FailUpdateException;
+import com.kh.pp.exception.MemberNotFoundException;
 import com.kh.pp.exception.PlantNotFoundException;
 import com.kh.pp.exception.dto.ErrorResponse;
 
@@ -59,6 +60,11 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(UsernameNotFoundException.class)
 	public ResponseEntity<ErrorResponse> HandlerUsernameNotFound(UsernameNotFoundException e) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(404, "없는 자원입니다.", null));
+	}
+	
+	@ExceptionHandler(MemberNotFoundException.class)
+	public ResponseEntity<ErrorResponse> HandlerMemberNotFound(MemberNotFoundException e) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(404, e.getMessage(), null));
 	}
 	
 	@ExceptionHandler(PlantNotFoundException.class)

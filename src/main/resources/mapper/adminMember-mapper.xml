@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pp.member.model.dao.AdminMemberMapper">
+
+<!-- Read Sql-->
+	<sql id="findAdminQuery">
+			SELECT
+				MEMBER_NO
+			 ,	MEMBER_ID
+			 ,	MEMBER_NAME
+			 ,	EMAIL
+			 ,	ENROLL_DATE
+			 ,	DEL_YN
+		  FROM
+		  		MEMBER
+		 WHERE
+		 		ROLE = 'ROLE_ADMIN'
+	</sql>
+
+	<sql id="findMemberWhere">
+		   AND	(
+				<choose>
+					<when test="target == 'memberName'">
+						<foreach collection="keywordList" item="word" separator="AND">
+							MEMBER_NAME LIKE '%' || #{word} || '%'
+						</foreach>
+					</when>
+					<when test="target == 'memberId'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		MEMBER_ID LIKE '%' || #{word} || '%'
+                		</foreach>
+            		</when>
+            		<when test="target == 'email'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		EMAIL LIKE '%' || #{word} || '%'
+                		</foreach>
+                	</when>
+            		<otherwise>
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		(
+		                        MEMBER_NAME LIKE '%' || #{word} || '%'
+		                        OR MEMBER_ID LIKE '%' || #{word} || '%'
+		                        OR EMAIL LIKE '%' || #{word} || '%'
+		                    )
+		                </foreach>
+            		</otherwise>
+				</choose>
+		   		)
+	</sql>
+	
+	<sql id="findMemberOffset">
+		 ORDER
+		 	BY
+		 		MEMBER_NO DESC
+		OFFSET
+				#{offset} ROWS FETCH
+		  NEXT
+		  		#{size} ROWS ONLY
+	</sql>
+
+<!-- Read -->
+	<select id="findAdminAll">
+		<include refid="findAdminQuery"/>
+		<include refid="findMemberOffset"/>
+	</select>
+	
+	<select id="findAdminByKeyword">
+		<include refid="findAdminQuery"/>
+		<include refid="findMemberWhere"/>
+		<include refid="findMemberOffset"/>
+	</select>
+	
+<!-- Update -->
+	<update id="restoreAdmins">
+		UPDATE
+				MEMBER
+		   SET
+		   		DEL_YN = 'N'
+		 WHERE
+		 		MEMBER_NO IN
+		 		<foreach item="memberNo" collection="memberNos"
+		 				 open="(" separator="," close=")">
+		 			#{memberNo}		 
+		 		</foreach>
+	</update>
+
+<!-- Delete -->
+	<update id="deleteAdmins">
+		UPDATE
+				MEMBER
+		   SET
+		   		DEL_YN = 'Y'
+		 WHERE
+		 		MEMBER_NO IN
+		 		<foreach item="memberNo" collection="memberNos"
+		 				 open="(" separator="," close=")">
+		 			#{memberNo}		 
+		 		</foreach>
+	</update>
+
+<!-- Count -->
+	<select id="getAdminTotalElements">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		MEMBER
+		 WHERE
+		 		ROLE = 'ROLE_ADMIN'
+	</select>
+	
+	<select id="getAdminTotalElementsByKeyword">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		MEMBER
+		 WHERE
+		 		ROLE = 'ROLE_ADMIN'
+		<include refid="findMemberWhere"/>
+	</select>
+
+</mapper>

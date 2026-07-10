@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.api.ApiResponse;
 import com.kh.pp.member.model.dto.MemberPlantOwnedResponseDto;
-import com.kh.pp.member.model.dto.MemberPlantRequestDto;
 import com.kh.pp.member.model.service.MemberPlantService;
 
 import jakarta.validation.Valid;
