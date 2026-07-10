@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.common.page.PlantPageResponse;
 import com.kh.pp.exception.FailUserRequestException;
 import com.kh.pp.mypage.model.PlantSize;
 import com.kh.pp.mypage.model.dao.MyPageMapper;
+import com.kh.pp.mypage.model.dto.MyPagePlantDetail;
 import com.kh.pp.mypage.model.dto.MyPageResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -17,13 +19,17 @@ import lombok.RequiredArgsConstructor;
 public class MyPageService {
 	private final MyPageMapper myPageMapper;
 	
-	public PlantPageResponse<MyPageResponse> plantList(Long memberNo, int size) {
-
+	private int plantCount(Long memberNo) {
 		int totalElements = myPageMapper.plantTotalElements(memberNo);
 		
 		if(totalElements < 1) {
 			throw new FailUserRequestException("조회된 결과가 없습니다");
 		}
+		return totalElements;
+	}
+	
+	public PlantPageResponse<MyPageResponse> plantList(Long memberNo, int size) {
+		int totalElements = plantCount(memberNo);
 		
 		List<MyPageResponse> plantList = myPageMapper.plantList(memberNo, size);
 		
@@ -58,6 +64,21 @@ public class MyPageService {
 		        new PlantPageResponse<>(plantList, totalElements, size, totalSmall, totalMiddle, totalBig, allCap);
 		
 		return response;
+	}
+
+	public PageResponse<MyPagePlantDetail> memberPlantList(Long memberNo, int page) {
+		int size = 10;
+		int offset = page * size;
+		
+		int totalElements = plantCount(memberNo);
+			
+		List<MyPagePlantDetail> plants =  myPageMapper.memberPlantList(memberNo, size, offset);
+		
+		if(plants.isEmpty()) {
+			throw new FailUserRequestException("조회된 결과가 없습니다");
+		}
+				
+		return new PageResponse<>(plants, totalElements, page, size);
 	}
 
 }
