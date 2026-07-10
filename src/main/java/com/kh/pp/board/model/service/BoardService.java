@@ -12,9 +12,8 @@ import com.kh.pp.board.model.dao.BoardMapper;
 import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.board.model.dto.BoardImgDto;
 import com.kh.pp.board.model.dto.BoardReactionDto;
-import com.kh.pp.board.model.dto.Category;
+import com.kh.pp.board.model.dto.CategoryDto;
 import com.kh.pp.board.model.vo.Board;
-import com.kh.pp.comment.model.dto.CommentLikeDto;
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
@@ -155,7 +154,7 @@ public class BoardService {
 	}
 	
 	// ------ 카테고리 조회 검증 ------	
-	public List<Category> boardCategoryAll() {
+	public List<CategoryDto> boardCategoryAll() {
 		return boardMapper.boardCategoryAll(); 
 	}
 	

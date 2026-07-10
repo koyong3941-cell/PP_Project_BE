@@ -1,4 +1,4 @@
-package com.kh.pp.board.model.dto;
+package com.kh.pp.board.model.vo;
 
 import lombok.Builder;
 import lombok.Value;

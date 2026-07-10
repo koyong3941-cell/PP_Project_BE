@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pp.board.model.dao.AdminCategoryMapper">
+
+<!-- Create -->
+	<insert id="saveCategory">
+		INSERT
+		  INTO
+		  		CATEGORY
+		  		(
+					CATEGORY_NAME
+				)
+		VALUES
+				(
+					#{categoryName}
+				)
+	</insert>
+	
+<!-- Read -->
+	<insert id="findCategoryAll">
+		SELECT
+				CATEGORY_NO
+			 ,	CATEGORY_NAME
+		  FROM
+		  		CATEGORY
+		 ORDER
+		 	BY
+		 		CATEGORY_NO DESC
+	</insert>
+
+</mapper>

@@ -7,8 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.kh.pp.board.model.dto.BoardDto;
-import com.kh.pp.board.model.dto.BoardReactionDto;
-import com.kh.pp.board.model.dto.Category;
+import com.kh.pp.board.model.dto.CategoryDto;
 import com.kh.pp.board.model.vo.Board;
 
 @Mapper
@@ -29,7 +28,7 @@ public interface BoardMapper {
 	
 	BoardDto boardDetail(Long boardNo);
 
-	List<Category> boardCategoryAll();
+	List<CategoryDto> boardCategoryAll();
 
 	Long getLastBoardNoByMemberNo(Long memberNo);
 	
