@@ -17,11 +17,14 @@ public class MyPageResponse {
 	private String plantName;
 	private String classification;
 	
-	private Double smallPlant;
-	private Double middlePlant;
-	private Double bigPlant;
+	private Integer smallPlant;
+	private Integer middlePlant;
+	private Integer bigPlant;
 	private Double smallPlantCap;
 	private Double middlePlantCap;
 	private Double bigPlantCap;
 	private Double carbonCapture;
+	private String imgPath;
+	private String saveName;
+	private String delYn;
 }
