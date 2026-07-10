@@ -19,7 +19,7 @@
 	</insert>
 	
 <!-- Read -->
-	<insert id="findCategoryAll">
+	<select id="findCategoryAll">
 		SELECT
 				CATEGORY_NO
 			 ,	CATEGORY_NAME
@@ -28,6 +28,62 @@
 		 ORDER
 		 	BY
 		 		CATEGORY_NO DESC
-	</insert>
+		OFFSET
+				#{offset} ROWS FETCH
+		  NEXT
+		  		#{size} ROWS ONLY
+	</select>
+	
+	<select id="findCategoryByKeyword">
+		SELECT
+				CATEGORY_NO
+			 ,	CATEGORY_NAME
+		  FROM
+		  		CATEGORY
+		 WHERE
+		 		<foreach collection="keywordList" item="word" separator="AND">
+					CATEGORY_NAME LIKE '%' || #{word} || '%'
+				</foreach>
+		 ORDER
+		 	BY
+		 		CATEGORY_NO DESC
+		OFFSET
+				#{offset} ROWS FETCH
+		  NEXT
+		  		#{size} ROWS ONLY
+	</select>
+	
+<!-- Delete -->
+	<delete id="deleteCategory">
+   		DELETE
+   		  FROM
+   				CATEGORY
+   		 WHERE
+   				CATEGORY_NO IN
+   				<foreach item="categoryNo" collection="categoryNos" 
+             			 open="(" separator="," close=")">
+       			 	#{categoryNo}
+    			</foreach>
+	</delete>
 
+	
+<!-- Count -->
+	<select id="getCategoryTotalElements">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		CATEGORY
+	</select>
+
+	<select id="getCategoryTotalElementsByKeyword">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		CATEGORY
+		 WHERE
+		 		<foreach collection="keywordList" item="word" separator="AND">
+					CATEGORY_NAME LIKE '%' || #{word} || '%'
+				</foreach>
+	</select>
+	
 </mapper>

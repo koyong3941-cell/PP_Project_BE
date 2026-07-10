@@ -16,7 +16,20 @@ public interface AdminCategoryMapper {
 	// Read
 	List<CategoryDto> findCategoryAll(@Param("offset") int offset, @Param("size") int size);
 
+	List<CategoryDto> findCategoryByKeyword(
+			@Param("offset") int offset
+			, @Param("size") int size
+			, @Param("keywordList") List<String> keywordList
+			);
+
+	// Delete
+	int deleteCategory(@Param("categoryNos") List<Long> categoryNos);
+
 	// Count
 	int getCategoryTotalElements();
+
+	int getCategoryTotalElementsByKeyword(@Param("keywordList") List<String> keywordList);
+
+
 	
 }
