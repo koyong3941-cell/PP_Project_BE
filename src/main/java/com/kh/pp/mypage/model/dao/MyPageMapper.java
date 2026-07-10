@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import com.kh.pp.common.page.PageResponse;
+import com.kh.pp.mypage.model.dto.MyPagePlantDetail;
 import com.kh.pp.mypage.model.dto.MyPageResponse;
 
 @Mapper
@@ -52,5 +54,34 @@ public interface MyPageMapper {
 				MEMBER_NO = #{memberNo}
 			""")
 	int plantTotalElements(Long memberNo);
+	
+	@Select("""
+			SELECT 
+		        M.MEMBER_NO,
+		        M.PLANT_NO,
+		        P.PLANT_NAME,
+		        P.CLASSIFICATION,
+		        AVG(R.RATING) AS RATING,
+		        M.SMALL_PLANT,
+		        M.MIDDLE_PLANT,
+		        M.BIG_PLANT
+		    FROM 
+		        PLANT_REVIEW R
+		    LEFT JOIN MEMBER_PLANT M
+		        ON R.MEMBER_NO = M.MEMBER_NO
+		        AND R.PLANT_NO = M.PLANT_NO
+		    LEFT JOIN PLANT P
+		        ON M.PLANT_NO = P.PLANT_NO
+		    WHERE R.MEMBER_NO = #{memberNo}
+		    GROUP BY
+		        M.MEMBER_NO,
+		        M.PLANT_NO,
+		        P.PLANT_NAME,
+		        P.CLASSIFICATION,
+		        M.SMALL_PLANT,
+		        M.MIDDLE_PLANT,
+		        M.BIG_PLANT
+			""")
+	List<MyPagePlantDetail> memberPlantList(@Param("memberNo") Long memberNo, @Param("size") int size, @Param("page") int page);
 
 }

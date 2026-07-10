@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.api.ApiResponse;
@@ -29,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 	private final MemberService memberService;
 	
-	// 유저 조회
+	// 유저 생성
 	@PostMapping
 	public ResponseEntity<ApiResponse<String>> signUp(@Valid @RequestBody MemberDto member){
 		memberService.signUp(member);
