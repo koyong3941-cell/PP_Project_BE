@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.api.ApiResponse;
+import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.common.page.PlantPageResponse;
+import com.kh.pp.mypage.model.dto.MyPagePlantDetail;
 import com.kh.pp.mypage.model.dto.MyPageResponse;
 import com.kh.pp.mypage.model.service.MyPageService;
 
@@ -28,5 +30,14 @@ public class MyPageController {
 		PlantPageResponse<MyPageResponse> pageDto = myPageSerivce.plantList(userDetails.getMemberNo(), size);
 		
 		return ResponseEntity.ok(ApiResponse.success(pageDto));
+	}
+	
+	@GetMapping("/plantlist")
+	public ResponseEntity<ApiResponse<PageResponse<MyPagePlantDetail>>> memberPlantList(@AuthenticationPrincipal CustomUserDetails userDetails,
+			 @RequestParam(name = "page") int page){
+		
+		PageResponse<MyPagePlantDetail> pageDto = myPageSerivce.memberPlantList(userDetails.getMemberNo(), page);
+		
+		return ResponseEntity.ok(ApiResponse.success("조회 성공",pageDto));
 	}
 }
