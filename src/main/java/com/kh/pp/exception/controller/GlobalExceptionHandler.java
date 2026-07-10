@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.kh.pp.exception.CustomAuthenticationException;
 import com.kh.pp.exception.DuplicateMemberException;
 import com.kh.pp.exception.FailDeleteException;
+import com.kh.pp.exception.FailLikeException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailSignUpException;
 import com.kh.pp.exception.FailUpdateException;
@@ -82,6 +83,11 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(FailUpdateException.class)
 	public ResponseEntity<ErrorResponse> HandlerFailUpdate(FailUpdateException e) {
+		return ResponseEntity.badRequest().body(new ErrorResponse(400, e.getMessage(), null));
+	}
+	
+	@ExceptionHandler(FailLikeException.class)
+	public ResponseEntity<ErrorResponse> HandlerFailLike(FailLikeException e) {
 		return ResponseEntity.badRequest().body(new ErrorResponse(400, e.getMessage(), null));
 	}
 

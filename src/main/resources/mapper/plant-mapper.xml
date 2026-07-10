@@ -3,33 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.pp.plant.model.dao.PlantMapper">
-<!-- Create -->
-	<insert id="savePlant" parameterType="Plant">
-		INSERT
-		  INTO
-				PLANT	
-				(
-				MEMBER_NO 
-			 ,	PLANT_NAME
-			 ,	CLASSIFICATION
-			 ,	PLANT_INFO
-			 ,	CARBON_CAPTURE
-			 ,	GROWTH_INFO
-			 ,	PLANT_API
-				)	
-		VALUES
-				(
-				#{memberNo}
-			 ,	#{plantName}
-			 ,	#{classification}
-			 ,	#{plantInfo}
-			 ,	#{carbonCapture}
-			 ,	#{growthInfo}
-			 ,	#{plantApi}
-				)
-	</insert>
-	
-<!-- Read -->
+<!-- Read Sql-->
 	<sql id="findPlantQuery">
 		SELECT 
 				P.PLANT_NO
@@ -120,29 +94,28 @@
 			 ,	PI.SAVE_NAME
 	</sql>
 	
+	<sql id="findPlantOffset">
+		 ORDER
+		 	BY
+		 		P.PLANT_NO DESC
+		OFFSET
+				#{offset} ROWS FETCH
+		  NEXT
+		  		#{size} ROWS ONLY
+	</sql>
+
+<!-- Read -->	
 	<select id="findPlantAll">
 		<include refid="findPlantQuery" />
 		<include refid="findPlantQueryGroup" />
-		 ORDER 
-		    BY
-				P.PLANT_NO DESC
-	    OFFSET 
-	    		#{offset} ROWS FETCH 
-		  NEXT 	
-		  		#{size} ROWS ONLY
+		<include refid="findPlantOffset" />
 	</select>
 	
 	<select id="findPlantByKeyword">
 		<include refid="findPlantQuery" />
 		<include refid="findPlantWhere" />
 		<include refid="findPlantQueryGroup" />
-		 ORDER 
-		    BY
-				P.PLANT_NO DESC
-	    OFFSET 
-	    		#{offset} ROWS FETCH 
-		  NEXT 	
-		  		#{size} ROWS ONLY
+		<include refid="findPlantOffset" />
 	</select>
 	
     <select id="plantDetail">
@@ -189,23 +162,7 @@
 		<include refid="findPlantWhere" />
 	</select>
     
-<!-- Update -->
-    <update id="editPlant">
-   		UPDATE
-   				PLANT
-   		   SET
-   		   		MEMBER_NO = #{memberNo}
-   			 ,	PLANT_NAME = #{plantName}
-   			 ,	CLASSIFICATION = #{classification}
-   			 ,	PLANT_INFO = #{plantInfo}
-   			 ,	CARBON_CAPTURE = #{carbonCapture}
-   			 ,	GROWTH_INFO = #{growthInfo}
-   			 ,	PLANT_API = #{plantApi}
-   		 WHERE
-   				PLANT_NO = #{plantNo}
-	</update>
-	
-	<update id="increasePlantCount">
+    <update id="increasePlantCount">
 		UPDATE 
 			PLANT 
 		SET 
@@ -214,39 +171,4 @@
 			PLANT_NO = #{plantNo}
 	</update>
 	
-<!-- Delete -->
-	<update id="deletePlant">
-   		UPDATE
-   			PLANT
-   		SET
-   			DEL_YN = 'Y'
-   		WHERE
-   			PLANT_NO = #{plantNo}
-	</update>
-	
-<!-- Validate -->
-    <select id="getLastPlantNoByMemberNo" resultType="java.lang.Long">
-		SELECT
-				PLANT_NO
-		FROM
-				PLANT
-		WHERE
-				MEMBER_NO = #{memberNo}
-		ORDER
-		   BY
-				PLANT_NO DESC
-		FETCH
-				FIRST 1 ROWS ONLY
-	</select>
-	
-	<select id="isActivePlant">
-		SELECT
-				COUNT(*)
-		  FROM
-		  		PLANT
-		 WHERE
-		 		PLANT_NO = #{plantNo}
-		   AND
-		   		DEL_YN = 'N'
-	</select>
 </mapper>

@@ -9,26 +9,42 @@
 		  INTO
 		  		PLANT_REVIEW
 				(
-			 	MEMBER_NO
-			 ,	PLANT_NO
-			 ,	RATING
-			 ,	REVIEW_TITLE
-			 ,	REVIEW_CONTENT			 
+				 	MEMBER_NO
+				 ,	PLANT_NO
+				 ,	RATING
+				 ,	REVIEW_TITLE
+				 ,	REVIEW_CONTENT			 
 				)
 		VALUES
 				(
-				#{memberNo}
-			 ,	#{plantNo}
-			 ,	#{rating}
-			 ,	#{reviewTitle}
-			 ,	#{reviewContent}
+					#{memberNo}
+				 ,	#{plantNo}
+				 ,	#{rating}
+				 ,	#{reviewTitle}
+				 ,	#{reviewContent}
 				)
 	</insert>
+	
+	<insert id="addPlantReviewLike">
+		INSERT
+		  INTO
+		  		PLANT_REVIEW_LIKE
+		  		(
+					MEMBER_NO
+				,	REVIEW_NO
+				)
+		VALUES
+				(
+					#{memberNo}
+				,	#{reviewNo}
+				)
+	</insert>	
 
 <!-- Read -->
 	<select id="findPlantReviewAll">
 		SELECT
 				R.REVIEW_NO
+			, R.MEMBER_NO
 			 ,	M.MEMBER_NAME
 			 ,	R.RATING
 			 ,	R.REVIEW_TITLE
@@ -101,20 +117,44 @@
 	</select>
 	
 <!-- Update -->
-<select id="editPlantReview">
-	UPDATE
-			PLANT_REVIEW
-	   SET
-	   		RATING = #{rating}
-		 ,	REVIEW_TITLE = #{reviewTitle}
-		 ,	REVIEW_CONTENT = #{reviewContent}
-	 WHERE
-	 		PLANT_NO = #{plantNo}
-	   AND
-	   		MEMBER_NO = #{memberNo}
-	   AND
-	   		REVIEW_NO = #{reviewNo}
-</select>
+	<update id="editPlantReview">
+		UPDATE
+				PLANT_REVIEW
+		   SET
+		   		RATING = #{rating}
+			 ,	REVIEW_TITLE = #{reviewTitle}
+			 ,	REVIEW_CONTENT = #{reviewContent}
+		 WHERE
+		   		MEMBER_NO = #{memberNo}
+		   AND
+		   		REVIEW_NO = #{reviewNo}
+		   AND
+		   		DEL_YN = 'N'
+	</update>
+
+<!-- Delete -->
+	<update id="deletePlantReview">
+		UPDATE
+				PLANT_REVIEW
+		   SET
+		   		DEL_YN = 'Y'
+		 WHERE
+		   		MEMBER_NO = #{memberNo}
+		   AND
+		   		REVIEW_NO = #{reviewNo}
+		   AND
+		   		DEL_YN = 'N'
+	</update>
+	
+	<delete id="deletePlantReviewLike">
+		DELETE 
+		  FROM 
+		  		PLANT_REVIEW_LIKE
+    	 WHERE 
+    	 		REVIEW_NO = #{reviewNo}
+      	   AND 	
+      	   		MEMBER_NO = #{memberNo}
+	</delete>
 
 <!-- Count -->
 	<select id="getPlantReviewTotalElements">
@@ -129,6 +169,17 @@
 	</select>
 	
 <!-- Validate -->
+	<select id="isActivePlant">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT
+		 WHERE
+		 		PLANT_NO = #{plantNo}
+		   AND
+		   		DEL_YN = 'N'
+	</select>
+	
 	<select id="getLastReviewNoByMemberNo">
 		SELECT
 				REVIEW_NO
@@ -154,6 +205,17 @@
 		 		MEMBER_NO = #{memberNo}
 		   AND
 		   		DEL_YN = 'N'
+	</select>
+	
+	<select id="isActivePlantReviewLike">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT_REVIEW_LIKE
+		 WHERE
+		 		REVIEW_NO = #{reviewNo}
+		   AND
+		 		MEMBER_NO = #{memberNo}
 	</select>
 	
 </mapper>

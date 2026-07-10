@@ -45,29 +45,29 @@ public interface MemberPlantMapper {
 				(
 				#{memberNo}
 				,#{plantNo}
-				,#{small}
-				,#{middle}
-				,#{big}
+				,#{smallPlant}
+				,#{middlePlant}
+				,#{bigPlant}
 				)
 			""")
 	int memberPlantAdd(@Param("memberNo") Long memberNo, @Param("plantNo") Long plantNo,
-			@Param("small") Integer small, @Param("middle") Integer middle, @Param("big") Integer big);
+			@Param("smallPlant") Integer smallPlant, @Param("middlePlant") Integer middlePlant, @Param("bigPlant") Integer big);
 
 	// 식물 개수 수정
 	@Update("""
 			UPDATE
 				MEMBER_PLANT
 			SET
-				SMALL_PLANT = #{small}
-				,MIDDLE_PLANT = #{middle}
-				,BIG_PLANT = #{big}
+				SMALL_PLANT = #{smallPlant}
+				,MIDDLE_PLANT = #{middlePlant}
+				,BIG_PLANT = #{bigPlant}
 			WHERE
 				MEMBER_NO = #{memberNo}
 			AND
 				PLANT_NO = #{plantNo}
 			""")
 	int memberPlantEdit(@Param("memberNo") Long memberNo, @Param("plantNo") Long plantNo,
-			@Param("small") Integer small, @Param("middle") Integer middle, @Param("big") Integer big);
+			@Param("smallPlant") Integer smallPlant, @Param("middlePlant") Integer middlePlant, @Param("bigPlant") Integer bigPlant);
 
 	// 식물 삭제
 	@Delete("""

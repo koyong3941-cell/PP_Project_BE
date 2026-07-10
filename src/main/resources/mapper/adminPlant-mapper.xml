@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pp.plant.model.dao.AdminPlantMapper">
+<!-- Create -->
+	<insert id="savePlant" parameterType="Plant">
+		INSERT
+		  INTO
+				PLANT	
+				(
+				MEMBER_NO 
+			 ,	PLANT_NAME
+			 ,	CLASSIFICATION
+			 ,	PLANT_INFO
+			 ,	CARBON_CAPTURE
+			 ,	GROWTH_INFO
+			 ,	PLANT_API
+				)	
+		VALUES
+				(
+				#{memberNo}
+			 ,	#{plantName}
+			 ,	#{classification}
+			 ,	#{plantInfo}
+			 ,	#{carbonCapture}
+			 ,	#{growthInfo}
+			 ,	#{plantApi}
+				)
+	</insert>
+	
+<!-- Read Sql-->
+	<sql id="findPlantQuery">
+		SELECT
+				P.PLANT_NO
+			 ,	M.MEMBER_NAME
+			 ,	P.PLANT_NAME
+			 ,	P.CLASSIFICATION
+			 ,	P.CREATE_DATE
+			 ,	P.DEL_YN
+		  FROM
+		  		PLANT P
+		  JOIN
+		  		MEMBER M ON P.MEMBER_NO = M.MEMBER_NO
+	</sql>
+
+	<sql id="findPlantWhere">
+		 WHERE
+			<choose>
+				<when test="target == 'writer'">
+					<foreach collection="keywordList" item="word" separator="AND">
+						M.MEMBER_NAME LIKE '%' || #{word} || '%'
+					</foreach>
+				</when>
+				<when test="target == 'plantName'">
+               		<foreach collection="keywordList" item="word" separator="AND">
+                   		P.PLANT_NAME LIKE '%' || #{word} || '%'
+               		</foreach>
+           		</when>
+           		<when test="target == 'classification'">
+               		<foreach collection="keywordList" item="word" separator="AND">
+                   		P.CLASSIFICATION LIKE '%' || #{word} || '%'
+               		</foreach>
+               	</when>
+           		<when test="target == 'growthInfo'">
+               		<foreach collection="keywordList" item="word" separator="AND">
+                   		P.GROWTH_INFO LIKE '%' || #{word} || '%'
+               		</foreach>
+               	</when>
+           		<when test="target == 'plantInfo'">
+               		<foreach collection="keywordList" item="word" separator="AND">
+                   		P.PLANT_INFO LIKE '%' || #{word} || '%'
+               		</foreach>          
+           		</when>
+           		<otherwise>
+               		<foreach collection="keywordList" item="word" separator="AND">
+                   		(
+			                M.MEMBER_NAME   LIKE '%' || #{word} || '%'
+		                    OR P.PLANT_NAME LIKE '%' || #{word} || '%'
+		                    OR P.CLASSIFICATION LIKE '%' || #{word} || '%'
+		                    OR P.GROWTH_INFO LIKE '%' || #{word} || '%'
+		                    OR P.PLANT_INFO LIKE '%' || #{word} || '%'
+		            	)
+		        	</foreach>
+           		</otherwise>
+			</choose>
+	</sql>
+	
+	<sql id="findPlantOffset">
+		 ORDER
+		 	BY
+		 		P.PLANT_NO DESC
+		OFFSET
+				#{offset} ROWS FETCH
+		  NEXT
+		  		#{size} ROWS ONLY
+	</sql>
+
+<!-- Read -->
+	<select id="findPlantAll">
+		<include refid="findPlantQuery" />
+		<include refid="findPlantOffset" />
+	</select>
+	
+	<select id="findPlantByKeyword">
+		<include refid="findPlantQuery" />
+		<include refid="findPlantWhere" />
+		<include refid="findPlantOffset" />
+	</select>
+	
+	<select id="plantDetail">
+		SELECT
+				PLANT_NO
+			 ,	PLANT_NAME
+			 ,	CLASSIFICATION
+			 ,	CARBON_CAPTURE
+			 ,	PLANT_INFO
+			 ,	GROWTH_INFO
+			 ,	PLANT_API
+		FROM 
+				PLANT
+		WHERE
+				PLANT_NO = #{plantNo}
+    </select>
+
+<!-- Update -->
+    <update id="editPlant">
+   		UPDATE
+   				PLANT
+   		   SET
+   		   		MEMBER_NO = #{memberNo}
+   			 ,	PLANT_NAME = #{plantName}
+   			 ,	CLASSIFICATION = #{classification}
+   			 ,	PLANT_INFO = #{plantInfo}
+   			 ,	CARBON_CAPTURE = #{carbonCapture}
+   			 ,	GROWTH_INFO = #{growthInfo}
+   			 ,	PLANT_API = #{plantApi}
+   		 WHERE
+   				PLANT_NO = #{plantNo}
+	</update>
+	
+	<update id="restorePlants">
+   		UPDATE
+   				PLANT
+   		   SET
+   				DEL_YN = 'N'
+   		 WHERE
+   				PLANT_NO IN
+   				<foreach item="plantNo" collection="plantNos" 
+             			 open="(" separator="," close=")">
+       			 	#{plantNo}
+    			</foreach>
+	</update>
+	
+<!-- Delete -->
+	<update id="deletePlants">
+   		UPDATE
+   				PLANT
+   		   SET
+   				DEL_YN = 'Y'
+   		 WHERE
+   				PLANT_NO IN
+   				<foreach item="plantNo" collection="plantNos" 
+             			 open="(" separator="," close=")">
+       			 	#{plantNo}
+    			</foreach>
+	</update>
+	
+<!-- Count -->
+	<select id="getPlantTotalElements">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT
+	</select>
+	
+	<select id="getPlantTotalElementsByKeyword">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT P
+		  JOIN
+		  		MEMBER M ON P.MEMBER_NO = M.MEMBER_NO
+		<include refid="findPlantWhere" />
+	</select>
+
+<!-- Validate -->
+    <select id="getLastPlantNoByMemberNo" resultType="java.lang.Long">
+		SELECT
+				PLANT_NO
+		FROM
+				PLANT
+		WHERE
+				MEMBER_NO = #{memberNo}
+		ORDER
+		   BY
+				PLANT_NO DESC
+		FETCH
+				FIRST 1 ROWS ONLY
+	</select>
+
+</mapper>

@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.DuplicateMemberException;
+import com.kh.pp.exception.FailDeleteException;
+import com.kh.pp.exception.FailLikeException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.exception.PlantNotFoundException;
@@ -23,7 +25,6 @@ import com.kh.pp.plant.model.dto.PlantReviewDto;
 import com.kh.pp.plant.model.dto.PlantReviewImgDto;
 import com.kh.pp.plant.model.vo.PlantReview;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly= true)
 @RequiredArgsConstructor
 public class PlantReviewService {
-	private final PlantMapper plantMapper;
 	private final PlantReviewMapper plantReviewMapper;
 	private final PlantReviewImgMapper plantReviewImgMapper;
 	private final FileService fileService;
@@ -68,6 +68,21 @@ public class PlantReviewService {
 			Long reviewNo = plantReviewMapper.getLastReviewNoByMemberNo(plantReview.getMemberNo());
 			
 			savePlantReviewImg(reviewNo, plantReview.getImageFiles());
+		}
+	}
+	
+	@Transactional
+	public void addPlantReviewLike(Long memberNo, Long reviewNo) {
+		int activePlantReviewLike = plantReviewMapper.isActivePlantReviewLike(memberNo, reviewNo);
+		
+		if (activePlantReviewLike == 1) {
+			throw new FailLikeException("이미 좋아요를 누르셨습니다.");
+		}
+		
+		Integer result = plantReviewMapper.addPlantReviewLike(memberNo, reviewNo);
+		
+		if (result == 0 || result == null) {
+			throw new FailLikeException("좋아요 입력을 실패했습니다.");
 		}
 	}
 	
@@ -115,6 +130,7 @@ public class PlantReviewService {
 		return rating;
 	}
 	
+	@Transactional
 	// Update
 	public void editPlantReview(PlantReviewDto plantReview, Long memberNo, Long reviewNo) {
 		long count = validatePlantReviewImages(plantReview.getImageFiles());
@@ -128,9 +144,9 @@ public class PlantReviewService {
 				.rating(plantReview.getRating())
 				.build();
 		
-		int result = plantReviewMapper.editPlantReview(plantReviewEntity);
+		Integer result = plantReviewMapper.editPlantReview(plantReviewEntity);
 		
-		if (result < 1) {
+		if (result == null || result == 0) {
 			throw new FailUpdateException("리뷰 수정에 실패했습니다.");
 		}
 		
@@ -141,9 +157,34 @@ public class PlantReviewService {
 		}
 	}
 	
+	// Delete
+	@Transactional
+	public void deletePlantReview(Long memberNo, Long reviewNo) {
+		Integer result = plantReviewMapper.deletePlantReview( memberNo, reviewNo);
+		
+		if (result == 0 || result == null) {
+			throw new FailDeleteException("리뷰 삭제에 실패하였습니다.");
+		}
+	}
+	
+	@Transactional
+	public void deletePlantReviewLike(Long memberNo, Long reviewNo) {
+		int activePlantReviewLike = plantReviewMapper.isActivePlantReviewLike(memberNo, reviewNo);
+		
+		if (activePlantReviewLike == 0) {
+			throw new FailLikeException("이미 좋아요가 취소되었습니다.");
+		}
+		
+		Integer result = plantReviewMapper.deletePlantReviewLike(memberNo, reviewNo);
+		
+		if (result == 0 || result == null) {
+			throw new FailLikeException("좋아요를 취소하지 못했습니다.");
+		}
+	}
+	
 	// ------ 식물 게시글 활성 여부 확인 ------
 	private void isActivePlant(Long plantNo) {
-		int result = plantMapper.isActivePlant(plantNo);
+		int result = plantReviewMapper.isActivePlant(plantNo);
 		
 		if (result < 1 ) {
 			throw new PlantNotFoundException("해당 식물을 찾을 수 없습니다.");
@@ -198,6 +239,5 @@ public class PlantReviewService {
             }
         }
 	}
-
 
 }

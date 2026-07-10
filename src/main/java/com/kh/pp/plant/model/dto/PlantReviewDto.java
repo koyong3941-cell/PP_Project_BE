@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -49,6 +50,7 @@ public class PlantReviewDto {
 	private Integer likeCount;
 	
 	// 사용자가 좋아요 했는지 확인용
+	@JsonProperty("isLiked")
 	private boolean isLiked;
 	
 	// 이미지 입력용

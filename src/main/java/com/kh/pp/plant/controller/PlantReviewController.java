@@ -2,6 +2,7 @@ package com.kh.pp.plant.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,14 +32,24 @@ public class PlantReviewController {
 	// Create
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> savePlantReview (
-				@AuthenticationPrincipal CustomUserDetails userDetails
-				, @ModelAttribute @Valid PlantReviewDto plantReview
-				, @PathVariable(name = "plantNo") Long plantNo
+			@AuthenticationPrincipal CustomUserDetails userDetails
+			, @ModelAttribute @Valid PlantReviewDto plantReview
+			, @PathVariable(name = "plantNo") Long plantNo
 				){
 		plantReview.setMemberNo(userDetails.getMemberNo());
 		plantReview.setPlantNo(plantNo);
 		plantReviewService.savePlantReview(plantReview);
 		
+		return ResponseEntity.status(201).body(ApiResponse.created(null));
+	}
+	
+	@PostMapping("/{reviewNo}/like")
+	public ResponseEntity<ApiResponse<Void>> addPlantReviewLike (
+			@AuthenticationPrincipal CustomUserDetails userDetails
+			, @PathVariable(name = "reviewNo") Long reviewNo
+			){
+		Long memberNo = userDetails.getMemberNo();
+		plantReviewService.addPlantReviewLike(memberNo, reviewNo);
 		return ResponseEntity.status(201).body(ApiResponse.created(null));
 	}
 	
@@ -78,5 +89,26 @@ public class PlantReviewController {
 		Long memberNo = userDetails.getMemberNo();
 		plantReviewService.editPlantReview(plantReview, memberNo, reviewNo);
 		return ResponseEntity.status(200).body(ApiResponse.success("edited", null));
+	}
+	
+	// Delete
+	@DeleteMapping("/{reviewNo}")
+	public ResponseEntity<ApiResponse<Void>> deletePlantReview(
+			@AuthenticationPrincipal CustomUserDetails userDetails
+			, @PathVariable(name = "reviewNo") Long reviewNo
+			){
+		Long memberNo = userDetails.getMemberNo();
+		plantReviewService.deletePlantReview(memberNo, reviewNo);
+		return ResponseEntity.status(204).body(ApiResponse.noContent("deleted", null));
+	}
+	
+	@DeleteMapping("/{reviewNo}/like")
+	public ResponseEntity<ApiResponse<Void>> deletePlantReviewLike (
+			@AuthenticationPrincipal CustomUserDetails userDetails
+			, @PathVariable(name = "reviewNo") Long reviewNo
+			){
+		Long memberNo = userDetails.getMemberNo();
+		plantReviewService.deletePlantReviewLike(memberNo, reviewNo);
+		return ResponseEntity.status(204).body(ApiResponse.created(null));
 	}
 }
