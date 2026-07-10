@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly= true)
 @RequiredArgsConstructor
 public class PlantReviewService {
-	private final PlantMapper plantMapper;
 	private final PlantReviewMapper plantReviewMapper;
 	private final PlantReviewImgMapper plantReviewImgMapper;
 	private final FileService fileService;
@@ -185,7 +184,7 @@ public class PlantReviewService {
 	
 	// ------ 식물 게시글 활성 여부 확인 ------
 	private void isActivePlant(Long plantNo) {
-		int result = plantMapper.isActivePlant(plantNo);
+		int result = plantReviewMapper.isActivePlant(plantNo);
 		
 		if (result < 1 ) {
 			throw new PlantNotFoundException("해당 식물을 찾을 수 없습니다.");

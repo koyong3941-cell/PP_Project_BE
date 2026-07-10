@@ -44,6 +44,7 @@
 	<select id="findPlantReviewAll">
 		SELECT
 				R.REVIEW_NO
+			, R.MEMBER_NO
 			 ,	M.MEMBER_NAME
 			 ,	R.RATING
 			 ,	R.REVIEW_TITLE
@@ -168,6 +169,17 @@
 	</select>
 	
 <!-- Validate -->
+	<select id="isActivePlant">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		PLANT
+		 WHERE
+		 		PLANT_NO = #{plantNo}
+		   AND
+		   		DEL_YN = 'N'
+	</select>
+	
 	<select id="getLastReviewNoByMemberNo">
 		SELECT
 				REVIEW_NO

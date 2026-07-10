@@ -42,6 +42,8 @@ public interface PlantReviewMapper {
 	int getPlantReviewTotalElements(Long plantNo);
 	
 	// Validate
+	int isActivePlant(Long plantNo);
+	
 	Long getLastReviewNoByMemberNo(Long memberNo);
 
 	int hasReviewByMemberNo(PlantReview plantReviewEntity);
