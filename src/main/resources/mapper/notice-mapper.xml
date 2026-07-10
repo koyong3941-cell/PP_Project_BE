@@ -141,7 +141,6 @@
       NOTICE_NO = #{noticeNo}
      AND
        DEL_YN = 'N'
-   
    </update>
     
    <update id = "increaseNoticeCount">

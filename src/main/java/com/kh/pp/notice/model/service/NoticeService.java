@@ -27,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class NoticeService {
-
 	private final NoticeMapper noticeMapper;
 	private final NoticeImgMapper noticeImgMapper;
 	private final FileService fileService;
@@ -52,21 +51,10 @@ public class NoticeService {
 			Long noticeNo = noticeMapper.getLastNoticeNoByMemberNo(notice.getNoticeNo());
 			
 			saveNoticeImages(noticeNo,notice.getImageFiles());
-			
 		}
 	
 	}
 	
-	private void validateNotice(NoticeDto notice) {
-		if(notice.getNoticeTitle() == null || notice.getNoticeTitle().isEmpty()) {
-			throw new FailSaveException("제목은 필수입니다");
-		}
-		if(notice.getNoticeContent() == null || notice.getNoticeContent().isEmpty()) {
-			throw new FailSaveException("내용은 필수입니다");
-		}
-		
-	}
-
 	public PageResponse<NoticeDto> findNoticeAll(int page){
 		int size = 10;
 		int offset = page * size;

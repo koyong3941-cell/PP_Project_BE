@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import com.kh.pp.notice.model.dto.NoticeDto;
 import com.kh.pp.notice.model.vo.Notice;
@@ -27,6 +28,19 @@ public interface NoticeMapper {
 	
 	void updateCount(Long noticeNo);
 
+	@Select("""
+			SELECT
+				NOTICE_NO
+		  FROM
+		  		NOTICE
+		 WHERE
+		 		MEMBER_NO = #{memberNo}
+		 ORDER
+		 	BY
+		    	NOTICE_NO DESC
+		 FETCH
+		 		FIRST 1 ROWS ONLY
+			""")
 	Long getLastNoticeNoByMemberNo(Long memberNo);
 	
 	void increaseNoticeCount(Long noticeNo);
