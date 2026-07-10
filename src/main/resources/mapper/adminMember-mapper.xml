@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pp.member.model.dao.AdminMemberMapper">
+
+<!-- Read Sql-->
+	<sql id="findQuery">
+		SELECT
+				MEMBER_NO
+			 ,	MEMBER_ID
+			 ,	MEMBER_NAME
+			 ,	EMAIL
+			 ,	ENROLL_DATE
+			 ,	DEL_YN
+		  FROM
+		  		MEMBER
+	</sql>
+	
+	<sql id="whereRoleAdmin">
+		 WHERE
+		 		ROLE = 'ROLE_ADMIN'	
+	</sql>
+	
+	<sql id="whereRoleMember">
+		 WHERE
+		 		ROLE = 'ROLE_USER'	
+	</sql>
+
+	<sql id="findAdminQuery">
+		<include refid="findQuery"/>
+		<include refid="whereRoleAdmin"/>
+	</sql>
+	
+	<sql id="findMemberQuery">
+		<include refid="findQuery"/>
+		<include refid="whereRoleMember"/>
+	</sql>
+
+	<sql id="keywordWhere">
+		   AND	(
+				<choose>
+					<when test="target == 'memberName'">
+						<foreach collection="keywordList" item="word" separator="AND">
+							MEMBER_NAME LIKE '%' || #{word} || '%'
+						</foreach>
+					</when>
+					<when test="target == 'memberId'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		MEMBER_ID LIKE '%' || #{word} || '%'
+                		</foreach>
+            		</when>
+            		<when test="target == 'email'">
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		EMAIL LIKE '%' || #{word} || '%'
+                		</foreach>
+                	</when>
+            		<otherwise>
+                		<foreach collection="keywordList" item="word" separator="AND">
+                    		(
+		                        MEMBER_NAME LIKE '%' || #{word} || '%'
+		                        OR MEMBER_ID LIKE '%' || #{word} || '%'
+		                        OR EMAIL LIKE '%' || #{word} || '%'
+		                    )
+		                </foreach>
+            		</otherwise>
+				</choose>
+		   		)
+	</sql>
+	
+	<sql id="findMemberOffset">
+		 ORDER
+		 	BY
+		 		MEMBER_NO DESC
+		OFFSET
+				#{offset} ROWS FETCH
+		  NEXT
+		  		#{size} ROWS ONLY
+	</sql>
+
+<!-- Read -->
+	<select id="findAdminAll">
+		<include refid="findAdminQuery"/>
+		<include refid="findMemberOffset"/>
+	</select>
+	
+	<select id="findMemberAll">
+		<include refid="findMemberQuery"/>
+		<include refid="findMemberOffset"/>
+	</select>
+	
+	<select id="findAdminByKeyword">
+		<include refid="findAdminQuery"/>
+		<include refid="keywordWhere"/>
+		<include refid="findMemberOffset"/>
+	</select>
+	
+	<select id="findMemberByKeyword">
+		<include refid="findMemberQuery"/>
+		<include refid="keywordWhere"/>
+		<include refid="findMemberOffset"/>
+	</select>
+
+<!-- Member List Sql-->
+	<sql id="memberList">
+		   AND
+		 		MEMBER_NO IN
+		 		<foreach item="memberNo" collection="memberNos"
+		 				 open="(" separator="," close=")">
+		 			#{memberNo}		 
+		 		</foreach>
+	</sql>
+	
+<!-- Update -->
+	<sql id="setDelN">
+		UPDATE
+				MEMBER
+		   SET
+		   		DEL_YN = 'N'
+	</sql>
+
+	<update id="restoreAdmins">
+		<include refid="setDelN"/>
+		<include refid="whereRoleAdmin"/>
+		<include refid="memberList"/>
+	</update>
+	
+	<update id="restoreMembers">
+		<include refid="setDelN"/>
+		<include refid="whereRoleMember"/>
+		<include refid="memberList"/>
+	</update>
+
+<!-- Delete -->
+	<sql id="setDelY">
+		UPDATE
+				MEMBER
+		   SET
+		   		DEL_YN = 'Y'
+	</sql>
+
+	<update id="deleteAdmins">
+		<include refid="setDelY"/>
+		<include refid="whereRoleAdmin"/>
+		<include refid="memberList"/>
+	</update>
+
+	<update id="deleteMembers">
+		<include refid="setDelY"/>
+		<include refid="whereRoleMember"/>
+		<include refid="memberList"/>
+	</update>
+
+<!-- Count -->
+	<sql id="memberCount">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		MEMBER
+	</sql>
+
+	<select id="getAdminTotalElements">
+		<include refid="memberCount"/>
+		<include refid="whereRoleAdmin"/>
+	</select>
+
+	<select id="getMemberTotalElements">
+		<include refid="memberCount"/>
+		<include refid="whereRoleMember"/>
+	</select>
+	
+	<select id="getAdminTotalElementsByKeyword">
+		<include refid="memberCount"/>
+		<include refid="whereRoleAdmin"/>
+		<include refid="keywordWhere"/>
+	</select>
+	
+	<select id="getMemberTotalElementsByKeyword">
+		<include refid="memberCount"/>
+		<include refid="whereRoleMember"/>
+		<include refid="keywordWhere"/>
+	</select>
+
+</mapper>

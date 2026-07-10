@@ -17,7 +17,6 @@ import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.exception.PlantNotFoundException;
 import com.kh.pp.file.service.FileService;
-import com.kh.pp.plant.model.dao.PlantMapper;
 import com.kh.pp.plant.model.dao.PlantReviewImgMapper;
 import com.kh.pp.plant.model.dao.PlantReviewMapper;
 import com.kh.pp.plant.model.dto.PlantRatingDto;
