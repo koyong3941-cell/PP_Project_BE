@@ -51,7 +51,7 @@ public interface SensorMapper {
 				)
 			VALUES(
 				#{sensorNo}
-				,#{measuredate}
+				,#{measureDate}
 				,#{humidity}
 				,#{temperature}
 				,#{spo2}
