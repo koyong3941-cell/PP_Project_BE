@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.board.model.dto.BoardReactionDto;
-import com.kh.pp.board.model.dto.Category;
+import com.kh.pp.board.model.dto.CategoryDto;
 import com.kh.pp.board.model.service.BoardService;
+import com.kh.pp.board.model.vo.Category;
 import com.kh.pp.common.api.ApiResponse;
 import com.kh.pp.common.page.PageResponse;
 
@@ -89,8 +90,8 @@ public class BoardController {
 	
 	// 카테고리 관련
 	@GetMapping("/category")
-	public ResponseEntity<ApiResponse<List<Category>>> findBoardCategoryAll() {
-		List<Category> category = boardService.boardCategoryAll();
+	public ResponseEntity<ApiResponse<List<CategoryDto>>> findBoardCategoryAll() {
+		List<CategoryDto> category = boardService.boardCategoryAll();
 		return ResponseEntity.ok(ApiResponse.success(category));
 	}
 	

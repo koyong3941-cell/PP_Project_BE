@@ -13,14 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
-import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.common.api.ApiResponse;
 import com.kh.pp.common.page.PageResponse;
-import com.kh.pp.notice.model.dto.NoticeDto;
-import com.kh.pp.notice.model.service.NoticeService;
+import com.kh.pp.notice.model.dto.AdminNoticeDto;
+import com.kh.pp.notice.model.service.AdminNoticeService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,87 +29,57 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/admins/notices")
 @RequiredArgsConstructor
 public class AdminNoticeController {
-
-	private final NoticeService noticeService;
+	private final AdminNoticeService adminNoticeService;
 	
-	/*
-	 * //목록조회
-	 * 
-	 * @GetMapping public ResponseEntity<ApiResponse<PageResponse<NoticeDto>>>
-	 * findNoticeAll(
-	 * 
-	 * @RequestParam(value="page", defaultValue="0")int page){
-	 * PageResponse<NoticeDto> notices = noticeService.findNoticeAll(page); return
-	 * ResponseEntity.ok( ApiResponse.success(notices)); }
-	 * 
-	 * //상세조회
-	 * 
-	 * @GetMapping("/{noticeNo}") public ResponseEntity<ApiResponse<NoticeDto>>
-	 * NoticeDetail(
-	 * 
-	 * @PathVariable(name="noticeNo") Long noticeNo){
-	 * 
-	 * return ResponseEntity.ok(
-	 * ApiResponse.success(noticeService.NoticeDetail(noticeNo))); }
-	 * 
-	 * //검색
-	 * 
-	 * @GetMapping("/search") public ResponseEntity<ApiResponse<List<NoticeDto>>>
-	 * NoticeSearch(
-	 * 
-	 * @RequestParam(name="keyword") String keyword,
-	 * 
-	 * @RequestParam(defaultValue="0",name="page") int page){ List<NoticeDto>
-	 * notices = noticeService.NoticeSearch(keyword,page);
-	 * 
-	 * return ResponseEntity.ok( ApiResponse.success(notices)); }
-	 * 
-	 * //작성
-	 * 
-	 * @PostMapping public ResponseEntity<ApiResponse<Void>> saveNotice(
-	 * 
-	 * @ModelAttribute @Valid NoticeDto notice,
-	 * 
-	 * @AuthenticationPrincipal CustomUserDetails userDetails){
-	 * 
-	 * Long memberNoFromToken = userDetails.getMemberNo();
-	 * notice.setMemberNo(memberNoFromToken);
-	 * 
-	 * 
-	 * noticeService.saveNotice(notice); return
-	 * ResponseEntity.status(201).body(ApiResponse.success("save",null));
-	 * 
-	 * }
-	 * 
-	 * //수정
-	 * 
-	 * @PatchMapping("/{noticeNo}") public ResponseEntity<ApiResponse<Void>>
-	 * editNotice(
-	 * 
-	 * @Valid NoticeDto notice,
-	 * 
-	 * @AuthenticationPrincipal CustomUserDetails userDetails,
-	 * 
-	 * @PathVariable(name = "noticeNo") Long noticeNo){
-	 * 
-	 * Long memberNoFromToken = userDetails.getMemberNo();
-	 * noticeService.editNotice(notice,memberNoFromToken,noticeNo);
-	 * 
-	 * 
-	 * return ResponseEntity.status(200).body(ApiResponse.success("edited",null)); }
-	 * 
-	 * 
-	 * //삭제
-	 * 
-	 * @DeleteMapping("/{noticeNo}") public ResponseEntity<ApiResponse<Void>>
-	 * deleteNotice(
-	 * 
-	 * @AuthenticationPrincipal CustomUserDetails userDetails,
-	 * 
-	 * @PathVariable(name = "noticeNo") Long noticeNo){
-	 * 
-	 * noticeService.deleteNotice(userDetails,noticeNo); return
-	 * ResponseEntity.ok(ApiResponse.success(null)); }
-	 */
+	 //목록조회
+	 @GetMapping public ResponseEntity<ApiResponse<PageResponse<AdminNoticeDto>>>findNoticeAll(@RequestParam(value="page", defaultValue="0")int page){
+		  PageResponse<AdminNoticeDto> notices = adminNoticeService.findNoticeAll(page); 
+		  
+		  return ResponseEntity.ok(ApiResponse.success(notices)); 
+	 }
+	
+	 @GetMapping("/{noticeNo}")
+	 public ResponseEntity<ApiResponse<AdminNoticeDto>> NoticeDetail(@PathVariable(name="noticeNo") Long noticeNo){
+	  
+		 AdminNoticeDto notice = adminNoticeService.noticeDetail(noticeNo);
+		 
+		  return ResponseEntity.status(200).body(ApiResponse.success("조회성공", notice)); 
+	 }
+	  
+	//검색 
+	 @GetMapping("/search") 
+	 public ResponseEntity<ApiResponse<List<AdminNoticeDto>>> NoticeSearch(@RequestParam(name="keyword") String keyword, @RequestParam(defaultValue="0",name="page") int page){ 
+			
+		  List<AdminNoticeDto>
+		  notices = adminNoticeService.noticeSearch(keyword,page);
+		  
+		 return ResponseEntity.status(200).body(ApiResponse.success("조회 성공",notices)); 
+	 }
+	 	  
+	  @PostMapping 
+	  public ResponseEntity<ApiResponse<Void>> saveNotice( @ModelAttribute @Valid AdminNoticeDto notice, @AuthenticationPrincipal CustomUserDetails userDetails){
+		  Long memberNoFromToken = userDetails.getMemberNo();
+		  notice.setMemberNo(memberNoFromToken);
+		  
+		 adminNoticeService.saveNotice(notice); 
+		  
+		  return ResponseEntity.status(201).body(ApiResponse.success("등록 성공",null));
+	  }
+	 
+	 // 수정 
+	 @PatchMapping("/{noticeNo}")
+	 public ResponseEntity<ApiResponse<Void>> editNotice(@Valid AdminNoticeDto notice, @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "noticeNo") Long noticeNo){
+	  
+	 Long memberNoFromToken = userDetails.getMemberNo();
+	 adminNoticeService.editNotice(notice,memberNoFromToken,noticeNo);
+	 
+	  return ResponseEntity.status(200).body(ApiResponse.success("수정 성공",null)); }
+	 
+	@DeleteMapping("/{noticeNo}") 
+	public ResponseEntity<ApiResponse<Void>> deleteNotice(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "noticeNo") Long noticeNo){
+		adminNoticeService.deleteNotice(userDetails.getMemberNo(),noticeNo); 
+		return ResponseEntity.status(200).body(ApiResponse.success("삭제 성공", null)); 
+	}
+	
 	
 }
