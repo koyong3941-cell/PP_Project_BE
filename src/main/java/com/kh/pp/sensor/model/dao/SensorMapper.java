@@ -2,10 +2,12 @@ package com.kh.pp.sensor.model.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import com.kh.pp.sensor.model.dto.SensorDto;
+import com.kh.pp.sensor.model.dto.SensorResponse;
 
 @Mapper
 public interface SensorMapper {
@@ -36,5 +38,26 @@ public interface SensorMapper {
 			ORDER BY MEASURE_DATE ASC
 			""")
 	List<SensorDto> sensorInfoRequest(Long memberNo);
+
+	@Insert("""
+			INSERT INTO
+				SENSOR_INFO(
+				SENSOR_NO
+				,MEASURE_DATE
+				,HUMIDITY
+				,TEMPERATURE
+				,SPO2
+				,CO2
+				)
+			VALUES(
+				#{sensorNo}
+				,#{measuredate}
+				,#{humidity}
+				,#{temperature}
+				,#{spo2}
+				,#{co2}
+			)
+			""")
+	int sensorResponse(SensorResponse sensor);
 
 }
