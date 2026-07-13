@@ -41,6 +41,7 @@ public class BoardDto {
 	
 	// Join
 	private String memberName;
+	private String memberId;
 	private String categoryName;
 	private Long commentCount;
 	private Long likeCount;
