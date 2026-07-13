@@ -6,13 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.pp.auth.model.vo.CustomUserDetails;
-import com.kh.pp.board.model.vo.Board;
 import com.kh.pp.common.page.PageResponse;
-import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.exception.FailUserRequestException;
+import com.kh.pp.exception.NoticeNotFoundException;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.notice.model.dao.AdminNoticeMapper;
 import com.kh.pp.notice.model.dao.NoticeImgMapper;
@@ -25,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AdminNoticeService {
 	private final AdminNoticeMapper adminNoticeMapper;
 	private final NoticeImgMapper noticeImgMapper;
@@ -112,6 +111,7 @@ public class AdminNoticeService {
 		return count;
 	}
 	
+	@Transactional
 	private void saveNoticeImages(Long noticeNo, List<MultipartFile> imageFiles) {
 		if (imageFiles == null || imageFiles.isEmpty()) {
 			return;
@@ -142,6 +142,7 @@ public class AdminNoticeService {
         }
 	}
 
+	@Transactional
 	public void editNotice(@Valid AdminNoticeDto notice, Long memberNoFromToken, Long noticeNo) {
 		long count = validateNoticeImages(notice.getImageFiles());
 
@@ -152,7 +153,7 @@ public class AdminNoticeService {
 				.noticeContent(notice.getNoticeContent())
 				.build();
 		
-		int result = adminNoticeMapper.editBoard(noticeEntity);
+		int result = adminNoticeMapper.editNotices(noticeEntity);
 		
 		if (result < 1) {
 			throw new FailUpdateException("수정에 실패했습니다.");
@@ -165,16 +166,18 @@ public class AdminNoticeService {
 		}
 	}
 
-	public void deleteNotice(Long memberNo, Long noticeNo) {		
-		if(memberNo == null) {
-			throw new FailDeleteException("비로그인 상태이므로 삭제가 불가능합니다.");
+	@Transactional
+	public int deleteNotice(List<Long> noticeNos) {			
+		if (noticeNos == null || noticeNos.isEmpty()) {
+			throw new NoticeNotFoundException("삭제할 공지사항 번호를 선택해주세요.");
 		}
 		
-		int result = adminNoticeMapper.deleteBoard(noticeNo);
+		int result = adminNoticeMapper.deleteNotices(noticeNos);
 		
-		if (result < 1) {
-			throw new FailDeleteException("삭제에 실패하였습니다.");
+		if (result == 0) {
+			throw new FailUpdateException("삭제에 실패하였습니다.");
 		}
+		return result;
 	}
 
 }
