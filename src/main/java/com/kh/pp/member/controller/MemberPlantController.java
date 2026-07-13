@@ -13,12 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.api.ApiResponse;
-<<<<<<< HEAD
 
-=======
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.common.page.PlantPageResponse;
->>>>>>> 05f4f2fc92b5d1860dab6d403b8157f3cb8eb779
+
 import com.kh.pp.member.model.dto.MemberPlantOwnedResponseDto;
 import com.kh.pp.member.model.service.MemberPlantService;
 
