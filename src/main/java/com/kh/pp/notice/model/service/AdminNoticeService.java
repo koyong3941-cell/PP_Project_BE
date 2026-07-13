@@ -175,7 +175,7 @@ public class AdminNoticeService {
 		int result = adminNoticeMapper.deleteNotices(noticeNos);
 		
 		if (result == 0) {
-			throw new FailUpdateException("탈퇴에 실패하였습니다.");
+			throw new FailUpdateException("삭제에 실패하였습니다.");
 		}
 		return result;
 	}
