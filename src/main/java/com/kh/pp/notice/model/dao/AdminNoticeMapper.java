@@ -144,17 +144,19 @@ public interface AdminNoticeMapper {
 	    WHERE
 	      NOTICE_NO = #{noticeNo}
 			""")
-	int editBoard(Notice noticeEntity);
+	int editNotices(Notice noticeEntity);
 
 	@Update("""
-			UPDATE
-   				NOTICE
-   		   SET
-   				DEL_YN = 'Y'
-   		 WHERE
-   				NOTICE_NO = #{noticeNo}
-			""")
-	int deleteBoard(Long noticeNo);
+		    <script>
+		        UPDATE NOTICE
+		        SET DEL_YN = 'Y'
+		        WHERE NOTICE_NO IN
+		        <foreach item="item" collection="noticeNos" open="(" separator="," close=")">
+		            #{item}
+		        </foreach>
+		    </script>
+		""")
+	int deleteNotices(@Param("noticeNos")List<Long> noticeNos);
 	
 	
 }

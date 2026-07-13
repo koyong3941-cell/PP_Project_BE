@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.api.ApiResponse;
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.notice.model.dto.AdminNoticeDto;
+import com.kh.pp.notice.model.dto.NoticeNoListDto;
 import com.kh.pp.notice.model.service.AdminNoticeService;
 
 import jakarta.validation.Valid;
@@ -75,11 +77,11 @@ public class AdminNoticeController {
 	 
 	  return ResponseEntity.status(200).body(ApiResponse.success("수정 성공",null)); }
 	 
-	@DeleteMapping("/{noticeNo}") 
-	public ResponseEntity<ApiResponse<Void>> deleteNotice(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "noticeNo") Long noticeNo){
-		adminNoticeService.deleteNotice(userDetails.getMemberNo(),noticeNo); 
-		return ResponseEntity.status(200).body(ApiResponse.success("삭제 성공", null)); 
+	@DeleteMapping
+	public ResponseEntity<ApiResponse<Integer>> deleteNotice(@RequestBody NoticeNoListDto request){
+		System.out.println("받은 데이터: " + request.getNoticeNos());
+		int result = adminNoticeService.deleteNotice(request.getNoticeNos()); 
+		return ResponseEntity.status(200).body(ApiResponse.success("삭제 성공", result)); 
 	}
-	
 	
 }
