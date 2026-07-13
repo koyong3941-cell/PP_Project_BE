@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pp.board.model.dao.AdminBoardMapper">
+<!-- Read Sql-->
+	<sql id="findBoardQuery">
+		SELECT
+				B.BOARD_NO
+			 ,	M.MEMBER_NAME
+			 ,	M.MEMBER_ID
+			 ,	B.BOARD_TITLE
+			 ,	B.CREATE_DATE
+			 ,	B.DEL_YN
+		  FROM
+		  		BOARD B 
+		  JOIN
+		  		MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+	</sql>
+	
+	<sql id="findBoardWhere">
+		 WHERE
+			<choose>
+				<when test="target == 'memberId'">
+					<foreach collection="keywordList" item="word" separator="AND">
+						M.MEMBER_ID LIKE '%' || #{word} || '%'
+					</foreach>
+				</when>
+           		<when test="target == 'memberName'">
+               		<foreach collection="keywordList" item="word" separator="AND">
+                   		M.MEMBER_NAME LIKE '%' || #{word} || '%'
+               		</foreach>
+               	</when>
+				<when test="target == 'boardTitle'">
+               		<foreach collection="keywordList" item="word" separator="AND">
+                   		B.BOARD_TITLE LIKE '%' || #{word} || '%'
+               		</foreach>
+           		</when>
+           		<when test="target == 'boardContent'">
+               		<foreach collection="keywordList" item="word" separator="AND">
+                   		B.BOARD_CONTENT LIKE '%' || #{word} || '%'
+               		</foreach>
+               	</when>
+           		<otherwise>
+               		<foreach collection="keywordList" item="word" separator="AND">
+                   		(
+			                M.MEMBER_ID LIKE '%' || #{word} || '%'
+		                    OR M.MEMBER_NAME LIKE '%' || #{word} || '%'
+		                    OR B.BOARD_TITLE LIKE '%' || #{word} || '%'
+		                    OR B.BOARD_CONTENT LIKE '%' || #{word} || '%'
+		            	)
+		        	</foreach>
+           		</otherwise>
+			</choose>
+	</sql>
+	
+	<sql id="findBoardOffset">
+		 ORDER
+			BY
+				B.BOARD_NO DESC
+		OFFSET
+				#{offset} ROWS FETCH
+		  NEXT
+		  		#{size} ROWS ONLY
+	</sql>
+
+<!-- READ -->
+	<select id="findBoardAll">
+		<include refid="findBoardQuery"/>
+		<include refid="findBoardOffset"/>
+	</select>
+	
+	<select id="findBoardByKeyword">
+		<include refid="findBoardQuery"/>
+		<include refid="findBoardWhere"/>
+		<include refid="findBoardOffset"/>
+	</select>
+	
+<!-- Update -->
+	<update id="restoreBoards">
+   		UPDATE
+   				BOARD
+   		   SET
+   				DEL_YN = 'N'
+   		 WHERE
+   				BOARD_NO IN
+   				<foreach item="boardNo" collection="boardNos" 
+             			 open="(" separator="," close=")">
+       			 	#{boardNo}
+    			</foreach>
+	</update>
+
+<!-- Delete -->
+	<update id="deleteBoards">
+   		UPDATE
+   				BOARD
+   		   SET
+   				DEL_YN = 'Y'
+   		 WHERE
+   				BOARD_NO IN
+   				<foreach item="boardNo" collection="boardNos" 
+             			 open="(" separator="," close=")">
+       			 	#{boardNo}
+    			</foreach>
+	</update>
+	
+<!-- Count -->
+	<select id="getBoardTotalElements">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		BOARD
+	</select>
+	
+	<select id="getBoardTotalElementsByKeyword">
+		SELECT
+				COUNT(*)
+		  FROM
+		  		BOARD B
+		  JOIN
+		  		MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+		<include refid="findBoardWhere"/>
+	</select>
+
+</mapper>
