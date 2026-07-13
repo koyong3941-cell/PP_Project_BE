@@ -20,6 +20,7 @@ import com.kh.pp.exception.FailLikeException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailSignUpException;
 import com.kh.pp.exception.FailUpdateException;
+import com.kh.pp.exception.InvalidCategoryException;
 import com.kh.pp.exception.MemberNotFoundException;
 import com.kh.pp.exception.PlantNotFoundException;
 import com.kh.pp.exception.dto.ErrorResponse;
@@ -74,6 +75,11 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(InvalidParameterException.class)
 	public ResponseEntity<ErrorResponse> HandlerInvalidParameter(InvalidParameterException e){
+		return ResponseEntity.badRequest().body(new ErrorResponse(400, e.getMessage(), null));
+	}
+	
+	@ExceptionHandler(InvalidCategoryException.class)
+	public ResponseEntity<ErrorResponse> HandlerInvalidCategory(InvalidCategoryException e){
 		return ResponseEntity.badRequest().body(new ErrorResponse(400, e.getMessage(), null));
 	}
 	
