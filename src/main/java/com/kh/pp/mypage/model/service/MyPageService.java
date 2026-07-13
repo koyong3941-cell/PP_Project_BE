@@ -67,7 +67,7 @@ public class MyPageService {
 	}
 
 	public PageResponse<MyPagePlantDetail> memberPlantList(Long memberNo, int page) {
-		int size = 10;
+		int size = 9;
 		int offset = page * size;
 		
 		int totalElements = plantCount(memberNo);
