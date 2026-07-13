@@ -32,6 +32,7 @@
        	  LEFT
        	  JOIN
        	  		PLANT_REVIEW PR ON PR.PLANT_NO = P.PLANT_NO
+       	  					AND PR.DEL_YN = 'N'
 		 WHERE
 				P.DEL_YN = 'N'	
 	</sql>

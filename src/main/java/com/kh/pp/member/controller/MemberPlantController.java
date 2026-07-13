@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pp.auth.model.vo.CustomUserDetails;
 import com.kh.pp.common.api.ApiResponse;
+
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.common.page.PlantPageResponse;
+
 import com.kh.pp.member.model.dto.MemberPlantOwnedResponseDto;
 import com.kh.pp.member.model.service.MemberPlantService;
-import com.kh.pp.mypage.model.dto.MyPageResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
