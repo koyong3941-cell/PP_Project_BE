@@ -81,36 +81,44 @@
     </select>
     
     <select id="searchNotice">
-			SELECT 
-				n.NOTICE_NO
-				,m.MEMBER_NAME
-				,n.NOTICE_TITLE
-				,n.NOTICE_COUNT
-				,n.CREATE_DATE
-				,(SELECT 
-						IMG_PATH || SAVE_NAME 
-             	   FROM 
-             	   		MEMBER_IMG 
-             	  WHERE 
-             	  		MEMBER_NO = n.MEMBER_NO 
-               	    AND 
-               	    	DEL_YN = 'N') AS PROFILE_IMAGE
-			FROM
-				NOTICE n
-			JOIN
-				MEMBER m ON (n.MEMBER_NO = m.MEMBER_NO)
-			WHERE
-				n.DEL_YN = 'N'
-			AND
-				(
-					 m.MEMBER_NAME   LIKE '%' || #{keyword} || '%'
-		             OR n.NOTICE_TITLE  LIKE '%' || #{keyword} || '%'
-		             OR n.NOTICE_CONTENT LIKE '%' || #{keyword} || '%'
-				)
-				ORDER BY n.NOTICE_NO DESC
-				OFFSET #{offset} ROWS
-				FETCH NEXT #{size} ROWS ONLY
-    </select>
+    SELECT 
+        n.NOTICE_NO,
+        m.MEMBER_NAME,
+        n.NOTICE_TITLE,
+        n.NOTICE_COUNT,
+        n.CREATE_DATE,
+        (
+            SELECT IMG_PATH || SAVE_NAME
+            FROM MEMBER_IMG
+            WHERE MEMBER_NO = n.MEMBER_NO
+            AND DEL_YN = 'N'
+        ) AS PROFILE_IMAGE
+    FROM NOTICE n
+    JOIN MEMBER m ON (n.MEMBER_NO = m.MEMBER_NO)
+    WHERE n.DEL_YN = 'N'
+
+    <choose>
+        <when test="target == 'title'">
+            AND n.NOTICE_TITLE LIKE '%' || #{keyword} || '%'
+        </when>
+
+        <when test="target == 'writer'">
+            AND m.MEMBER_NAME LIKE '%' || #{keyword} || '%'
+        </when>
+
+        <otherwise>
+            AND (
+                m.MEMBER_NAME LIKE '%' || #{keyword} || '%'
+                OR n.NOTICE_TITLE LIKE '%' || #{keyword} || '%'
+                OR n.NOTICE_CONTENT LIKE '%' || #{keyword} || '%'
+            )
+        </otherwise>
+    </choose>
+
+    ORDER BY n.NOTICE_NO DESC
+    OFFSET #{offset} ROWS
+    FETCH NEXT #{size} ROWS ONLY
+</select>
     
    
     
