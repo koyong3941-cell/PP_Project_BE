@@ -48,10 +48,11 @@ public class NoticeController {
 	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<List<NoticeDto>>> searchNotice(
 			@RequestParam(name="keyword") String keyword,
+			@RequestParam(name = "target", required = false) String target,
 			@RequestParam(defaultValue="0", name="page") int page){
 
 		
-		List<NoticeDto> notices = noticeService.searchNotice(keyword,page);
+		List<NoticeDto> notices = noticeService.searchNotice(keyword, target, page);
 		
 		return ResponseEntity.ok(ApiResponse.success(notices));
 	}

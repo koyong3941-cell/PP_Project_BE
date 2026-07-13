@@ -126,7 +126,7 @@ public class NoticeService {
 		noticeMapper.deleteNotice(noticeNo);
 	}
 
-	public List<NoticeDto> searchNotice(String keyword,int page) {
+	public List<NoticeDto> searchNotice(String keyword, String target, int page) {
 		int size = 10;
 		int offset = page * size;
 		
@@ -134,8 +134,7 @@ public class NoticeService {
 			return noticeMapper.findNoticeAll(offset,size);
 		}
 		
-		return noticeMapper.searchNotice(keyword,offset,size);
-	
+		return noticeMapper.searchNotice(keyword, target, offset,size);
 	}
 
 	private void saveNoticeImages(Long noticeNo, List<MultipartFile> imageFiles) {
