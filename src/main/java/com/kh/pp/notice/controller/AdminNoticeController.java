@@ -21,6 +21,7 @@ import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.notice.model.dto.AdminNoticeDto;
 import com.kh.pp.notice.model.dto.NoticeNoListDto;
 import com.kh.pp.notice.model.service.AdminNoticeService;
+import com.kh.pp.plant.model.dto.PlantNoListDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +77,12 @@ public class AdminNoticeController {
 	 adminNoticeService.editNotice(notice,memberNoFromToken,noticeNo);
 	 
 	  return ResponseEntity.status(200).body(ApiResponse.success("수정 성공",null)); }
+	 
+	@PatchMapping
+	public ResponseEntity<ApiResponse<Integer>> restoreNotice(@RequestBody NoticeNoListDto request){
+		int result = adminNoticeService.restoreNotice(request.getNoticeNos());
+		return ResponseEntity.ok(ApiResponse.success(result + "개 복구에 성공했습니다.", result));
+	}
 	 
 	@DeleteMapping
 	public ResponseEntity<ApiResponse<Integer>> deleteNotice(@RequestBody NoticeNoListDto request){

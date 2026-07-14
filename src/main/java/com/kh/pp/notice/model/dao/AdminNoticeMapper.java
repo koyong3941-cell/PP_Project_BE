@@ -149,6 +149,18 @@ public interface AdminNoticeMapper {
 	@Update("""
 		    <script>
 		        UPDATE NOTICE
+		        SET DEL_YN = 'N'
+		        WHERE NOTICE_NO IN
+		        <foreach item="item" collection="noticeNos" open="(" separator="," close=")">
+		            #{item}
+		        </foreach>
+		    </script>
+		""")
+	int restoreNotices(@Param("noticeNos")List<Long> noticeNos);
+	
+	@Update("""
+		    <script>
+		        UPDATE NOTICE
 		        SET DEL_YN = 'Y'
 		        WHERE NOTICE_NO IN
 		        <foreach item="item" collection="noticeNos" open="(" separator="," close=")">
