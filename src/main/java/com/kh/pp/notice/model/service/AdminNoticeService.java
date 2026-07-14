@@ -11,6 +11,7 @@ import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.exception.FailUserRequestException;
 import com.kh.pp.exception.NoticeNotFoundException;
+import com.kh.pp.exception.PlantNotFoundException;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.notice.model.dao.AdminNoticeMapper;
 import com.kh.pp.notice.model.dao.NoticeImgMapper;
@@ -88,7 +89,7 @@ public class AdminNoticeService {
 			throw new FailSaveException("작성에 실패했습니다");
 		}
 		if(count > 0) {
-			Long noticeNo = adminNoticeMapper.getLastNoticeNoByMemberNo(notice.getNoticeNo());
+			Long noticeNo = adminNoticeMapper.getLastNoticeNoByMemberNo(notice.getMemberNo());
 			
 			saveNoticeImages(noticeNo,notice.getImageFiles());
 		}
@@ -143,7 +144,7 @@ public class AdminNoticeService {
 	}
 
 	@Transactional
-	public void editNotice(@Valid AdminNoticeDto notice, Long memberNoFromToken, Long noticeNo) {
+	public void editNotice(AdminNoticeDto notice, Long memberNoFromToken, Long noticeNo) {
 		long count = validateNoticeImages(notice.getImageFiles());
 
 		Notice noticeEntity = Notice.builder()
@@ -166,6 +167,20 @@ public class AdminNoticeService {
 		}
 	}
 
+	@Transactional
+	public int restoreNotice(List<Long> noticeNos) {
+		if (noticeNos == null || noticeNos.isEmpty()) {
+	        throw new NoticeNotFoundException("복구할 공지사항 번호를 선택해주세요.");
+	    }
+		
+		int result = adminNoticeMapper.restoreNotices(noticeNos);
+		
+		if (result == 0) {
+			throw new FailUpdateException("복구에 실패하였습니다.");
+		}
+		return result;
+	}
+	
 	@Transactional
 	public int deleteNotice(List<Long> noticeNos) {			
 		if (noticeNos == null || noticeNos.isEmpty()) {

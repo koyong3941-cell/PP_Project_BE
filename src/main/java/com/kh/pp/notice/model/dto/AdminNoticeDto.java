@@ -32,6 +32,7 @@ public class AdminNoticeDto {
 	
 	// join
 	private String memberName;
+	private String memberId;
 	
 	//이미지 입력용
 	private List<MultipartFile> imageFiles;
