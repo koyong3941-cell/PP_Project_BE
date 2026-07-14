@@ -88,7 +88,7 @@ public class AdminNoticeService {
 			throw new FailSaveException("작성에 실패했습니다");
 		}
 		if(count > 0) {
-			Long noticeNo = adminNoticeMapper.getLastNoticeNoByMemberNo(notice.getNoticeNo());
+			Long noticeNo = adminNoticeMapper.getLastNoticeNoByMemberNo(notice.getMemberNo());
 			
 			saveNoticeImages(noticeNo,notice.getImageFiles());
 		}
@@ -143,7 +143,7 @@ public class AdminNoticeService {
 	}
 
 	@Transactional
-	public void editNotice(@Valid AdminNoticeDto notice, Long memberNoFromToken, Long noticeNo) {
+	public void editNotice(AdminNoticeDto notice, Long memberNoFromToken, Long noticeNo) {
 		long count = validateNoticeImages(notice.getImageFiles());
 
 		Notice noticeEntity = Notice.builder()
