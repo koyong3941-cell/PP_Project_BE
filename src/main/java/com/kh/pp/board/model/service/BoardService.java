@@ -216,6 +216,9 @@ public class BoardService {
 	        boardMapper.deleteBoardLike(memberNo, boardNo);
 	        return;
 	    }
+	    
+	    // 싫어요가 있으면 제거
+	    boardMapper.deleteBoardDislike(memberNo, boardNo);
 		
 		int insertResult = boardMapper.addBoardLike(memberNo, boardNo);
 		
@@ -233,6 +236,9 @@ public class BoardService {
 	        boardMapper.deleteBoardDislike(memberNo, boardNo);
 	        return;
 	    }
+	    
+	    // 좋아요가 있으면 제거
+	    boardMapper.deleteBoardLike(memberNo, boardNo);
 		
 		int insertResult = boardMapper.addBoardDislike(memberNo, boardNo);
 		
