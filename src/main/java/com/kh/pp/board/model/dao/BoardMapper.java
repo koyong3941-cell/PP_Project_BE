@@ -76,5 +76,10 @@ public interface BoardMapper {
 	int findBoardDisLikeReactions(Long boardNo);
 
 
+	int deleteBoardLike(@Param("memberNo") Long memberNo,
+            @Param("boardNo") Long boardNo);
+
+	int deleteBoardDislike(@Param("memberNo") Long memberNo,
+               @Param("boardNo") Long boardNo);
 
 }

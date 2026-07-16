@@ -211,9 +211,14 @@ public class BoardService {
 	public void addBoardLike(Long memberNo, Long boardNo) {
 		int countResult = boardMapper.validateLikeExists(memberNo, boardNo);
 		
-		if(countResult > 0) {
-			throw new FailSaveException("좋아요 저장에 실패하였습니다.");
-		}
+		  // 이미 좋아요를 누른 상태 → 취소
+	    if (countResult > 0) {
+	        boardMapper.deleteBoardLike(memberNo, boardNo);
+	        return;
+	    }
+	    
+	    // 싫어요가 있으면 제거
+	    boardMapper.deleteBoardDislike(memberNo, boardNo);
 		
 		int insertResult = boardMapper.addBoardLike(memberNo, boardNo);
 		
@@ -226,9 +231,14 @@ public class BoardService {
 	public void addBoardDislike(Long memberNo, Long boardNo) {
 		int countResult = boardMapper.validateDislikeExists(memberNo, boardNo);
 		
-		if(countResult > 0) {
-			throw new FailSaveException("싫어요 저장에 실패하였습니다.");
-		}
+		 // 이미 싫어요를 누른 상태 → 취소
+	    if (countResult > 0) {
+	        boardMapper.deleteBoardDislike(memberNo, boardNo);
+	        return;
+	    }
+	    
+	    // 좋아요가 있으면 제거
+	    boardMapper.deleteBoardLike(memberNo, boardNo);
 		
 		int insertResult = boardMapper.addBoardDislike(memberNo, boardNo);
 		
