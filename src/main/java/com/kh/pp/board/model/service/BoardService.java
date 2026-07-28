@@ -18,6 +18,7 @@ import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
+import com.kh.pp.file.dto.FileSaveResult;
 import com.kh.pp.file.service.FileService;
 
 import lombok.RequiredArgsConstructor;
@@ -158,6 +159,10 @@ public class BoardService {
 		return boardMapper.boardCategoryAll(); 
 	}
 	
+	public int getBoardTotalCount() {
+	    return boardMapper.getBoardTotalElements();
+	}
+	
 	// ------ 이미지 갯수 확인 ------
 	private long validateBoardImages(List<MultipartFile> imageFiles) {
 		if (imageFiles == null) {
@@ -185,13 +190,13 @@ public class BoardService {
         for (MultipartFile file : imageFiles) {
             if (!file.isEmpty()) {
                 try {
-                    String saveName = fileService.store(file, "board");
+                	FileSaveResult result = fileService.store(file, "board");
 
                     BoardImgDto imgDto = new BoardImgDto();
                     imgDto.setBoardNo(boardNo);
                     imgDto.setOriginalName(file.getOriginalFilename());
-                    imgDto.setSaveName(saveName);
-                    imgDto.setImgPath("/uploads/board/");
+                    imgDto.setSaveName(result.getSaveName());
+                    imgDto.setImgPath(result.getImgPath());
                     imgDto.setImgOrder(order++);
 
                     int imgResult = boardImgMapper.insertBoardImg(imgDto);

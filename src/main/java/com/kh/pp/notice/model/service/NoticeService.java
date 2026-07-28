@@ -11,6 +11,7 @@ import com.kh.pp.board.model.dto.BoardImgDto;
 import com.kh.pp.common.page.PageResponse;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
+import com.kh.pp.file.dto.FileSaveResult;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.notice.model.dao.NoticeImgMapper;
 import com.kh.pp.notice.model.dao.NoticeMapper;
@@ -146,13 +147,13 @@ public class NoticeService {
         for (MultipartFile file : imageFiles) {
             if (!file.isEmpty()) {
                 try {
-                    String saveName = fileService.store(file, "notice");
+                	FileSaveResult result = fileService.store(file, "notice");
 
                     NoticeImgDto imgDto = new NoticeImgDto();
                     imgDto.setNoticeNo(noticeNo);
                     imgDto.setOriginalName(file.getOriginalFilename());
-                    imgDto.setSaveName(saveName);
-                    imgDto.setImgPath("/uploads/notice/");
+                    imgDto.setSaveName(result.getSaveName());
+                    imgDto.setImgPath(result.getImgPath());
                     imgDto.setImgOrder(order++);
 
                     int imgResult = noticeImgMapper.insertNoticeImg(imgDto);

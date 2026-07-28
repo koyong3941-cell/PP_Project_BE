@@ -12,6 +12,7 @@ import com.kh.pp.exception.FailDeleteException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.exception.PlantNotFoundException;
+import com.kh.pp.file.dto.FileSaveResult;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.plant.model.dao.AdminPlantMapper;
 import com.kh.pp.plant.model.dao.PlantImgMapper;
@@ -202,13 +203,13 @@ public class AdminPlantService {
         for (MultipartFile file : imageFiles) {
             if (!file.isEmpty()) {
                 try {
-                    String saveName = fileService.store(file, "plant");
+                	FileSaveResult result = fileService.store(file, "plant");
 
                     PlantImgDto imgDto = new PlantImgDto();
                     imgDto.setPlantNo(plantNo);
                     imgDto.setOriginalName(file.getOriginalFilename());
-                    imgDto.setSaveName(saveName);
-                    imgDto.setImgPath("/uploads/plant/");
+                    imgDto.setSaveName(result.getSaveName());
+                    imgDto.setImgPath(result.getImgPath());
                     imgDto.setImgOrder(order++);
 
                     int imgResult = plantImgMapper.insertPlantImg(imgDto);

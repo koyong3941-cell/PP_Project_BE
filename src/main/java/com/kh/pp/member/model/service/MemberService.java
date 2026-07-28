@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailSignUpException;
 import com.kh.pp.exception.FailUserRequestException;
+import com.kh.pp.file.dto.FileSaveResult;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.member.model.dao.MemberImgMapper;
 import com.kh.pp.member.model.dao.MemberMapper;
@@ -111,14 +112,14 @@ public class MemberService {
 			throw new FailUserRequestException("사용자 이미지 파일 업로드에  실패하였습니다, 다시 시도해주세요.");
 		}
 		
-		String saveName = fileService.store(imageFile, "profile");
+		FileSaveResult result = fileService.store(imageFile, "profile");
 		
 		try {
 		MemberImgDto imgDto = new MemberImgDto();
         imgDto.setMemberNo(memberNo);
         imgDto.setOriginalName(imageFile.getOriginalFilename());
-        imgDto.setSaveName(saveName);
-        imgDto.setImgPath("/uploads/profile/");
+        imgDto.setSaveName(result.getSaveName());
+        imgDto.setImgPath(result.getImgPath());
 		
         memberImgMapper.userImgUpload(imgDto);
         
