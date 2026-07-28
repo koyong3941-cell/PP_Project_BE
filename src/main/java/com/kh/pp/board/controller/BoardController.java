@@ -2,6 +2,8 @@ package com.kh.pp.board.controller;
 
 import java.util.List;
 
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,18 +21,35 @@ import com.kh.pp.board.model.dto.BoardDto;
 import com.kh.pp.board.model.dto.BoardReactionDto;
 import com.kh.pp.board.model.dto.CategoryDto;
 import com.kh.pp.board.model.service.BoardService;
-import com.kh.pp.board.model.vo.Category;
 import com.kh.pp.common.api.ApiResponse;
 import com.kh.pp.common.page.PageResponse;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/boards")
 public class BoardController {
 	private final BoardService boardService;
+	private final Counter viewCounter;
+	private final MeterRegistry registry;
+	
+	public BoardController(BoardService boardService, MeterRegistry registry) {
+		this.boardService = boardService;
+		this.registry = registry;
+	    this.viewCounter = Counter.builder("board_view_total")
+	            .description("게시글 조회 횟수")
+	            .register(registry);
+	    
+	    Gauge.builder("board_count_current", boardService, 
+	            service -> (double) service.getBoardTotalCount())  // 메서드 이름은 아래에 맞게
+	         .description("현재 게시글 수")
+	         .register(registry);
+	    
+	}
 
 	// Create
 	@PostMapping
@@ -46,9 +65,16 @@ public class BoardController {
 	// Read
 	@GetMapping
 	public ResponseEntity<ApiResponse<PageResponse<BoardDto>>> findBoardAll(@RequestParam(value = "page", defaultValue ="0") int page){
-		PageResponse<BoardDto> boards = boardService.findBoardAll(page);
-		
-		return ResponseEntity.ok(ApiResponse.success(boards));
+		Timer.Sample sample = Timer.start(registry);   // 측정 시작
+
+	    try {
+	        PageResponse<BoardDto> boards = boardService.findBoardAll(page);
+	        return ResponseEntity.ok(ApiResponse.success(boards));
+	    } finally {
+	        sample.stop(Timer.builder("board_list_duration")
+	                .description("게시글 목록 조회 시간")
+	                .register(registry));
+	    }
 	}
 	
 	@GetMapping("/search")
@@ -64,6 +90,9 @@ public class BoardController {
 	public ResponseEntity<ApiResponse<BoardDto>> boardDetail(@PathVariable(name = "boardNo") Long boardNo){
 		
 		BoardDto board = boardService.boardDetail(boardNo);
+		
+		viewCounter.increment();
+		
 		
 		return ResponseEntity.status(200).body(ApiResponse.success(board));
 	}

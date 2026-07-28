@@ -16,6 +16,7 @@ import com.kh.pp.exception.FailLikeException;
 import com.kh.pp.exception.FailSaveException;
 import com.kh.pp.exception.FailUpdateException;
 import com.kh.pp.exception.PlantNotFoundException;
+import com.kh.pp.file.dto.FileSaveResult;
 import com.kh.pp.file.service.FileService;
 import com.kh.pp.plant.model.dao.PlantReviewImgMapper;
 import com.kh.pp.plant.model.dao.PlantReviewMapper;
@@ -217,13 +218,13 @@ public class PlantReviewService {
         for (MultipartFile file : imageFiles) {
             if (!file.isEmpty()) {
                 try {
-                    String saveName = fileService.store(file, "plantReview");
+                	FileSaveResult result = fileService.store(file, "plantReview");
 
                     PlantReviewImgDto imgDto = new PlantReviewImgDto();
                     imgDto.setReviewNo(reviewNo);
                     imgDto.setOriginalName(file.getOriginalFilename());
-                    imgDto.setSaveName(saveName);
-                    imgDto.setImgPath("/uploads/plantReview/");
+                    imgDto.setSaveName(result.getSaveName());
+                    imgDto.setImgPath(result.getImgPath());
                     imgDto.setImgOrder(order++);
 
                     int imgResult = plantReviewImgMapper.insertPlantReviewImg(imgDto);

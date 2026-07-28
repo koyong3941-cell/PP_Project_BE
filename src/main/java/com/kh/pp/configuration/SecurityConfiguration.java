@@ -36,35 +36,36 @@ public class SecurityConfiguration {
 				.csrf(AbstractHttpConfigurer::disable)	// "/api/admins/boards/{boardNo}"
 				.cors(Customizer.withDefaults()).authorizeHttpRequests(requests ->{
 					
-					// 1. 관리자 전용 경로 (가장 구체적이거나 제한이 강한 것)
-					requests.requestMatchers("/api/admins/**").hasRole("ADMIN");
-					// 2. 인증 관련 (로그인/토큰 등)
-					requests.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll();
-					// 3. 회원 관련
-					requests.requestMatchers(HttpMethod.POST, "/api/members").permitAll();
-					requests.requestMatchers(HttpMethod.DELETE, "/api/members/**").authenticated();
-					requests.requestMatchers(HttpMethod.PATCH, "/api/members/**").authenticated();
-					// 4. 게시판 관련 (보드/공지사항 등)
-					requests.requestMatchers(HttpMethod.POST, "/api/boards/**").authenticated();
-					requests.requestMatchers(HttpMethod.PATCH, "/api/boards/**").authenticated();
-					requests.requestMatchers(HttpMethod.DELETE, "/api/boards/**").authenticated();
-					requests.requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll(); 
-					requests.requestMatchers(HttpMethod.GET, "/api/boards").permitAll();   
-					// 5. 공지사항 관련
-					requests.requestMatchers(HttpMethod.GET, "/api/notices/**").permitAll();
-					requests.requestMatchers(HttpMethod.GET, "/api/notices").permitAll();
-					// 6. 식물 게시판 관련
-					requests.requestMatchers(HttpMethod.GET, "/api/plants/**").permitAll();
-					requests.requestMatchers(HttpMethod.GET, "/api/plants").permitAll();
-					// 7. 이미지 관련
-					requests.requestMatchers("/uploads/**").permitAll();
-					// 8. 마이페이지 및 센서 관련
-					requests.requestMatchers("/api/sensors/**").permitAll();
-
-					requests.requestMatchers(HttpMethod.GET, "/api/mypage/**").authenticated();
-					
-					// 요청 /api/plants get
-					requests.anyRequest().authenticated(); 
+					// 임시 권한 전부 설정
+					requests.anyRequest().permitAll();
+					/*
+					 * // 1. 관리자 전용 경로 (가장 구체적이거나 제한이 강한 것)
+					 * requests.requestMatchers("/api/admins/**").hasRole("ADMIN"); // 2. 인증 관련
+					 * (로그인/토큰 등) requests.requestMatchers(HttpMethod.POST,
+					 * "/api/auth/**").permitAll(); // 3. 회원 관련
+					 * requests.requestMatchers(HttpMethod.POST, "/api/members").permitAll();
+					 * requests.requestMatchers(HttpMethod.DELETE,
+					 * "/api/members/**").authenticated();
+					 * requests.requestMatchers(HttpMethod.PATCH,
+					 * "/api/members/**").authenticated(); // 4. 게시판 관련 (보드/공지사항 등)
+					 * requests.requestMatchers(HttpMethod.POST, "/api/boards/**").authenticated();
+					 * requests.requestMatchers(HttpMethod.PATCH, "/api/boards/**").authenticated();
+					 * requests.requestMatchers(HttpMethod.DELETE,
+					 * "/api/boards/**").authenticated(); requests.requestMatchers(HttpMethod.GET,
+					 * "/api/boards/**").permitAll(); requests.requestMatchers(HttpMethod.GET,
+					 * "/api/boards").permitAll(); // 5. 공지사항 관련
+					 * requests.requestMatchers(HttpMethod.GET, "/api/notices/**").permitAll();
+					 * requests.requestMatchers(HttpMethod.GET, "/api/notices").permitAll(); // 6.
+					 * 식물 게시판 관련 requests.requestMatchers(HttpMethod.GET,
+					 * "/api/plants/**").permitAll(); requests.requestMatchers(HttpMethod.GET,
+					 * "/api/plants").permitAll(); // 7. 이미지 관련
+					 * requests.requestMatchers("/uploads/**").permitAll(); // 8. 마이페이지 및 센서 관련
+					 * requests.requestMatchers("/api/sensors/**").permitAll();
+					 * 
+					 * requests.requestMatchers(HttpMethod.GET, "/api/mypage/**").authenticated();
+					 * 
+					 * // 요청 /api/plants get requests.anyRequest().authenticated();
+					 */
 					
 
 				}).sessionManagement(manager ->
@@ -87,7 +88,11 @@ public class SecurityConfiguration {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		configuration.setAllowedOrigins(Arrays.asList(
+				"http://localhost:5173",
+				"http://localhost:8088",
+			    "http://54.224.35.101",
+			    "http://54.224.35.101:8080"));
 		configuration.setAllowedMethods(Arrays.asList("POST", "PATCH", "DELETE", "GET","PUT","OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
 		configuration.setAllowCredentials(true);

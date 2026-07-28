@@ -1,77 +1,77 @@
 package com.kh.pp.file.service;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pp.exception.FailSaveException;
+import com.kh.pp.file.dto.FileSaveResult;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FileService {
-	
-	// 파일을 uploads폴더에 저장하고 저장된 파일명을 반환 subDirectort는 경로 지정을 위해 해당 게시글 명(ex. board, plant 등)을 입력
-	public String store(MultipartFile file, String subDirectory) {
+
+    private final S3Service s3Service;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+
+    @Value("${cloud.aws.region.static}")
+    private String region;
+
+    public FileSaveResult store(MultipartFile file, String subDirectory) {
         try {
-        	if (!isImageFile(file)) {
+            if (!isImageFile(file)) {
                 throw new FailSaveException("이미지 파일만 업로드할 수 있습니다. (jpg, jpeg, png, gif, webp)");
             }
-        	String extension = getExtension(file);
-        	String saveName = UUID.randomUUID().toString() + extension;
 
-            // uploads/{subDirectory}/ 경로 생성
-            Path uploadPath = Paths.get(System.getProperty("user.dir"), "uploads", subDirectory)
-                    .toAbsolutePath().normalize();
+            String extension = getExtension(file);
+            String saveName = UUID.randomUUID().toString() + extension;
 
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+            // S3에 저장될 키 (예: plant/uuid.jpg)
+            String key = subDirectory + "/" + saveName;
 
-            Path targetPath = uploadPath.resolve(saveName);
-            file.transferTo(targetPath.toFile());
+            // S3 업로드
+            s3Service.fileSave(file, key);
 
-            return saveName;
+            // 이미지 경로 생성
+            String imgPath = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + subDirectory + "/";
 
-        } catch (IOException e) {
+            return new FileSaveResult(saveName, imgPath);
+
+        } catch (Exception e) {
             log.error("파일 저장 실패", e);
             throw new RuntimeException("이미지 파일 저장에 실패했습니다.");
         }
     }
-	
-	// 파일 확장자 추출 (
-	private String getExtension(MultipartFile file) {
-		String originalName = file.getOriginalFilename();
-		if (originalName == null || !originalName.contains(".")) {
-			return "";
-		}
-		return originalName.substring(originalName.lastIndexOf("."));
-	}
 
-	// 이미지 파일인지 검증
-	private boolean isImageFile(MultipartFile file) {
+    private String getExtension(MultipartFile file) {
+        String originalName = file.getOriginalFilename();
+        if (originalName == null || !originalName.contains(".")) {
+            return "";
+        }
+        return originalName.substring(originalName.lastIndexOf("."));
+    }
+
+    private boolean isImageFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return false;
         }
 
         String contentType = file.getContentType();
-        
-        // MIME 타입 체크
         if (contentType == null || !contentType.startsWith("image/")) {
-        	return false;
+            return false;
         }
 
-        // 확장자 체크
         String extension = getExtension(file).toLowerCase();
         return extension.equals(".jpg") || extension.equals(".jpeg")
-        		|| extension.equals(".png") || extension.equals(".gif")
-        		|| extension.equals(".webp");
+                || extension.equals(".png") || extension.equals(".gif")
+                || extension.equals(".webp");
     }
-	
 }
