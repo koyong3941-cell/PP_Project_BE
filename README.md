@@ -6,7 +6,7 @@
 <img src="./시연영상.gif" width="800"/>
 
 ## 🔗 배포 사이트
-🌱 https://goodsfinder.store/
+https://goodsfinder.store/
 
 ## 1. 개발 배경
 
