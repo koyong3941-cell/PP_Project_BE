@@ -259,4 +259,17 @@
 	 AND
 	 	BOARD_NO = #{boardNo}
 </select>
+<delete id="deleteBoardLike">
+    DELETE
+      FROM BOARD_LIKE
+     WHERE MEMBER_NO = #{memberNo}
+       AND BOARD_NO = #{boardNo}
+</delete>
+
+<delete id="deleteBoardDislike">
+    DELETE
+      FROM BOARD_DISLIKE
+     WHERE MEMBER_NO = #{memberNo}
+       AND BOARD_NO = #{boardNo}
+</delete>
 </mapper>
